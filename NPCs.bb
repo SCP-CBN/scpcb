@@ -2642,7 +2642,7 @@ Function UpdateNPCs()
 					Else
 						dist = EntityDistance(Collider, n\Collider)
 						
-						;use the prev-values to do a "twitching" effect"
+						;use the prev-values to do a "twitching" effect
 						n\PrevX = CurveValue(0.0, n\PrevX, 10.0)
 						n\PrevZ = CurveValue(0.0, n\PrevZ, 10.0)
 						
@@ -2916,7 +2916,11 @@ Function UpdateNPCs()
 												If WrapAngle(EntityYaw(pvt)-EntityYaw(n\Collider))<10 Then
 													PlaySound2(Gunshot2SFX, Camera, n\Collider, 20)
 													
-													DeathMSG = Chr(34)+"CH-2 to control. Shot down a runaway Class D at Gate B."+Chr(34)
+													If PlayerRoom\RoomTemplate\Name = "exit1" Then
+														DeathMSG = Chr(34)+"CH-2 to control. Shot down a runaway Class D at Gate B."+Chr(34)
+													Else
+														DeathMSG = Chr(34)+"CH-2 to control. Shot down a runaway Class D at Gate A."+Chr(34)
+													EndIf
 													
 													Shoot( EntityX(pvt),EntityY(pvt), EntityZ(pvt),((10/dist)*(1/dist))*(n\State=2),(n\State=2))
 													
@@ -6382,10 +6386,11 @@ Function Console_SpawnNPC(c_input$,state%=-9999)
 	Select c_input$ 
 		Case "mtf"
 			n.NPCs = CreateNPC(NPCtypeMTF, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
-		Case "173","scp173","scp-173"
+		Case "173","scp173","scp-173","statue"
 			n.NPCs = CreateNPC(NPCtype173, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
 		Case "106","scp106","scp-106","larry"
-			n.NPCs = CreateNPC(NPCtypeOldMan, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
+			Curr106\State = -1
+			PositionEntity(Curr106\Collider, EntityX(Collider), EntityY(Curr106\Collider), EntityZ(Collider))
 		Case "guard"
 			n.NPCs = CreateNPC(NPCtypeGuard, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
 		Case "096","scp096","scp-096"
@@ -6416,14 +6421,12 @@ Function Console_SpawnNPC(c_input$,state%=-9999)
 			If state%=-9999 Then n\State = 1
 		Case "066","scp066","scp-066"
 			n.NPCs = CreateNPC(NPCtype066, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
-		Case "npc178"
+		Case "npc178","178-1"
 			n.NPCs = CreateNPC(NPCtype178, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
 		Case "pdplane"
 			n.NPCs = CreateNPC(NPCtypePdPlane, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
 		Case "1048-a","scp1048-a","scp-1048-a","scp1048a","scp-1048a"
 			n.NPCs = CreateNPC(NPCtype1048a, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
-		Case "scp-008-1","008-1","scp008-1"
-			n.NPCs = CreateNPC(NPCtype008, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
 		Case "scp-1499-1","scp1499-1","1499-1"
 			n.NPCs = CreateNPC(NPCtype1499, EntityX(Collider),EntityY(Collider)+0.2,EntityZ(Collider))
 		Default 

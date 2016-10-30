@@ -624,19 +624,19 @@ Function UpdateMainMenu()
 					
 					Color 255,255,255
 					AAText(x + 20 * MenuScale, y, "Particle amount:")
-					ParticleAmount = Slider3(x+310*MenuScale,y+6*MenuScale,150*MenuScale,ParticleAmount,2,"ALMOST NONE","FEW","ALL")
+					ParticleAmount = Slider3(x+310*MenuScale,y+6*MenuScale,150*MenuScale,ParticleAmount,2,"DECREASED","MINIMAL","ALL")
 					If (MouseOn(x + 310 * MenuScale, y-6*MenuScale, 150*MenuScale+14, 20) And OnSliderID=0) Or OnSliderID=2
 						DrawOptionsTooltip(tx,ty,tw,th,"particleamount",ParticleAmount)
 					EndIf
 					
-					y=y+50*MenuScale
-					
-						Color 255,255,255
-					AAText(x + 20 * MenuScale, y, "Enable prop fading:")
-					PropFading = DrawTick(x + 310 * MenuScale, y + MenuScale, PropFading)
-					If MouseOn(x+310*MenuScale,y+MenuScale,20*MenuScale,20*MenuScale) And OnSliderID=0
-						DrawOptionsTooltip(tx,ty,tw,th+100*MenuScale,"propfading")
-					EndIf
+;					y=y+50*MenuScale
+;					
+;						Color 255,255,255
+;					AAText(x + 20 * MenuScale, y, "Enable prop fading:")
+;					PropFading = DrawTick(x + 310 * MenuScale, y + MenuScale, PropFading)
+;					If MouseOn(x+310*MenuScale,y+MenuScale,20*MenuScale,20*MenuScale) And OnSliderID=0
+;						DrawOptionsTooltip(tx,ty,tw,th+100*MenuScale,"propfading")
+;					EndIf
 					;[End Block]
 				ElseIf MainMenuTab = 5 ;Audio
 					;[Block]

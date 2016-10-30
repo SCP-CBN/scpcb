@@ -583,8 +583,7 @@ Function UpdateConsole()
 						Case "2"
 							CreateConsoleMsg("LIST OF COMMANDS - PAGE 2/3")
 							CreateConsoleMsg("******************************")
-							CreateConsoleMsg("- spawn513-1")
-							CreateConsoleMsg("- spawn106")
+							CreateConsoleMsg("- spawn [npc type] [state]")
 							CreateConsoleMsg("- reset096")
 							CreateConsoleMsg("- disable173")
 							CreateConsoleMsg("- enable173")
@@ -601,15 +600,13 @@ Function UpdateConsole()
 							CreateConsoleMsg("- debughud")
 							CreateConsoleMsg("- camerafog [near] [far]")
 							CreateConsoleMsg("- gamma [value]")
+							CreateConsoleMsg("- infinitestamina")
 							CreateConsoleMsg("******************************")
 							CreateConsoleMsg("Use "+Chr(34)+"help [command name]"+Chr(34)+" to get more information about a command.")
 							CreateConsoleMsg("******************************")
 						Case "3"
-							CreateConsoleMsg("- spawn [npc type]")
-							CreateConsoleMsg("- infinitestamina")
 							CreateConsoleMsg("- playmusic [clip + .wav/.ogg]")
 							CreateConsoleMsg("- notarget")
-							CreateConsoleMsg("- spawnnpcstate [npc type] [state]")
 							CreateConsoleMsg("- unlockexits")
 						Case "asd"
 							CreateConsoleMsg("HELP - asd")
@@ -897,13 +894,6 @@ Function UpdateConsole()
 					CreateConsoleMsg("Idle: " + Curr106\Idle)
 					CreateConsoleMsg("State: " + Curr106\State)
 
-				Case "spawn513-1"
-					CreateNPC(NPCtype5131, 0,0,0)
-
-				Case "spawn106"
-					Curr106\State = -1
-					PositionEntity Curr106\Collider, EntityX(Collider), EntityY(Curr106\Collider), EntityZ(Collider)
-
 				Case "reset096"
 					For n.NPCs = Each NPCs
 						If n\NPCtype = NPCtype096 Then
@@ -1105,8 +1095,10 @@ Function UpdateConsole()
 					CreateConsoleMsg("Gamma set to " + ScreenGamma)
 
 				Case "spawn"
-					StrTemp$ = Lower(Right(ConsoleInput, Len(ConsoleInput) - Instr(ConsoleInput, " ")))
-					Console_SpawnNPC(StrTemp$)
+					args$ = Lower(Right(ConsoleInput, Len(ConsoleInput) - Instr(ConsoleInput, " ")))
+					StrTemp$ = Piece$(args$,1," ")
+					StrTemp2$ = Piece$(args$,2," ")
+					Console_SpawnNPC(StrTemp$,Int(StrTemp2$))
 
 				;new Console Commands in SCP:CB 1.3 - ENDSHN
 				Case "infinitestamina","infstam"
@@ -1134,12 +1126,6 @@ Function UpdateConsole()
 					Curr106\Idle = True
 					Curr106\State = 200000
 					Contained106 = True
-
-				Case "spawnnpcstate"
-					args$ = Lower(Right(ConsoleInput, Len(ConsoleInput) - Instr(ConsoleInput, " ")))
-					StrTemp$ = Piece$(args$,1," ")
-					StrTemp2$ = Piece$(args$,2," ")
-					Console_SpawnNPC(StrTemp$,Int(StrTemp2$))
 
 				Case "toggle_warhead_lever"
 					For e.Events = Each Events
@@ -2786,8 +2772,8 @@ Repeat
 
 				BlinkTimer = BlinkTimer - FPSfactor
 			Else
-				BlinkTimer = BlinkTimer - FPSfactor * 0.6
-				If EyeIrritation > 0 Then BlinkTimer=BlinkTimer-Min(EyeIrritation / 100.0 + 1.0, 4.0) * FPSfactor * BlinkEffect
+				BlinkTimer = BlinkTimer - FPSfactor * 0.6 * BlinkEffect
+				If EyeIrritation > 0 Then BlinkTimer=BlinkTimer-Min(EyeIrritation / 100.0 + 1.0, 4.0) * FPSfactor
 				
 				darkA = Max(darkA, 0.0)
 			End If
@@ -2797,6 +2783,7 @@ Repeat
 			If BlinkEffectTimer > 0 Then
 				BlinkEffectTimer = BlinkEffectTimer - (FPSfactor/70)
 			Else
+				BlinkEffect = 1.0
 				BlinkEffect = CurveValue(1.0,BlinkEffect,500)
 			EndIf
 			
@@ -2807,9 +2794,7 @@ Repeat
 			
 			If (Not WearingNightVision) Then darkA = Max((1.0-SecondaryLightOn)*0.9, darkA)
 			
-			If KillTimer >= 0 Then
-				
-			Else
+			If KillTimer < 0 Then
 				InvOpen = False
 				SelectedItem = Null
 				SelectedScreen = Null
@@ -2848,7 +2833,7 @@ Repeat
 		Else
 			HideEntity Light
 			;EntityAlpha(Light, LightFlash)
-		End If
+		EndIf
 		
 		EntityColor Light,255,255,255
 		
@@ -3232,6 +3217,7 @@ Function MovePlayer()
 	If StaminaEffectTimer > 0 Then
 		StaminaEffectTimer = StaminaEffectTimer - (FPSfactor/70)
 	Else
+		StaminaEffect = 1.0
 		StaminaEffect = CurveValue(1.0, StaminaEffect, 50)
 	EndIf
 	
@@ -4722,7 +4708,7 @@ Function DrawGUI()
 							LightFlash = 7
 							PlaySound_Strict(LoadTempSound("SFX\SCP\1123\Touch.ogg"))		
 							DeathMSG = "Subject D-9341 was shot dead after attempting to attack a member of Nine-Tailed Fox. Surveillance tapes show that the subject had been "
-							DeathMSG = DeathMSG + "wandering around the site approximately 9 minutes prior shouting the phrase " + Chr(34) + "get rid of the four pests" + Chr(34)
+							DeathMSG = DeathMSG + "wandering around the site approximately 9 minutes prior, shouting the phrase " + Chr(34) + "get rid of the four pests" + Chr(34)
 							DeathMSG = DeathMSG + " in chinese. SCP-1123 was found in [REDACTED] nearby, suggesting the subject had come into physical contact with it. How "
 							DeathMSG = DeathMSG + "exactly SCP-1123 was removed from its containment chamber is still unknown."
 							Kill()
@@ -4894,7 +4880,7 @@ Function DrawGUI()
 											Msg = "You feel nauseated."
 										Case 4
 											BlinkEffect = 0.6
-											BlinkEffectTimer = 70*Rand(20,30)
+											BlinkEffectTimer = Rand(20,30)
 										Case 5
 											Bloodloss = 0
 											Injuries = 0
@@ -4914,14 +4900,14 @@ Function DrawGUI()
 				Case "eyedrops"
 					If (Not (Wearing714=1)) Then
 						BlinkEffect = 0.6
-						BlinkEffectTimer = 70*Rand(20,30)
+						BlinkEffectTimer = Rand(20,30)
 						BlurTimer = 200
 					EndIf
 					RemoveItem(SelectedItem)
 				Case "fineeyedrops"
 					If (Not (Wearing714=1)) Then 
 						BlinkEffect = 0.4
-						BlinkEffectTimer = 70*Rand(30,40)
+						BlinkEffectTimer = Rand(30,40)
 						Bloodloss = Max(Bloodloss-1.0, 0)
 						BlurTimer = 200
 					EndIf
@@ -5010,9 +4996,9 @@ Function DrawGUI()
 					strtemp = GetINIString2(iniStr, loc, "message")
 					If strtemp <> "" Then Msg = strtemp : MsgTimer = 70*6
 					
-					If GetINIInt2(iniStr, loc, "lethal") Then 
+					If GetINIInt2(iniStr, loc, "lethal") Or GetINIInt2(iniStr, loc, "deathtimer") Then 
 						DeathMSG = GetINIString2(iniStr, loc, "deathmessage")
-						Kill()
+						If GetINIInt2(iniStr, loc, "lethal") Then Kill()
 					EndIf
 					BlurTimer = GetINIInt2(iniStr, loc, "blur")*70;*temp
 					Injuries = Max(Injuries + GetINIInt2(iniStr, loc, "damage"),0);*temp
@@ -5022,15 +5008,14 @@ Function DrawGUI()
 						PlaySound_Strict LoadTempSound(strtemp)
 					EndIf
 					If GetINIInt2(iniStr, loc, "stomachache") Then SCP1025state[3]=1
-					If GetINIInt2(iniStr, loc, "godmode") Then GodMode=True
 					
 					DeathTimer=GetINIInt2(iniStr, loc, "deathtimer")*70
 					
-					BlinkEffect = (BlinkEffect + Float(GetINIString2(iniStr, loc, "blinkeffect", 1.0))*x2)/2.0
-					BlinkEffectTimer = (BlinkEffectTimer + Float(GetINIString2(iniStr, loc, "blinkeffecttimer", 1.0))*x2)/2.0
+					BlinkEffect = Float(GetINIString2(iniStr, loc, "blink effect", 1.0))*x2
+					BlinkEffectTimer = Float(GetINIString2(iniStr, loc, "blink effect timer", 1.0))*x2
 					
-					StaminaEffect = (StaminaEffect + Float(GetINIString2(iniStr, loc, "stamina effect", 1.0))*x2)/2.0
-					StaminaEffectTimer = (StaminaEffectTimer + Float(GetINIString2(iniStr, loc, "staminaeffecttimer", 1.0))*x2)/2.0
+					StaminaEffect = Float(GetINIString2(iniStr, loc, "stamina effect", 1.0))*x2
+					StaminaEffectTimer = Float(GetINIString2(iniStr, loc, "stamina effect timer", 1.0))*x2
 					
 					strtemp = GetINIString2(iniStr, loc, "refusemessage")
 					If strtemp <> "" Then
@@ -5981,7 +5966,7 @@ Function DrawMenu()
 					
 					Color 255,255,255
 					AAText(x, y, "Particle amount:")
-					ParticleAmount = Slider3(x+270*MenuScale,y+6*MenuScale,100*MenuScale,ParticleAmount,2,"ALMOST NONE","FEW","ALL")
+					ParticleAmount = Slider3(x+270*MenuScale,y+6*MenuScale,100*MenuScale,ParticleAmount,2,"DECREASED","MINIMAL","ALL")
 					If (MouseOn(x + 270 * MenuScale, y-6*MenuScale, 100*MenuScale+14, 20) And OnSliderID=0) Or OnSliderID=2
 						DrawOptionsTooltip(tx,ty,tw,th,"particleamount",ParticleAmount)
 					EndIf
@@ -8380,7 +8365,7 @@ Function Use294()
 		EndIf
 		
 	Else ;playing a dispensing sound
-		If Input294 <> "OUT OF RANGE" Then Input294 = "DISPENSING..." : DebugLog "Generated dat dispenser"
+		If Input294 <> "OUT OF RANGE" Then Input294 = "DISPENSING..."
 		
 		If Not ChannelPlaying(PlayerRoom\SoundCHN) Then
 			If Input294 <> "OUT OF RANGE" Then
@@ -9317,7 +9302,6 @@ Function RenderWorld2()
 		RenderWorld()
 	EndIf
 	
-	;Removed High and Very High settings - ENDSHN
 	SetBuffer TextureBuffer(fresize_texture)
 	ClsColor 0,0,0 : Cls
 	CopyRect 0,0,GraphicWidth,GraphicHeight,1024-(GraphicWidth*ResolutionScale)/2,1024-(GraphicHeight*ResolutionScale)/2,BackBuffer(),TextureBuffer(fresize_texture)
