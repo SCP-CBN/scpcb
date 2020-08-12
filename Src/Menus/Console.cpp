@@ -27,6 +27,7 @@ Console::Console(World* wrld, UIMesh* um, Font* font, KeyBinds* kb, Config* con,
     commandHistoryIndex = -1;
 
     windowScrollOffset = 0.f;
+    txtMngt = tm;
 
     this->uiMesh = um;
     this->font = font;
@@ -116,8 +117,8 @@ void Console::executeCommand(const PGE::String& in) {
     addConsoleMessage("No command found", PGE::Color::Red);
 }
 
-Console::Message::Message(UIMesh* um, KeyBinds* kb, Config* con, Font* fnt, const PGE::String& resp, const PGE::Color& color) {
-    text = new GUIText(um, kb, con, fnt, 3.f / con->getAspectRatio(), 0.f, Alignment::Left | Alignment::Top);
+Console::Message::Message(UIMesh* um, KeyBinds* kb, Config* con, TxtManager* txtmng, Font* fnt, const PGE::String& resp, const PGE::Color& color) {
+    text = new GUIText(um, kb, con, txtmng, fnt, 3.f / con->getAspectRatio(), 0.f, Alignment::Left | Alignment::Top);
     text->rt = { resp, color };
 }
 
@@ -127,7 +128,7 @@ void Console::Message::setLinePositionFromBottom(float line) {
 }
 
 void Console::addConsoleMessage(const PGE::String& resp, const PGE::Color& color) {
-    messageHistory.push_back(Message(uiMesh, keyBinds, config, font, resp, color));
+    messageHistory.push_back(Message(uiMesh, keyBinds, config, txtMngt, font, resp, color));
     updateMessageWindow();
     windowScrollOffset = 0;
 }

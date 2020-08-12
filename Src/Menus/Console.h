@@ -36,7 +36,7 @@ private:
         float linePositionFromBottom;
 
     public:
-        Message(UIMesh* um, KeyBinds* kb, Config* con, Font* fnt, const PGE::String& resp, const PGE::Color& color);
+        Message(UIMesh* um, KeyBinds* kb, Config* con, TxtManager* txtmng, Font* fnt, const PGE::String& resp, const PGE::Color& color);
 
         GUIText* text;
 
@@ -59,6 +59,7 @@ private:
     Font* font;
     KeyBinds* keyBinds;
     Config* config;
+    TxtManager* txtMngt;
 
     std::vector<Command*> commands;
     void registerInternalCommands();

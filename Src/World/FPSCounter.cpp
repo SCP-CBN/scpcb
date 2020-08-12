@@ -3,14 +3,16 @@
 #include "../Graphics/Font.h"
 #include "../Save/Config.h"
 #include "../Menus/GUI/GUIText.h"
+#include "../Utils/TextMgmt.h"
 
-FPSCounter::FPSCounter(UIMesh* um, KeyBinds* kb, Config* con, Font* font) {
+FPSCounter::FPSCounter(UIMesh* um, KeyBinds* kb, Config* con, TxtManager* tm, Font* font) {
     avgFPS = 0.0;
     currFPS = 0.0;
     visible = false;
     this->config = con;
+    txtMng = tm;
 
-    display = new GUIText(um, kb, con, font, 0.f, 0.f, Alignment::Left | Alignment::Top);
+    display = new GUIText(um, kb, con, txtMng, font, 0.f, 0.f, Alignment::Left | Alignment::Top);
     display->rt.text = "FPS: -1";
 }
 

@@ -5,6 +5,7 @@
 #include "GUI/GUIButton.h"
 #include "GUI/GUIFrame.h"
 #include "GUI/GUITextInput.h"
+#include "GUI/GUIText.h"
 #include "../Graphics/Font.h"
 
 class TxtManager;
@@ -48,6 +49,7 @@ class PauseMenu : public Menu {
         GUIFrame* quitFrame;
         GUIButton* quitYes;
         GUIButton* quitNo;
+        GUIText* quitText;
 
         UIMesh* uiMesh;
         Font* largeFont;

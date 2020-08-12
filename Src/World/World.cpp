@@ -57,7 +57,7 @@ World::World() {
 
     billboardManager = new BillboardManager(graphics, gfxRes);
 
-    fps = new FPSCounter(uiMesh, keyBinds, config, largeFont);
+    fps = new FPSCounter(uiMesh, keyBinds, config, txtMngt, largeFont);
     fps->visible = true;
 
     scripting = new ScriptWorld(gfxRes, camera, keyBinds, config, (float)timing->getTimeStep(), console, billboardManager);
@@ -65,8 +65,8 @@ World::World() {
     applyConfig(config);
 
 #ifdef DEBUG
-    mouseTxtX = new GUIText(uiMesh, keyBinds, config, largeFont, 0.f, -5.f, Alignment::Bottom | Alignment::Left);
-    mouseTxtY = new GUIText(uiMesh, keyBinds, config, largeFont, 0.f, -2.5f, Alignment::Bottom | Alignment::Left);
+    mouseTxtX = new GUIText(uiMesh, keyBinds, config, txtMngt, largeFont, 0.f, -5.f, Alignment::Bottom | Alignment::Left);
+    mouseTxtY = new GUIText(uiMesh, keyBinds, config, txtMngt, largeFont, 0.f, -2.5f, Alignment::Bottom | Alignment::Left);
 #endif
 
     shutdownRequested = false;

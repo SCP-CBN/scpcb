@@ -8,6 +8,7 @@ class KeyBinds;
 class Config;
 class Font;
 class GUIText;
+class TxtManager;
 
 class FPSCounter {
     private:
@@ -20,11 +21,12 @@ class FPSCounter {
         Config* config;
 
         GUIText* display;
+        TxtManager* txtMng;
 
     public:
         bool visible;
 
-        FPSCounter(UIMesh* um, KeyBinds* kb, Config* con, Font* font);
+        FPSCounter(UIMesh* um, KeyBinds* kb, Config* con, TxtManager* tm, Font* font);
 
         void update(double elapsedSeconds);
         void draw();
