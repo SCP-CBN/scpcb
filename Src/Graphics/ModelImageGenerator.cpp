@@ -59,7 +59,7 @@ PGE::Texture* ModelImageGenerator::generate(const PGE::String& model, float scal
         // Further optimized if in initialization step, requires Model shader to be loaded at that point.
         gfxRes->setCameraUniforms(cam);
 
-        position = position * (float)texSize;
+        position = position * texSize;
         mi->setPosition(PGE::Vector3f(position.x, position.y, 0.f));
         mi->setRotation(rotation);
         mi->setScale(PGE::Vector3f(scale * texSize));

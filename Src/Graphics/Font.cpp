@@ -72,7 +72,7 @@ void Font::renderAtlas(long chr) {
 
                 if (glyphWidth>0 && glyphHeight>0) {
                     if (buffer==nullptr) {
-                        buffer = new uint8_t[static_cast<uint8_t>(atlasDims)^2*4];
+                        buffer = new uint8_t[atlasDims*atlasDims*4];
                         for (int j=0;j<atlasDims*atlasDims;j++) {
                             buffer[(j*4)+0]=255;
                             buffer[(j*4)+1]=255;
