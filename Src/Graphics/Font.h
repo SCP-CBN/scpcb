@@ -32,9 +32,9 @@ class Font {
         float getHeight(float scale) const;
 
         struct Atlas {
-            PGE::Texture* texture{};
-            PGE::Material* material{};
-            PGE::Mesh* mesh{};
+            PGE::Texture* texture;
+            PGE::Material* material;
+            PGE::Mesh* mesh;
 
             std::vector<PGE::Vertex> vertices;
             std::vector<PGE::Primitive> primitives;
