@@ -2,7 +2,7 @@
 	path = Engine
 	url = git@github.com:juanjp600/pge.git
 	branch = main
+
 [submodule "tinyxml2"]
 	path = Libraries/tinyxml2
-	url = git@github.com:leethomason/tinyxml2.git
-	branch = master
+	url = https://github.com/leethomason/tinyxml2
