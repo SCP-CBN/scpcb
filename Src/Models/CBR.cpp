@@ -86,7 +86,7 @@ CBR::CBR(GraphicsResources* gr, const PGE::String& filename) {
             // 2 * Coordinate (= 3 * float) + 5 * decimal
             reader.skip(2 * 3 * 4 + 5 * 16);
             int vertexCount = reader.readInt();
-            int vertexOffset = vertices[textureID].size();
+            int vertexOffset = static_cast<int>(vertices[textureID].size());
             for (int k = 1; k < vertexCount - 1; k++) {
                 primitives[textureID].push_back(PGE::Primitive(
                     vertexOffset,
@@ -110,7 +110,7 @@ CBR::CBR(GraphicsResources* gr, const PGE::String& filename) {
         if (toolTextures.find(i) == toolTextures.end()) {
             PGE::Mesh* newMesh = PGE::Mesh::create(gr->getGraphics(), PGE::Primitive::TYPE::TRIANGLE);
             newMesh->setMaterial(materials[i]);
-            newMesh->setGeometry(vertices[i].size(), vertices[i], primitives[i].size(), primitives[i]);
+            newMesh->setGeometry(static_cast<int>(vertices[i].size()), vertices[i], static_cast<int>(primitives[i].size()), primitives[i]);
             meshes.push_back(newMesh);
         }
     }
