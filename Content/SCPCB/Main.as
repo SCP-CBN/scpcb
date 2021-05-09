@@ -52,12 +52,13 @@ external void Console::addMessage(const string&in msg, const Color&in color = Co
 
 
 void main() {
-	Debug::log("Starting up!");
+	Debug::log("Starting up! ");
 
 	@menuManager = MenuManager();
 
 	@fpsCounter = GUIText(null, -50.0 * UI::getAspectRatio(), -50.0, false, false, false);
 	fpsCounter.text = "test";
+
 
 	Item::spawn("Gasmask", Vector3f(-15.0, 5.0, 20.0));
 	Item::spawn("FirstAid", Vector3f(0.0, 20.0, 20.0));
