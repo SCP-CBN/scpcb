@@ -20,7 +20,6 @@ namespace Item {
 			return null;
 		}
 
-		Debug::log("Attempting to make1 " + name);
 		Item@ instance=template.MakeInstance();
 		instance.position=position;
 		instance.rotation=rotation;
@@ -34,7 +33,16 @@ shared abstract class Item::Template {
 	Template() { Item::templates.insertLast(@this); }
 	string name;
 	string local_name;
+
 	string modelPath;
+	float modelScale;
+
+	int pickSoundID;
+	// "SFX/Interact/PickItem" + pickSoundID + ".ogg";
+
+	bool useModelIcon=true;
+	string iconImage;
+
 	float iconScale;
 	Vector3f iconRot;
 	Vector2f iconPos;
@@ -61,6 +69,10 @@ shared abstract class Item {
 	// Lifecycle
 	bool valid;
 
+	// Save States
+	int state;
+	int power;
+	int equipped;
 
 	// Construction
 	Item(Item::Template@&in origin) {
@@ -113,6 +125,8 @@ shared abstract class Item {
 		}
 		return false;
 	}
+
+
 
 	// // // Override functions // // //
 
