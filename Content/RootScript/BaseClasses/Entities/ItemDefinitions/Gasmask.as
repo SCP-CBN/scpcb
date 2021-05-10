@@ -7,7 +7,7 @@ class ItemTemplate_Gasmask : Item::Template {
 		
 		name = "Gasmask";
 		modelPath = "SCPCB/GFX/Items/Gasmask/Gasmask.fbx";
-		modelScale = 0.02;
+		modelScale = 0.2;
 
 		pickSoundID=2;
 

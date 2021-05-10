@@ -61,8 +61,14 @@ void main() {
 
 
 	Item::spawn("Gasmask", Vector3f(-15.0, 5.0, 20.0));
+
 	Item::spawn("FirstAid", Vector3f(0.0, 20.0, 20.0));
-	Item::spawn("FirstAid", Vector3f(10.0, 20.0, 20.0));
+	Item::spawn("SmallFirstAid", Vector3f(10.0, 20.0, 20.0));
+	Item::spawn("BlueFirstAid", Vector3f(5.0, 20.0, 22.0));
+
+	Item::spawn("Battery9v", Vector3f(-12.0, 5.0, 20.0));
+	Item::spawn("Battery18v", Vector3f(-8.0, 5.0, 20.0));
+	Item::spawn("StrangeBattery", Vector3f(-4.0, 5.0, 20.0));
 
 
 	Vector2f test = Vector2f(10.0, 10.0);

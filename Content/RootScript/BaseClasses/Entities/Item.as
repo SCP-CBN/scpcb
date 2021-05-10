@@ -35,10 +35,13 @@ shared abstract class Item::Template {
 	string local_name;
 
 	string modelPath;
+	string modelSkin;
+
+	// Original model scales appear to be *10 less than what it should be. (0.008, etc)
 	float modelScale;
 
-	int pickSoundID;
 	// "SFX/Interact/PickItem" + pickSoundID + ".ogg";
+	int pickSoundID;
 
 	bool useModelIcon=true;
 	string iconImage;
@@ -80,6 +83,9 @@ shared abstract class Item {
 		@template=@originTemplate;
 		World::ModelPicker @mdl = World::ModelPicker(template.modelPath);
 		@model=@mdl;
+		if(template.modelScale != 0) {
+			model.scale=Vector3f(template.modelScale);
+		}
 
 		name=template.name;
 		Item::instances.insertLast(@this);

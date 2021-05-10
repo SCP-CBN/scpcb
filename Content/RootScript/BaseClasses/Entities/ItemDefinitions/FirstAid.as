@@ -1,9 +1,17 @@
+// First Aid --------------------------------------
+
 class ItemTemplate_FirstAid : Item::Template {
 	Item@ MakeInstance() { Item @instance = Item_FirstAid(@this); return @instance; }
 	ItemTemplate_FirstAid() { super();
-		name = "FirstAid";
-		modelPath = "SCPCB/GFX/Items/FirstAid/FirstAid.fbx";
+		name = "FirstAid"; //"firstaid"
+		modelPath = "SCPCB/GFX/Items/Firstaid/firstaid.fbx";
+		modelSkin = "SCPCB/GFX/Items/Firstaid/firstaid.jpg";
+		modelScale = 0.5;
 
+		pickSoundID=1;
+
+		useModelIcon=true;
+		iconImage = "SCPCB/GFX/Items/Firstaid/inv_firstaid.jpg";
 		iconScale = 0.1;
 		iconRot = Vector3f(-2.3,-0.3,0.2);
 		iconPos = Vector2f(0,0.05);
@@ -25,8 +33,83 @@ shared class Item_FirstAid : Item {
 	}
 }
 
+// Small First Aid --------------------------------------
 
-/*
+class ItemTemplate_SmallFirstAid : Item::Template {
+	Item@ MakeInstance() { Item @instance = Item_SmallFirstAid(@this); return @instance; }
+	ItemTemplate_SmallFirstAid() { super();
+
+		name = "SmallFirstAid"; //"finefirstaid"
+		modelPath = "SCPCB/GFX/Items/Firstaid/firstaid.fbx";
+		modelSkin = "SCPCB/GFX/Items/Firstaid/firstaid.jpg";
+		modelScale = 0.3;
+
+		pickSoundID=1;
+
+		useModelIcon=true;
+		iconImage = "SCPCB/GFX/Items/Firstaid/inv_firstaid_blue.jpg";
+		iconScale = 0.1;
+		iconRot = Vector3f(-2.3,-0.3,0.2);
+		iconPos = Vector2f(0,0.05);
+		Item::Register(@this);
+	}
+}
+ItemTemplate_SmallFirstAid OriginItem_SmallFirstAid;
+
+
+shared class Item_SmallFirstAid : Item {
+	Item_SmallFirstAid(Item::Template@&in origin) { super(@origin);
+		// onConstructed();
+	}
+
+	void Test() {
+		Debug::log("Im a SmallFirstAid");
+	}
+	void Localize(Item@&in instance) {
+	}
+}
+
+// Blue First Aid --------------------------------------
+
+class ItemTemplate_BlueFirstAid : Item::Template {
+	Item@ MakeInstance() { Item @instance = Item_BlueFirstAid(@this); return @instance; }
+	ItemTemplate_BlueFirstAid() { super();
+
+		name = "BlueFirstAid"; //"firstaid2"
+		modelPath = "SCPCB/GFX/Items/Firstaid/firstaid.fbx";
+		modelSkin = "SCPCB/GFX/Items/Firstaid/firstaid_blue.jpg";
+		modelScale = 0.3;
+
+		pickSoundID=1;
+
+		useModelIcon=true;
+		iconImage = "SCPCB/GFX/Items/Firstaid/inv_firstaid_blue.jpg";
+		iconScale = 0.1;
+		iconRot = Vector3f(-2.3,-0.3,0.2);
+		iconPos = Vector2f(0,0.05);
+		Item::Register(@this);
+	}
+}
+ItemTemplate_BlueFirstAid OriginItem_BlueFirstAid;
+
+
+shared class Item_BlueFirstAid : Item {
+	Item_BlueFirstAid(Item::Template@&in origin) { super(@origin);
+		// onConstructed();
+	}
+
+	void Test() {
+		Debug::log("Im a BlueFirstAid");
+	}
+	void Localize(Item@&in instance) {
+	}
+}
+
+
+
+
+/* Originals --------------------------------------
+
 Definitions
 
 	it = CreateItemTemplate("First Aid Kit", "firstaid", "GFX\items\firstaid.x", "GFX\items\INVfirstaid.jpg", "", 0.05)
