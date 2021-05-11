@@ -43,10 +43,6 @@ enum class RM2Error {
 
 class RM2 {
     private:
-        const static PGE::FilePath opaqueShaderPath;
-        const static PGE::FilePath opaqueNormalMapShaderPath;
-        const static PGE::FilePath alphaShaderPath;
-
         std::map<unsigned short, PGE::Material*> materials;
 
         struct TextureEntry {
@@ -76,8 +72,6 @@ class RM2 {
         std::vector<Waypoint> waypoints;
 
         RM2Error error;
-
-        static const PGE::String texturePath;
 
     public:
         RM2(GraphicsResources* gfxMgr, const PGE::String& filename);

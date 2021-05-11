@@ -25,7 +25,7 @@ class CollisionMeshCollection {
                 PGE::Matrix4x4f matrix;
                 void recalculateBBox();
 
-                Instance() {};
+                Instance() = default;
             private:
                 CollisionMeshCollection* collection;
                 CollisionMesh* mesh;

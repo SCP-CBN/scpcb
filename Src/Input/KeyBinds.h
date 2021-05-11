@@ -29,12 +29,12 @@ class KeyBinds {
         ConsoleBindingsMap consoleBindings;
 
         void bindInput(Input input, PGE::UserInput* key);
-        void unbindInput(Input input, PGE::UserInput::DEVICE device, int key);
+        void unbindInput(Input input, PGE::UserInput::Device device, int key);
 
         std::unordered_map<PGE::String::Key, PGE::UserInput*> inputStrings;
-        void registerInputString(const PGE::String& string, PGE::KeyboardInput::KEYCODE key);
-        void registerInputString(const PGE::String& string, PGE::MouseInput::BUTTON key);
-        void registerInputString(const PGE::String& string, PGE::ControllerInput::BUTTON key);
+        void registerInputString(const PGE::String& string, PGE::KeyboardInput::Keycode key);
+        void registerInputString(const PGE::String& string, PGE::MouseInput::Button key);
+        void registerInputString(const PGE::String& string, PGE::ControllerInput::Button key);
 
     public:
         KeyBinds(PGE::IO* inIo);
@@ -80,12 +80,12 @@ class KeyBinds {
         bool redoIsHit() const;
         bool selectAllIsHit() const;
 
-        void bindInput(Input input, PGE::MouseInput::BUTTON key);
-        void bindInput(Input input, PGE::KeyboardInput::KEYCODE key);
-        void bindInput(Input input, PGE::ControllerInput::BUTTON key);
-        void unbindInput(Input input, PGE::MouseInput::BUTTON key);
-        void unbindInput(Input input, PGE::KeyboardInput::KEYCODE key);
-        void unbindInput(Input input, PGE::ControllerInput::BUTTON key);
+        void bindInput(Input input, PGE::MouseInput::Button key);
+        void bindInput(Input input, PGE::KeyboardInput::Keycode key);
+        void bindInput(Input input, PGE::ControllerInput::Button key);
+        void unbindInput(Input input, PGE::MouseInput::Button key);
+        void unbindInput(Input input, PGE::KeyboardInput::Keycode key);
+        void unbindInput(Input input, PGE::ControllerInput::Button key);
 
         void bindCommand(PGE::String command, PGE::UserInput* key);
         void unbindCommand(PGE::String command, PGE::UserInput* key);

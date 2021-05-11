@@ -20,21 +20,16 @@ enum WindowType {
 
 class Config {
     public:
-        typedef std::multimap<Input, PGE::KeyboardInput::KEYCODE> KeyBindsMap;
+        typedef std::multimap<Input, PGE::KeyboardInput::Keycode> KeyBindsMap;
         
     private:
         // TODO: Revisit this.
         // Initialization lists initialize their variables in the order that they are declared in the header.
         // This means that the two following members have to stay in that order and all ConfigValues have to follow below.
         const PGE::FilePath filename;
-        INIFile* const optionsFile;
+        INIFile* optionsFile;
         
         GraphicsResources* gfxResMgr = nullptr;
-        
-        const PGE::String secGen = "general";
-        const PGE::String secGFX = "graphics";
-        const PGE::String secCon = "controls";
-        const PGE::String secMod = "mods";
 
         std::vector<ConfigValue*> values;
 
@@ -45,7 +40,7 @@ class Config {
         
         KeyBindsMap kbBinds;
         void loadKeyboardInput(Input input);
-        std::multimap<Input, PGE::MouseInput::BUTTON> msBinds;
+        std::multimap<Input, PGE::MouseInput::Button> msBinds;
 
         void loadFile();
         void saveFile() const;

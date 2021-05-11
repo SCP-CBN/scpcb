@@ -16,21 +16,21 @@ void ConsoleDefinitions::helpInternal(std::vector<PGE::String> params) {
     if (params.size() == 2) {
         auto find = commands.find(params[1]);
         if (find == commands.end()) {
-            addConsoleMessage("That command doesn't exist", PGE::Color::Yellow);
+            addConsoleMessage("That command doesn't exist", PGE::Color::YELLOW);
         } else {
             if (find->second.helpText.isEmpty()) {
-                addConsoleMessage("There is no help available for that command.", PGE::Color::Yellow);
+                addConsoleMessage("There is no help available for that command.", PGE::Color::YELLOW);
             } else {
-                addConsoleMessage(find->second.helpText, PGE::Color::Blue);
+                addConsoleMessage(find->second.helpText, PGE::Color::BLUE);
             }
         }
     } else if (params.size() == 1) {
         for (const auto& comSet : commands) {
             Command command = comSet.second;
-            addConsoleMessage(command.name, PGE::Color::Cyan);
+            addConsoleMessage(command.name, PGE::Color::CYAN);
         }
     } else {
-        addConsoleMessage("ARGUMENT SIZE MISMATCH", PGE::Color::Red);
+        addConsoleMessage("ARGUMENT SIZE MISMATCH", PGE::Color::RED);
     }
 }
 
@@ -38,7 +38,7 @@ void ConsoleDefinitions::bindInternal(std::vector<PGE::String> params) {
     params.erase(params.begin());
     PGE::UserInput* key = keyBinds->stringToInput(params.back());
     if (key == nullptr) {
-        addConsoleMessage("That key doesn't exist.", PGE::Color::Red);
+        addConsoleMessage("That key doesn't exist.", PGE::Color::RED);
     } else {
         params.pop_back();
         keyBinds->bindCommand(PGE::String::join(params, " "), key);
@@ -49,7 +49,7 @@ void ConsoleDefinitions::unbindInternal(std::vector<PGE::String> params) {
     params.erase(params.begin());
     PGE::UserInput* key = keyBinds->stringToInput(params.back());
     if (key == nullptr) {
-        addConsoleMessage("That key doesn't exist.", PGE::Color::Red);
+        addConsoleMessage("That key doesn't exist.", PGE::Color::RED);
     } else {
         params.pop_back();
         keyBinds->unbindCommand(PGE::String::join(params, " "), key);
@@ -133,7 +133,7 @@ void ConsoleDefinitions::executeCommand(const PGE::String& in) {
                 func->GetParam((asUINT)params.size(), nullptr, nullptr, nullptr, &defaultParam);
                 if (defaultParam == nullptr) {
                     scriptContext->Unprepare();
-                    addConsoleMessage("ARGUMENT SIZE MISMATCH", PGE::Color::Red);
+                    addConsoleMessage("ARGUMENT SIZE MISMATCH", PGE::Color::RED);
                     return;
                 }
             }
@@ -160,7 +160,7 @@ void ConsoleDefinitions::executeCommand(const PGE::String& in) {
 
                     // If the user enters a float.
                     if (!MathUtil::equalFloats((float)arg, params[i].toFloat())) {
-                        addConsoleMessage("Loss of data!", PGE::Color::Yellow);
+                        addConsoleMessage("Loss of data!", PGE::Color::YELLOW);
                     }
 
                     scriptContext->SetArgDWord(i, arg);
@@ -181,12 +181,12 @@ void ConsoleDefinitions::executeCommand(const PGE::String& in) {
             if (errMsg.isEmpty()) {
                 scriptContext->Execute();
             } else {
-                addConsoleMessage(errMsg, PGE::Color::Red);
+                addConsoleMessage(errMsg, PGE::Color::RED);
             }
             scriptContext->Unprepare();
         }
     } else {
-        addConsoleMessage("No command found", PGE::Color::Red);
+        addConsoleMessage("No command found", PGE::Color::RED);
     }
 }
 

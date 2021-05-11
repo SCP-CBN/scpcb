@@ -63,11 +63,10 @@ void BillboardManager::removeBillboard(Billboard* billboard) {
 void BillboardManager::render() {
     for (auto it=meshes.begin();it!=meshes.end();it++) {
         BillboardMesh& mesh = it->second;
-        const PGE::Vector3f camPos = camera->position;
         // Insertion sort.
         bool& geomChanged = mesh.geomChanged;
         for (int i = 0; i < mesh.billboards.size(); i++) {
-            mesh.billboards[i]->camDistance = mesh.billboards[i]->getPosition().distanceSquared(camPos);
+            mesh.billboards[i]->camDistance = mesh.billboards[i]->getPosition().distanceSquared(camera->position);
             Billboard* b = mesh.billboards[i];
             int j;
             for (j=i-1;j>=0;j--) {
@@ -228,13 +227,13 @@ bool Billboard::updateVertices(std::vector<PGE::Vertex>& vertices, int startInde
         PGE::Vector3f offset3 = rotationMatrix.transform(PGE::Vector3f(-scale.x * 0.5f, -scale.y * 0.5f, 0.f));
 
         vertices[startIndex + 0].setVector4f("position", PGE::Vector4f(position.add(offset0),1.f));
-        vertices[startIndex + 0].setVector2f("offset", PGE::Vector2f::zero);
+        vertices[startIndex + 0].setVector2f("offset", PGE::Vector2f::ZERO);
         vertices[startIndex + 1].setVector4f("position", PGE::Vector4f(position.add(offset1),1.f));
-        vertices[startIndex + 1].setVector2f("offset", PGE::Vector2f::zero);
+        vertices[startIndex + 1].setVector2f("offset", PGE::Vector2f::ZERO);
         vertices[startIndex + 2].setVector4f("position", PGE::Vector4f(position.add(offset2),1.f));
-        vertices[startIndex + 2].setVector2f("offset", PGE::Vector2f::zero);
+        vertices[startIndex + 2].setVector2f("offset", PGE::Vector2f::ZERO);
         vertices[startIndex + 3].setVector4f("position", PGE::Vector4f(position.add(offset3),1.f));
-        vertices[startIndex + 3].setVector2f("offset", PGE::Vector2f::zero);
+        vertices[startIndex + 3].setVector2f("offset", PGE::Vector2f::ZERO);
     }
 
     vertices[startIndex + 0].setVector2f("texCoords", PGE::Vector2f(0.f,0.f));

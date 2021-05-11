@@ -8,11 +8,13 @@
 #include "../Graphics/GraphicsResources.h"
 #include "../Graphics/Camera.h"
 
-const PGE::FilePath RM2::opaqueShaderPath = PGE::FilePath::fromStr("SCPCB/GFX/Shaders/RoomOpaque/");
-const PGE::FilePath RM2::opaqueNormalMapShaderPath = PGE::FilePath::fromStr("SCPCB/GFX/Shaders/RoomOpaqueNormalMap/");
-const PGE::FilePath RM2::alphaShaderPath = PGE::FilePath::fromStr("SCPCB/GFX/Shaders/RoomAlpha/");
+static const PGE::FilePath opaqueShaderPath = PGE::FilePath::fromStr("SCPCB/GFX/Shaders/RoomOpaque/");
+static const PGE::FilePath OPAQUE_NORMAL_MAP_SHADER_PATH = PGE::FilePath::fromStr("SCPCB/GFX/Shaders/RoomOpaqueNormalMap/");
+static const PGE::FilePath ALPHA_SHADER_PATH = PGE::FilePath::fromStr("SCPCB/GFX/Shaders/RoomAlpha/");
 
-const PGE::String RM2::texturePath = "SCPCB/GFX/Map/Textures/";
+static const PGE::String TEXTURE_PATH = "SCPCB/GFX/Map/Textures/";
+
+static const PGE::String EXTENSION = ".rm2";
 
 enum class FileSections {
     Textures = 1,
@@ -93,28 +95,26 @@ RM2::RM2(GraphicsResources* gfxRes, const PGE::String& filename) {
     UCharByte textureCount;
     inFile.read(&textureCount.c, 1);
 
-    const PGE::String extension = ".rm2";
-
     opaqueShader = gfxRes->getShader(opaqueShaderPath, true);
     opaqueModelMatrixConstant = opaqueShader->getVertexShaderConstant("modelMatrix");
 
-    opaqueNormalMapShader = gfxRes->getShader(opaqueNormalMapShaderPath, true);
+    opaqueNormalMapShader = gfxRes->getShader(OPAQUE_NORMAL_MAP_SHADER_PATH, true);
     opaqueNormalMapModelMatrixConstant = opaqueNormalMapShader->getVertexShaderConstant("modelMatrix");
 
-    //alphaShader = gfxRes->getShader(alphaShaderPath, true);
+    //alphaShader = gfxRes->getShader(ALPHA_SHADER_PATH, true);
 
     std::vector<PGE::Texture*> lightmapTextures[3];
     if (lmCount.u == 1) {
         for (int i = 0; i < 3; i++) {
-            const PGE::String lightmapSuffix = "_lm" + PGE::String::fromInt(i);
-            PGE::String lightmapName = filename.substr(0, filename.length() - extension.length()) + lightmapSuffix;
+            PGE::String lightmapSuffix = "_lm" + PGE::String::fromInt(i);
+            PGE::String lightmapName = filename.substr(0, filename.length() - EXTENSION.length()) + lightmapSuffix;
             lightmapTextures[i].push_back(gfxRes->getTexture(lightmapName));
         }
     } else {
         for (int n = 0; n < lmCount.u; n++) {
             for (int i = 0; i < 3; i++) {
-                const PGE::String lightmapSuffix = "_lm" + PGE::String::fromInt(i) + "_" + PGE::String::fromInt(n);
-                PGE::String lightmapName = filename.substr(0, filename.length() - extension.length()) + lightmapSuffix;
+                PGE::String lightmapSuffix = "_lm" + PGE::String::fromInt(i) + "_" + PGE::String::fromInt(n);
+                PGE::String lightmapName = filename.substr(0, filename.length() - EXTENSION.length()) + lightmapSuffix;
                 lightmapTextures[i].push_back(gfxRes->getTexture(lightmapName));
             }
         }
@@ -125,7 +125,7 @@ RM2::RM2(GraphicsResources* gfxRes, const PGE::String& filename) {
 
         PGE::String textureName = readByteString(inFile);
 
-        PGE::Texture* texture = gfxRes->getTexture(texturePath + textureName);
+        PGE::Texture* texture = gfxRes->getTexture(TEXTURE_PATH + textureName);
         textureEntry.texture = texture;
 
         char flag = 0;
@@ -137,7 +137,7 @@ RM2::RM2(GraphicsResources* gfxRes, const PGE::String& filename) {
         textureEntry.normalMap = nullptr;
         if (isOpaque) {
             textureEntry.shader = opaqueShader;
-            if (PGE::Texture* tex = gfxRes->getTexture(texturePath + textureName + "_n")) {
+            if (PGE::Texture* tex = gfxRes->getTexture(TEXTURE_PATH + textureName + "_n")) {
                 textureEntry.normalMap = tex;
                 textureEntry.shader = opaqueNormalMapShader;
             }
@@ -219,10 +219,10 @@ RM2::RM2(GraphicsResources* gfxRes, const PGE::String& filename) {
                     PGE::Vector2f lmUv = PGE::Vector2f(inLmU.f, inLmV.f);
 
                     tempVertex.setVector4f("position", position);
-                    tempVertex.setVector3f("normal", PGE::Vector3f::one);
+                    tempVertex.setVector3f("normal", PGE::Vector3f::ONE);
                     tempVertex.setVector2f("diffUv", diffUv);
                     tempVertex.setVector2f("lmUv", lmUv);
-                    tempVertex.setColor("color", PGE::Color::White);
+                    tempVertex.setColor("color", PGE::Color::WHITE);
                     vertices.push_back(tempVertex);
 
                     vertexPositions.push_back(PGE::Vector3f(position.x, position.y, position.z));

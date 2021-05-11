@@ -26,7 +26,7 @@ class Font {
 
         // Simplified input parameters.
         void draw(const PGE::String& text, const PGE::Vector2f& pos, float scale, float rotation = 0.f, const PGE::Color& color = PGE::Color(1.f, 1.f, 1.f));
-        void draw(const PGE::String& text, const PGE::Vector3f& pos, const PGE::Vector2f& scale, const PGE::Vector3f& rotation = PGE::Vector3f::zero, const PGE::Color& color = PGE::Color(1.f,1.f,1.f));
+        void draw(const PGE::String& text, const PGE::Vector3f& pos, const PGE::Vector2f& scale, const PGE::Vector3f& rotation = PGE::Vector3f::ZERO, const PGE::Color& color = PGE::Color(1.f,1.f,1.f));
 
         float stringWidth(const PGE::String& text, float scale);
         float getHeight(float scale) const;
@@ -56,8 +56,6 @@ class Font {
         PGE::Shader* shader;
         PGE::Shader::Constant* modelMatrixConstant;
         PGE::Shader::Constant* colorConstant;
-
-        const int atlasDims = 1024;
 
         void renderAtlas(long chr);
 

@@ -28,7 +28,7 @@ RM2Definitions::RM2Definitions(ScriptManager* mgr, GraphicsResources* gfxRes) {
 RM2* RM2Definitions::loadRM2(PGE::String filename) {
     try {
         return new RM2(graphicsResources, filename);
-    } catch (const std::exception e) {
+    } catch (const std::exception& e) {
         std::cout << e.what() << std::endl;
     }
 }

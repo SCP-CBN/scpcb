@@ -17,6 +17,4 @@ class Collider {
         float fallSpeed = 0.f;
         float height;
         float radius;
-
-        const float GRAVITY = 0.6f;
 };

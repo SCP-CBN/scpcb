@@ -148,7 +148,7 @@ StringFactory::StringFactory(asIScriptEngine* engine) {
 
     engine->RegisterObjectMethod("string", "uint length() const", asFUNCTION(stringLength), asCALL_CDECL_OBJLAST);
     engine->RegisterObjectMethod("string", "string substr(int start) const", asFUNCTION(stringSubstrStart), asCALL_CDECL_OBJLAST);
-    engine->RegisterObjectMethod("string", "string substr(int start, int end) const",asFUNCTION(stringSubstrStartLen), asCALL_CDECL_OBJLAST);
+    engine->RegisterObjectMethod("string", "string substr(int start, int count) const",asFUNCTION(stringSubstrStartLen), asCALL_CDECL_OBJLAST);
 
     engine->RegisterObjectMethod("string", "uint16 opIndex(uint) const",asFUNCTION(stringCharAt), asCALL_CDECL_OBJLAST);
 

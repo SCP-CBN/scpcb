@@ -1,6 +1,9 @@
 #include "Timing.h"
 #include "../Utils/MathUtil.h"
 
+// The maximum amount of time the accumulator can store.
+static constexpr double MAX_ACCUMULATED_SECONDS = 3.0;
+
 Timing::Timing(int tickrate) {
     timeStep = 1.0 / tickrate;
     accumulatedSeconds = 0.0;

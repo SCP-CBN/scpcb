@@ -23,7 +23,7 @@ int PGEMain::Main() {
 //    doc.SaveFile(filename.cstr());
     
     World* world = new World();
-    while (world->run()) { }
+    while (world->run());
     
     delete world;
     return 0;

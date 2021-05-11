@@ -39,8 +39,6 @@ Type::Type(const PGE::String& name, int size) {
     arrayType = nullptr;
 }
 
-Type::~Type() {}
-
 PGE::String Type::getName() const {
     return typeName;
 }

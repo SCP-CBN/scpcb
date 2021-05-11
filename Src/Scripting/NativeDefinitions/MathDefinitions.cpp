@@ -125,8 +125,8 @@ MathDefinitions::MathDefinitions(ScriptManager* mgr) {
 
     engine->SetDefaultNamespace("Vector2f");
     engine->RegisterGlobalFunction("Vector2f lerp(const Vector2f&in oldValue, const Vector2f&in newValue, float interpolation)", asFUNCTION(PGE::Vector2f::lerp), asCALL_CDECL);
-    engine->RegisterGlobalProperty("const Vector2f one", (void*)&PGE::Vector2f::one);
-    engine->RegisterGlobalProperty("const Vector2f zero", (void*)&PGE::Vector2f::zero);
+    engine->RegisterGlobalProperty("const Vector2f one", (void*)&PGE::Vector2f::ONE);
+    engine->RegisterGlobalProperty("const Vector2f zero", (void*)&PGE::Vector2f::ZERO);
     engine->SetDefaultNamespace("");
 
     // Vector3f
@@ -179,8 +179,8 @@ MathDefinitions::MathDefinitions(ScriptManager* mgr) {
 
     engine->SetDefaultNamespace("Vector3f");
     engine->RegisterGlobalFunction("Vector3f lerp(const Vector3f&in oldValue, const Vector3f&in newValue, float interpolation)", asFUNCTION(PGE::Vector3f::lerp), asCALL_CDECL);
-    engine->RegisterGlobalProperty("const Vector3f one", (void*) &PGE::Vector3f::one);
-    engine->RegisterGlobalProperty("const Vector3f zero", (void*)&PGE::Vector3f::zero);
+    engine->RegisterGlobalProperty("const Vector3f one", (void*) &PGE::Vector3f::ONE);
+    engine->RegisterGlobalProperty("const Vector3f zero", (void*)&PGE::Vector3f::ZERO);
     engine->SetDefaultNamespace("");
 
     // Matrix4x4f

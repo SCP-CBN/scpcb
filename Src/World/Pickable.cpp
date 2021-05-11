@@ -9,7 +9,7 @@
 CollisionMeshCollection* PickableManager::cmc;
 
 Pickable::Pickable() {
-    position = PGE::Vector3f::zero;
+    position = PGE::Vector3f::ZERO;
     picked = false;
 }
 
@@ -40,7 +40,7 @@ void PickableManager::activatePickable(Pickable* p) {
 }
 
 void PickableManager::deactivatePickable(Pickable* p) {
-    for (std::vector<Pickable*>::const_iterator it = activePickables.begin(); it != activePickables.end(); it++) {
+    for (auto it = activePickables.begin(); it != activePickables.end(); it++) {
         if (*it == p) {
             activePickables.erase(it);
             validPickables.resize(activePickables.size());

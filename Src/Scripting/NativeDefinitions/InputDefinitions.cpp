@@ -12,20 +12,20 @@ InputDefinitions::InputDefinitions(ScriptManager* mgr, KeyBinds* kb, MouseData* 
 
     engine->RegisterEnum("Input");
 
-    engine->RegisterEnumValue("Input", "None", (int)Input::None);
-    engine->RegisterEnumValue("Input", "Forward", (int)Input::Forward);
-    engine->RegisterEnumValue("Input", "Backward", (int)Input::Backward);
-    engine->RegisterEnumValue("Input", "Left", (int)Input::Left);
-    engine->RegisterEnumValue("Input", "Right", (int)Input::Right);
-    engine->RegisterEnumValue("Input", "Crouch", (int)Input::Crouch);
-    engine->RegisterEnumValue("Input", "Blink", (int)Input::Blink);
-    engine->RegisterEnumValue("Input", "Interact", (int)Input::Interact);
+    engine->RegisterEnumValue("Input", "None", (int)Input::NONE);
+    engine->RegisterEnumValue("Input", "Forward", (int)Input::FORWARD);
+    engine->RegisterEnumValue("Input", "Backward", (int)Input::BACKWARD);
+    engine->RegisterEnumValue("Input", "Left", (int)Input::LEFT);
+    engine->RegisterEnumValue("Input", "Right", (int)Input::LEFT);
+    engine->RegisterEnumValue("Input", "Crouch", (int)Input::CROUCH);
+    engine->RegisterEnumValue("Input", "Blink", (int)Input::BLINK);
+    engine->RegisterEnumValue("Input", "Interact", (int)Input::INTERACT);
 
-    engine->RegisterEnumValue("Input", "Inventory", (int)Input::Inventory);
-    engine->RegisterEnumValue("Input", "ToggleSiteNavigator", (int)Input::ToggleSiteNavigator);
-    engine->RegisterEnumValue("Input", "ToggleRadio", (int)Input::ToggleRadio);
+    engine->RegisterEnumValue("Input", "Inventory", (int)Input::INVENTORY);
+    engine->RegisterEnumValue("Input", "ToggleSiteNavigator", (int)Input::TOGGLE_SITE_NAVIGATOR);
+    engine->RegisterEnumValue("Input", "ToggleRadio", (int)Input::TOGGLE_RADIO);
 
-    engine->RegisterEnumValue("Input", "ToggleConsole", (int)Input::ToggleConsole);
+    engine->RegisterEnumValue("Input", "ToggleConsole", (int)Input::TOGGLE_CONSOLE);
 
     engine->SetDefaultNamespace("Input::Mouse1");
     engine->RegisterGlobalFunction("int getClickCount()", asMETHOD(InputDefinitions, getClickCount), asCALL_THISCALL_ASGLOBAL, this);

@@ -1,29 +1,28 @@
 #ifndef MATHUTIL_H_INCLUDED
 #define MATHUTIL_H_INCLUDED
 
-class MathUtil {
-    public:
-        constexpr static float MARGIN_ERROR = 0.001f;
+namespace MathUtil {
+    constexpr float MARGIN_ERROR = 0.001f;
 
-        constexpr static float PI = 3.1415926535897932f;
+    constexpr float PI = 3.1415926535897932f;
 
-        static float degToRad(float degrees);
-        static float radToDeg(float radians);
+    float degToRad(float degrees);
+    float radToDeg(float radians);
     
-        static bool equalFloats(float val, float other);
+    bool equalFloats(float val, float other);
 
-        static int maxInt(int val, int other);
-        static int minInt(int val, int other);
-        static float maxFloat(float val, float other);
-        static float minFloat(float val, float other);
-        static int clampInt(int val, int min, int max);
-        static float clampFloat(float val, float min, float max);
+    int maxInt(int val, int other);
+    int minInt(int val, int other);
+    float maxFloat(float val, float other);
+    float minFloat(float val, float other);
+    int clampInt(int val, int min, int max);
+    float clampFloat(float val, float min, float max);
 
-        static float absFloat(float val);
-        static double absDouble(double val);
+    float absFloat(float val);
+    double absDouble(double val);
 
-        static int floor(float val);
-        static int ceil(float val);
+    int floor(float val);
+    int ceil(float val);
 };
 
 #endif // MATHUTIL_H_INCLUDED

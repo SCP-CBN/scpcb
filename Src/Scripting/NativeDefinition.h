@@ -6,7 +6,7 @@
 class NativeDefinition {
     public:
         // Virtual so we can safely call delete on children.
-        virtual ~NativeDefinition() {};
+        virtual ~NativeDefinition() = default;
 
     protected:
         template<class BASE, class DERIVED>

@@ -4,27 +4,32 @@
 #include "../Input/Input.h"
 #include "../Graphics/GraphicsResources.h"
 
-const PGE::String corpFolder = "Undertow Games";
-const PGE::String gameFolder = "SCP - Containment Breach";
+static const PGE::String CORP_FOLDER = "Undertow Games";
+static const PGE::String GAME_FOLDER = "SCP - Containment Breach";
+
+static const PGE::String SEC_GEN = "general";
+static const PGE::String SEC_GFX = "graphics";
+static const PGE::String SEC_CON = "controls";
+static const PGE::String SEC_MOD = "mods";
 
 PGE::FilePath getConfigDir() {
     // return ""; // Uncomment this if you want options.ini in the root game folder.
-    return PGE::FilePath::getDataPath() + corpFolder + '/' + gameFolder + '/';
+    return PGE::FilePath::getDataPath() + CORP_FOLDER + '/' + GAME_FOLDER + '/';
 }
 
 Config::Config(const PGE::String& file) :
         filename(getConfigDir() + file),
         optionsFile(new INIFile(filename)),
-        vsync(new BoolConfigValue(optionsFile, secGFX, "vsync", true)),
-        vr(new BoolConfigValue(optionsFile, secGFX, "vr", false)),
-        sensitivity(new IntConfigValue(optionsFile, secGen, "sensitivity", 100)),
-        languageCode(new StringConfigValue(optionsFile, secGen, "language", "en")),
-        windowType(new IntConfigValue(optionsFile, secGFX, "window", WindowType::Windowed)),
-        width(new IntConfigValue(optionsFile, secGFX, "width", 1280)),
-        height(new IntConfigValue(optionsFile, secGFX, "height", 720)),
-        enabledMods(new ArrayConfigValue(optionsFile, secMod, "enabledmods", "RootScript|SCPCB")),
-        resourcePackLocations(new ArrayConfigValue(optionsFile, secMod, "resourcepacklocations", "ResourcePacks")),
-        enabledResourcePacks(new ArrayConfigValue(optionsFile, secMod, "enabledresourcepacks", "HIGH|hahahaha")) {
+        vsync(new BoolConfigValue(optionsFile, SEC_GFX, "vsync", true)),
+        vr(new BoolConfigValue(optionsFile, SEC_GFX, "vr", false)),
+        sensitivity(new IntConfigValue(optionsFile, SEC_GEN, "sensitivity", 100)),
+        languageCode(new StringConfigValue(optionsFile, SEC_GEN, "language", "en")),
+        windowType(new IntConfigValue(optionsFile, SEC_GFX, "window", WindowType::Windowed)),
+        width(new IntConfigValue(optionsFile, SEC_GFX, "width", 1280)),
+        height(new IntConfigValue(optionsFile, SEC_GFX, "height", 720)),
+        enabledMods(new ArrayConfigValue(optionsFile, SEC_MOD, "enabledmods", "RootScript|SCPCB")),
+        resourcePackLocations(new ArrayConfigValue(optionsFile, SEC_MOD, "resourcepacklocations", "ResourcePacks")),
+        enabledResourcePacks(new ArrayConfigValue(optionsFile, SEC_MOD, "enabledresourcepacks", "HIGH|hahahaha")) {
     values.push_back(vsync);
     values.push_back(vr);
     values.push_back(sensitivity);
@@ -39,21 +44,21 @@ Config::Config(const PGE::String& file) :
     setResolution(width->value, height->value);
 
     // Generating default keyboard bindings.
-    kbBinds.emplace(Input::Forward, PGE::KeyboardInput::KEYCODE::W);
-    kbBinds.emplace(Input::Backward, PGE::KeyboardInput::KEYCODE::S);
-    kbBinds.emplace(Input::Left, PGE::KeyboardInput::KEYCODE::A);
-    kbBinds.emplace(Input::Right, PGE::KeyboardInput::KEYCODE::D);
-    kbBinds.emplace(Input::Sprint, PGE::KeyboardInput::KEYCODE::LSHIFT);
-    kbBinds.emplace(Input::Crouch, PGE::KeyboardInput::KEYCODE::LCTRL);
-    kbBinds.emplace(Input::Blink, PGE::KeyboardInput::KEYCODE::SPACE);
-    kbBinds.emplace(Input::Interact, PGE::KeyboardInput::KEYCODE::E);
-    kbBinds.emplace(Input::Inventory, PGE::KeyboardInput::KEYCODE::TAB);
-    kbBinds.emplace(Input::ToggleConsole, PGE::KeyboardInput::KEYCODE::F3);
+    kbBinds.emplace(Input::FORWARD, PGE::KeyboardInput::Keycode::W);
+    kbBinds.emplace(Input::BACKWARD, PGE::KeyboardInput::Keycode::S);
+    kbBinds.emplace(Input::LEFT, PGE::KeyboardInput::Keycode::A);
+    kbBinds.emplace(Input::RIGHT, PGE::KeyboardInput::Keycode::D);
+    kbBinds.emplace(Input::SPRINT, PGE::KeyboardInput::Keycode::LSHIFT);
+    kbBinds.emplace(Input::CROUCH, PGE::KeyboardInput::Keycode::LCTRL);
+    kbBinds.emplace(Input::BLINK, PGE::KeyboardInput::Keycode::SPACE);
+    kbBinds.emplace(Input::INTERACT, PGE::KeyboardInput::Keycode::E);
+    kbBinds.emplace(Input::INVENTORY, PGE::KeyboardInput::Keycode::TAB);
+    kbBinds.emplace(Input::TOGGLE_CONSOLE, PGE::KeyboardInput::Keycode::F3);
 
     if (filename.exists()) {
         loadFile();
     } else {
-        (PGE::FilePath::getDataPath() + corpFolder).createDirectory();
+        (PGE::FilePath::getDataPath() + CORP_FOLDER).createDirectory();
         getConfigDir().createDirectory();
 
         saveFile();
@@ -80,20 +85,20 @@ void Config::loadFile() {
 
     setResolution(width->value, height->value);
 
-    loadKeyboardInput(Input::Forward);
-    loadKeyboardInput(Input::Backward);
-    loadKeyboardInput(Input::Left);
-    loadKeyboardInput(Input::Right);
-    loadKeyboardInput(Input::Sprint);
-    loadKeyboardInput(Input::Crouch);
-    loadKeyboardInput(Input::Blink);
-    loadKeyboardInput(Input::Interact);
-    loadKeyboardInput(Input::Inventory);
+    loadKeyboardInput(Input::FORWARD);
+    loadKeyboardInput(Input::BACKWARD);
+    loadKeyboardInput(Input::LEFT);
+    loadKeyboardInput(Input::RIGHT);
+    loadKeyboardInput(Input::SPRINT);
+    loadKeyboardInput(Input::CROUCH);
+    loadKeyboardInput(Input::BLINK);
+    loadKeyboardInput(Input::INTERACT);
+    loadKeyboardInput(Input::INVENTORY);
 }
 
 void Config::loadKeyboardInput(Input input) {
     PGE::String name = getBindingName(input) + "_keyboard";
-    PGE::String bindings = optionsFile->getString(secCon, name, "");
+    PGE::String bindings = optionsFile->getString(SEC_CON, name, "");
     if (bindings.isEmpty()) {
         return;
     }
@@ -103,7 +108,7 @@ void Config::loadKeyboardInput(Input input) {
 
     std::vector<PGE::String> bindVect = bindings.split(',', true);
     for (int i = 0; i < (int)bindVect.size(); i++) {
-        kbBinds.emplace(input, (PGE::KeyboardInput::KEYCODE)bindVect[i].toInt());
+        kbBinds.emplace(input, (PGE::KeyboardInput::Keycode)bindVect[i].toInt());
     }
 }
 
@@ -112,17 +117,17 @@ void Config::saveFile() const {
         values[i]->saveValue();
     }
 
-    Input currInput = Input::None;
+    Input currInput = Input::NONE;
     std::vector<PGE::String> strToJoin;
     for (const auto& it : kbBinds) {
         if (it.first != currInput) {
-            optionsFile->setString(secCon, getBindingName(currInput) + "_keyboard", PGE::String::join(strToJoin, ","));
+            optionsFile->setString(SEC_CON, getBindingName(currInput) + "_keyboard", PGE::String::join(strToJoin, ","));
             strToJoin.clear();
             currInput = it.first;
         }
         strToJoin.push_back(PGE::String::fromInt((int)it.second));
     }
-    optionsFile->setString(secCon, getBindingName(currInput) + "_keyboard", PGE::String::join(strToJoin, ","));
+    optionsFile->setString(SEC_CON, getBindingName(currInput) + "_keyboard", PGE::String::join(strToJoin, ","));
 
     optionsFile->save();
 }

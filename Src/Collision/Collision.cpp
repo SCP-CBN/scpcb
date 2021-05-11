@@ -29,7 +29,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 
 using namespace PGE;
 
-static const float COLLISION_EPSILON = 0.001f;
+static constexpr float COLLISION_EPSILON = 0.001f;
 
 Collision::Collision() { coveredAmount = 1.0f; hit = false; }
 
@@ -117,7 +117,7 @@ Collision Collision::edgeTest(const Vector3f& v0,const Vector3f& v1,const Vector
     t2=(-b-sqrt(d))/(2*a);
     t=t1<t2 ? t1 : t2;
     if( t>1.f ) { return retVal; }    //intersects too far away
-    Vector3f i=sv.add(dv.multiply(t)),p=Vector3f::zero;
+    Vector3f i=sv.add(dv.multiply(t)),p=Vector3f::ZERO;
     if( i.y>v0.distance(v1) ) { return retVal; }    //intersection above cylinder
     if( i.y>=0 ){
         p.y=i.y;

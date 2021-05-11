@@ -32,11 +32,6 @@ class PlayerController {
 
         void stand(float timeStep);
         void walk(PGE::Vector2f dir, float timeStep);
-
-        const float WALK_SPEED_MAX = 18.0f;
-        const float SPRINT_SPEED_MAX = 42.0f;
-        const float WALK_SPEED_SMOOTHING_FACTOR = 0.9f;
-        const float STAMINA_RECOVERY_RATE = 0.2f;
 };
 
 #endif // PLAYERCONTROLLER_H_INCLUDED

@@ -2,34 +2,34 @@
 
 PGE::String getBindingName(const Input& input) {
     switch (input) {
-        case Input::Forward: {
+        case Input::FORWARD: {
             return PGE::String("Forward");
         } break;
-        case Input::Backward: {
+        case Input::BACKWARD: {
             return PGE::String("Backward");
         } break;
-        case Input::Left: {
+        case Input::LEFT: {
             return PGE::String("Left");
         } break;
-        case Input::Right: {
+        case Input::RIGHT: {
             return PGE::String("Right");
         } break;
-        case Input::Sprint: {
+        case Input::SPRINT: {
             return PGE::String("Sprint");
         } break;
-        case Input::Crouch: {
+        case Input::CROUCH: {
             return PGE::String("Crouch");
         } break;
-        case Input::Blink: {
+        case Input::BLINK: {
             return PGE::String("Blink");
         } break;
-        case Input::Interact: {
+        case Input::INTERACT: {
             return PGE::String("Interact");
         } break;
-        case Input::Inventory: {
+        case Input::INVENTORY: {
             return PGE::String("Inventory");
         } break;
-        case Input::ToggleConsole: {
+        case Input::TOGGLE_CONSOLE: {
             return PGE::String("ToggleConsole");
         } break;
         default: {

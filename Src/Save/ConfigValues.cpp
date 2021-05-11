@@ -3,7 +3,7 @@
 #include "../Utils/INI.h"
 
 ConfigValue::ConfigValue(INIFile* file, const PGE::String& section, const PGE::String& name) :
-    file(file), section(section), name(name) {}
+    file(file), section(section), name(name) { /* default */ }
 
 IntConfigValue::IntConfigValue(INIFile* file, const PGE::String& section, const PGE::String& name, int defaultValue)
     : ConfigValue(file, section, name) {

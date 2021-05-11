@@ -5,9 +5,6 @@
 
 class Timing {
     private:
-        // The maximum amount of time the accumulator can store.
-        const double MAX_ACCUMULATED_SECONDS = 3.0;
-
         double timeStep;
         double accumulatedSeconds;
 
@@ -21,7 +18,6 @@ class Timing {
 
     public:
         Timing(int tickrate);
-        ~Timing()=default;
 
         double getTimeStep() const;
         void addSecondsToAccumulator(double secondsPassed);

@@ -72,6 +72,10 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <FloatingPointModel>Fast</FloatingPointModel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <OpenMPSupport>false</OpenMPSupport>
+      <EnableModules>false</EnableModules>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies);d3d11.lib;dxgi.lib;opengl32.lib;$(Platform)/$(Configuration)/Engine.lib;$(Platform)/$(Configuration)/glad.lib;$(Platform)/$(Configuration)/SDL2.lib;../Libraries/freetype-2.10.1/objs/$(Platform)/$(Configuration)/freetype.lib;../Libraries/assimp-4.1.0/VS2017/assimp/$(Platform)/$(Configuration)/assimp.lib;../Libraries/tinyxml2-7.1.0/tinyxml2/x64/Debug-Lib/tinyxml2.lib;../Libraries/angelscript-2.34.0/angelscript/lib/angelscript64d.lib</AdditionalDependencies>
@@ -114,6 +118,10 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
       <FloatingPointModel>Fast</FloatingPointModel>
       <PreprocessorDefinitions>VR_API_PUBLIC;OPENVR_BUILD_STATIC;_MBCS;STB_IMAGE_IMPLEMENTATION;STBI_WINDOWS_UTF8;STBI_FAILURE_USERMSG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <OpenMPSupport>false</OpenMPSupport>
+      <EnableModules>false</EnableModules>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>

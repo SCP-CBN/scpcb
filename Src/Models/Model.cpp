@@ -12,7 +12,7 @@ Model::Model(Assimp::Importer* importer, GraphicsResources* gr, const PGE::Strin
     shader = gr->getShader(PGE::FilePath::fromStr("SCPCB/GFX/Shaders/Model/"), true);
     modelMatrix = shader->getVertexShaderConstant("modelMatrix");
     PGE::Shader::Constant* colorConstant = shader->getFragmentShaderConstant("inColor");
-    colorConstant->setValue(PGE::Color::White);
+    colorConstant->setValue(PGE::Color::WHITE);
 
     PGE::String path = filename.substr(filename.begin(), filename.findLast("/") + 1);
 
@@ -61,7 +61,7 @@ Model::Model(Assimp::Importer* importer, GraphicsResources* gr, const PGE::Strin
         for (unsigned int j = 0; j < mesh->mNumVertices; j++) {
             PGE::Vertex vertex = PGE::Vertex();
             vertex.setVector4f("position", PGE::Vector4f((float)mesh->mVertices[j].x, (float)mesh->mVertices[j].y, (float)mesh->mVertices[j].z, 1.f));
-            vertex.setVector3f("normal", PGE::Vector3f::one);
+            vertex.setVector3f("normal", PGE::Vector3f::ONE);
             vertex.setVector2f("uv", PGE::Vector2f((float)mesh->mTextureCoords[0][j].x, (float)mesh->mTextureCoords[0][j].y));
             vertices.push_back(vertex);
         }

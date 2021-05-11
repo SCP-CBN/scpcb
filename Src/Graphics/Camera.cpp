@@ -5,15 +5,15 @@
 #include "GraphicsResources.h"
 #include "../World/DataInterpolator.h"
 
-const PGE::Vector3f Camera::forwardVector = PGE::Vector3f(0.f, 0.f, 1.f);
-const PGE::Vector3f Camera::upVector = PGE::Vector3f(0.f, 1.f, 0.f);
+const PGE::Vector3f Camera::FORWARD = PGE::Vector3f(0.f, 0.f, 1.f);
+const PGE::Vector3f Camera::UP = PGE::Vector3f(0.f, 1.f, 0.f);
 
 Camera::Camera(GraphicsResources* gr, int w, int h, float fov, float nearZ, float farZ, bool orthographic) {
     gfxRes = gr;
 
     position = PGE::Vector3f(0.f, 0.f, 0.f);
 
-    viewMatrix = PGE::Matrix4x4f::constructViewMat(position, forwardVector, upVector);
+    viewMatrix = PGE::Matrix4x4f::constructViewMat(position, FORWARD, UP);
 
     yawAngle = 0.f;
     pitchAngle = 0.f;
@@ -27,23 +27,23 @@ Camera::Camera(GraphicsResources* gr, int w, int h, float fov, float nearZ, floa
     this->height = h;
     this->orthographicProj = orthographic;
 
-    rotation = PGE::Matrix4x4f::identity;
-    dataInter = DataInterpolator(position, PGE::Vector3f(-pitchAngle, yawAngle, tilt), PGE::Vector3f::zero);
+    rotation = PGE::Matrix4x4f::IDENTITY;
+    dataInter = DataInterpolator(position, PGE::Vector3f(-pitchAngle, yawAngle, tilt), PGE::Vector3f::ZERO);
 
     needsProjUpdate = true;
     update();
 }
 
-Camera::Camera(GraphicsResources* gr, int w, int h) : Camera(gr, w, h, MathUtil::degToRad(70.0f)) {}
+Camera::Camera(GraphicsResources* gr, int w, int h) : Camera(gr, w, h, MathUtil::degToRad(70.0f)) { /* default */ }
 
 void Camera::update() {
-    dataInter.update(position, PGE::Vector3f(-pitchAngle, yawAngle, tilt), PGE::Vector3f::zero);
+    dataInter.update(position, PGE::Vector3f(-pitchAngle, yawAngle, tilt), PGE::Vector3f::ZERO);
 }
 
 void Camera::updateDrawTransform(float interpolation) {
     rotation = PGE::Matrix4x4f::rotate(dataInter.getInterpolatedRotation(interpolation));
 
-    viewMatrix = PGE::Matrix4x4f::constructViewMat(dataInter.getInterpolatedPosition(interpolation), rotation.transform(forwardVector), rotation.transform(upVector));
+    viewMatrix = PGE::Matrix4x4f::constructViewMat(dataInter.getInterpolatedPosition(interpolation), rotation.transform(FORWARD), rotation.transform(UP));
 
     if (needsProjUpdate) {
         if (!orthographicProj) {

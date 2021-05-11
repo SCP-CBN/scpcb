@@ -51,7 +51,7 @@ PGE::Texture* ModelImageGenerator::generate(const PGE::String& model, float scal
     PGE::Texture* tex = PGE::Texture::createRenderTarget(graphics, texSize, texSize, PGE::Texture::FORMAT::RGBA32);
 
     graphics->setRenderTarget(tex);
-    graphics->clear(PGE::Color::Black);
+    graphics->clear(PGE::Color::BLACK);
 
     try {
         ModelInstance* mi = gfxRes->getModelInstance(model);

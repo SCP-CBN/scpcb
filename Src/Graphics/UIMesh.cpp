@@ -16,7 +16,7 @@ UIMesh::UIMesh(GraphicsResources* gr) {
     shaderTexturedColorConstant = shaderTextured->getFragmentShaderConstant("imageColor");
     shaderTexturelessColorConstant = shaderTextureless->getFragmentShaderConstant("imageColor");
     
-    color = PGE::Color::White;
+    color = PGE::Color::WHITE;
     shaderTexturedColorConstant->setValue(color);
     shaderTexturelessColorConstant->setValue(color);
     

@@ -29,8 +29,8 @@ class Camera {
 
         bool needsProjUpdate;
         
-        static const PGE::Vector3f forwardVector;
-        static const PGE::Vector3f upVector;
+        static const PGE::Vector3f FORWARD;
+        static const PGE::Vector3f UP;
         
         PGE::Matrix4x4f rotation;
 

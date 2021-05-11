@@ -10,8 +10,8 @@ class ArrayConfigValue;
 class ResourcePackManager {
     private:
         struct ResourcePack {
-            const PGE::String name;
-            const PGE::FilePath path;
+            PGE::String name;
+            PGE::FilePath path;
         };
         
         ArrayConfigValue* resPackLocs;

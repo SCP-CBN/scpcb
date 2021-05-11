@@ -29,7 +29,7 @@ class Type {
     public:
         Type();
         Type(const PGE::String& name, int size = 0);
-        ~Type();
+        ~Type() = default;
 
         virtual PGE::String getName() const;
         virtual bool isClassType() const;

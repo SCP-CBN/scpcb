@@ -6,10 +6,15 @@
 #include "../World/Pickable.h"
 #include "../Utils/MathUtil.h"
 
+static constexpr float WALK_SPEED_MAX = 18.0f;
+static constexpr float SPRINT_SPEED_MAX = 42.0f;
+static constexpr float WALK_SPEED_SMOOTHING_FACTOR = 0.9f;
+static constexpr float STAMINA_RECOVERY_RATE = 0.2f;
+
 PlayerController::PlayerController(float r, float camHeight) {
     collider = new Collider(r, camHeight);
 
-    position = PGE::Vector3f::zero;
+    position = PGE::Vector3f::ZERO;
     camAnimState = 0.f;
     currWalkSpeed = 0.f;
     stamina = 1.f;
@@ -27,29 +32,29 @@ void PlayerController::setCollisionMeshCollection(CollisionMeshCollection* colle
 }
 
 void PlayerController::update(float yaw, float pitch, Input input, float timeStep) {
-    if ((input & (Input::Forward | Input::Backward | Input::Left | Input::Right)) == Input::None) {
+    if ((input & (Input::FORWARD | Input::BACKWARD | Input::LEFT | Input::RIGHT)) == Input::NONE) {
         stand(timeStep); //not pressing any movement keys: we're standing still
     } else {
         float sinAngle = std::sin(yaw);
         float cosAngle = std::cos(yaw);
         float targetSpeed = WALK_SPEED_MAX;
-        if ((input & Input::Sprint) != Input::None) {
+        if ((input & Input::SPRINT) != Input::NONE) {
             targetSpeed = SPRINT_SPEED_MAX * getClampedStamina() + WALK_SPEED_MAX * (1.f - getClampedStamina());
         }
         // TODO: Scale this.
         currWalkSpeed = currWalkSpeed * WALK_SPEED_SMOOTHING_FACTOR + targetSpeed * (1.f - WALK_SPEED_SMOOTHING_FACTOR);
 
-        PGE::Vector2f targetDir = PGE::Vector2f::zero;
-        if ((input & Input::Forward) != Input::None) {
+        PGE::Vector2f targetDir = PGE::Vector2f::ZERO;
+        if ((input & Input::FORWARD) != Input::NONE) {
             targetDir = targetDir.add(PGE::Vector2f(sinAngle, cosAngle));
         }
-        if ((input & Input::Backward) != Input::None) {
+        if ((input & Input::BACKWARD) != Input::NONE) {
             targetDir = targetDir.add(PGE::Vector2f(-sinAngle, -cosAngle));
         }
-        if ((input & Input::Left) != Input::None) {
+        if ((input & Input::LEFT) != Input::NONE) {
             targetDir = targetDir.add(PGE::Vector2f(-cosAngle, sinAngle));
         }
-        if ((input & Input::Right) != Input::None) {
+        if ((input & Input::RIGHT) != Input::NONE) {
             targetDir = targetDir.add(PGE::Vector2f(cosAngle, -sinAngle));
         }
         if (targetDir.lengthSquared() < 0.01f) {

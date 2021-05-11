@@ -9,6 +9,8 @@
 #include "../Graphics/GraphicsResources.h"
 #include "../Save/Config.h"
 
+static constexpr int atlasDims = 1024;
+
 Font::Font(FT_Library ftLibrary, GraphicsResources* gr, Config* con, const PGE::FilePath& fn, int h) {
     graphicsRes = gr;
     config = con;
@@ -144,7 +146,7 @@ void Font::draw(const PGE::String& text, const PGE::Vector2f& pos, float scale, 
 void Font::draw(const PGE::String& text, const PGE::Vector3f& pos, const PGE::Vector2f& scale, const PGE::Vector3f& rotation, const PGE::Color& color) {
     PGE::Matrix4x4f modelMatrix = PGE::Matrix4x4f::constructWorldMat(pos, PGE::Vector3f(scale.x, scale.y, 1.f), rotation);
 
-    PGE::Vector3f currPos = PGE::Vector3f::zero;
+    PGE::Vector3f currPos = PGE::Vector3f::ZERO;
 
     modelMatrixConstant->setValue(modelMatrix);
     colorConstant->setValue(color);

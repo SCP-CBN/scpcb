@@ -97,10 +97,10 @@ CBR::CBR(GraphicsResources* gr, const PGE::String& filename) {
             for (int k = 0; k < vertexCount; k++) {
                 PGE::Vertex tempVertex;
                 tempVertex.setVector4f("position", PGE::Vector4f(reader.readVector3f(), 1.f));
-                tempVertex.setVector3f("normal", PGE::Vector3f::one);
+                tempVertex.setVector3f("normal", PGE::Vector3f::ONE);
                 tempVertex.setVector2f("lmUv", reader.readVector2f());
                 tempVertex.setVector2f("diffUv", reader.readVector2f());
-                tempVertex.setColor("color", PGE::Color::White);
+                tempVertex.setColor("color", PGE::Color::WHITE);
                 vertices[textureID].push_back(tempVertex);
             }
         }

@@ -17,7 +17,7 @@ struct CachedArgument {
         void* ptr;
     } value;
     PGE::String strValue;
-    CachedArgument() { }
+    CachedArgument() = default;
     CachedArgument(const PGE::String& nm, Type* t);
 };
 

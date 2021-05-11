@@ -10,9 +10,6 @@ class GraphicsResources;
 
 class CBR {
     private:
-        const PGE::FilePath shaderPath;
-        const PGE::FilePath shaderNormalPath;
-
         GraphicsResources* gr;
 
         PGE::Texture** lightmaps;
