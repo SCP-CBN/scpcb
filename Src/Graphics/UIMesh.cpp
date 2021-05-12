@@ -10,7 +10,7 @@ UIMesh::UIMesh(GraphicsResources* gr) {
     shaderTextured = gr->getShader(PGE::FilePath::fromStr("SCPCB/GFX/Shaders/UI/"), false);
     shaderTextureless = gr->getShader(PGE::FilePath::fromStr("SCPCB/GFX/Shaders/UITextureless/"), false);
 
-    mesh = PGE::Mesh::create(gfxRes->getGraphics(), PGE::Primitive::TYPE::TRIANGLE);
+    mesh = PGE::Mesh::create(gfxRes->getGraphics(), PGE::Primitive::Type::TRIANGLE);
     material = nullptr;
 
     shaderTexturedColorConstant = shaderTextured->getFragmentShaderConstant("imageColor");

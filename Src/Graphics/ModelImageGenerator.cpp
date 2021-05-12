@@ -48,7 +48,7 @@ bool ModelImageGenerator::getInitialized() const {
 PGE::Texture* ModelImageGenerator::generate(const PGE::String& model, float scale, const PGE::Vector3f& rotation, PGE::Vector2f position) {
     PGE_ASSERT(initialized, "Model Image Generator has not been initialized");
 
-    PGE::Texture* tex = PGE::Texture::createRenderTarget(graphics, texSize, texSize, PGE::Texture::FORMAT::RGBA32);
+    PGE::Texture* tex = PGE::Texture::createRenderTarget(graphics, texSize, texSize, PGE::Texture::Format::RGBA32);
 
     graphics->setRenderTarget(tex);
     graphics->clear(PGE::Color::BLACK);

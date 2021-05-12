@@ -3,7 +3,7 @@
 #include <math.h>
 
 DebugGraphics::DebugGraphics(PGE::Graphics* gfx) {
-    mesh = PGE::Mesh::create(gfx, PGE::Primitive::TYPE::TRIANGLE);
+    mesh = PGE::Mesh::create(gfx, PGE::Primitive::Type::TRIANGLE);
     shader = PGE::Shader::load(gfx, PGE::FilePath::fromStr("SCPCB/GFX/Shaders/Debug/"));
     material = new PGE::Material(shader, true);
     mesh->setMaterial(material);

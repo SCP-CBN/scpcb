@@ -38,7 +38,7 @@ CBR::CBR(GraphicsResources* gr, const PGE::String& filename) {
     lightmaps = new PGE::Texture*[4];
     for (int i = 0; i < 4; i++) {
         int size = reader.readInt();
-        uint8_t* bytes = reader.readBytes(size);
+        PGE::byte* bytes = reader.readBytes(size);
         lightmaps[i] = TextureHelper::load(gr->getGraphics(), bytes, size);
         delete[] bytes;
     }
@@ -108,7 +108,7 @@ CBR::CBR(GraphicsResources* gr, const PGE::String& filename) {
     meshes.reserve(texSize);
     for (int i = 0; i < texSize; i++) {
         if (toolTextures.find(i) == toolTextures.end()) {
-            PGE::Mesh* newMesh = PGE::Mesh::create(gr->getGraphics(), PGE::Primitive::TYPE::TRIANGLE);
+            PGE::Mesh* newMesh = PGE::Mesh::create(gr->getGraphics(), PGE::Primitive::Type::TRIANGLE);
             newMesh->setMaterial(materials[i]);
             newMesh->setGeometry(vertices[i].size(), vertices[i], primitives[i].size(), primitives[i]);
             meshes.push_back(newMesh);

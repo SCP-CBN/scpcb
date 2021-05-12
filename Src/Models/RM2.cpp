@@ -248,7 +248,7 @@ RM2::RM2(GraphicsResources* gfxRes, const PGE::String& filename) {
                     indices.push_back(index2.i);
                 }
 
-                PGE::Mesh* mesh = PGE::Mesh::create(gfxRes->getGraphics(), PGE::Primitive::TYPE::TRIANGLE);
+                PGE::Mesh* mesh = PGE::Mesh::create(gfxRes->getGraphics(), PGE::Primitive::Type::TRIANGLE);
 
                 mesh->setMaterial(materialIter->second);
                 mesh->setGeometry((int)vertices.size(), vertices, (int)primitives.size(), primitives);

@@ -5,17 +5,16 @@
 #include <Misc/FilePath.h>
 #include <Texture/Texture.h>
 
-class ImageData : public PGE::Resource<uint8_t*> {
+class ImageData : public PGE::Resource<PGE::byte*> {
 	public:
 		ImageData(const PGE::FilePath& file, int& width, int& height);
-		ImageData(uint8_t* fileData, int size, int& width, int& height);
+		ImageData(PGE::byte* fileData, int size, int& width, int& height);
 		~ImageData();
 };
 
-class TextureHelper {
-	public:
-		static PGE::Texture* load(PGE::Graphics* gfx, const PGE::FilePath& file);
-		static PGE::Texture* load(PGE::Graphics* gfx, uint8_t* fileData, int size);
+namespace TextureHelper {
+	PGE::Texture* load(PGE::Graphics* gfx, const PGE::FilePath& file);
+	PGE::Texture* load(PGE::Graphics* gfx, PGE::byte* fileData, int size);
 };
 
 #endif // TEXTURE_UTIL_H_DEFINED

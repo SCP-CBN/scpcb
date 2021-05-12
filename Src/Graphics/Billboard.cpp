@@ -30,7 +30,7 @@ void BillboardManager::addBillboard(Billboard* billboard) {
         BillboardMesh newMesh;
         newMesh.texture = gfxRes->getTexture(texName);
         newMesh.material = new PGE::Material(shader, newMesh.texture, false);
-        newMesh.mesh = PGE::Mesh::create(gfxRes->getGraphics(), PGE::Primitive::TYPE::TRIANGLE);
+        newMesh.mesh = PGE::Mesh::create(gfxRes->getGraphics(), PGE::Primitive::Type::TRIANGLE);
         newMesh.mesh->setMaterial(newMesh.material);
         meshes.emplace(texName, newMesh);
         it = meshes.find(texName);

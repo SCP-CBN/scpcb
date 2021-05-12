@@ -55,7 +55,7 @@ void Font::renderAtlas(long chr) {
     if (startChr<0) { startChr = 0; }
     long endChr = startChr+2048;
 
-    uint8_t* buffer = nullptr;
+    PGE::byte* buffer = nullptr;
     int x = -1; int y = -1;
     int maxHeight = -1;
     for (long i=startChr;i<endChr;i++) {
@@ -74,7 +74,7 @@ void Font::renderAtlas(long chr) {
 
                 if (glyphWidth>0 && glyphHeight>0) {
                     if (buffer==nullptr) {
-                        buffer = new uint8_t[atlasDims*atlasDims*4];
+                        buffer = new PGE::byte[atlasDims*atlasDims*4];
                         for (int j=0;j<atlasDims*atlasDims;j++) {
                             buffer[(j*4)+0]=255;
                             buffer[(j*4)+1]=255;
@@ -126,9 +126,9 @@ void Font::renderAtlas(long chr) {
 
     if (buffer!=nullptr) {
         Atlas newAtlas;
-        newAtlas.texture = PGE::Texture::load(graphicsRes->getGraphics(),atlasDims,atlasDims,buffer,PGE::Texture::FORMAT::RGBA32);
+        newAtlas.texture = PGE::Texture::load(graphicsRes->getGraphics(),atlasDims,atlasDims,buffer,PGE::Texture::Format::RGBA32);
         newAtlas.material = new PGE::Material(shader,newAtlas.texture);
-        newAtlas.mesh = PGE::Mesh::create(graphicsRes->getGraphics(),PGE::Primitive::TYPE::TRIANGLE);
+        newAtlas.mesh = PGE::Mesh::create(graphicsRes->getGraphics(),PGE::Primitive::Type::TRIANGLE);
         newAtlas.mesh->setMaterial(newAtlas.material);
         atlases.push_back(newAtlas);
         delete[] buffer;
