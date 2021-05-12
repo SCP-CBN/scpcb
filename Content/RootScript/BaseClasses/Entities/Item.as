@@ -58,11 +58,11 @@ shared abstract class Item {
 	string name;
 
 	Item::Template@ template;
-	World::Icon@ iconData;
+	Util::Icon@ iconData;
 	Texture@ icon;
 
 	// Model/Picker, and alias model position/rotation/picker onto item.position/rotation/picker
-	World::ModelPicker@ model;
+	Util::ModelPicker@ model;
 	Vector3f position { get { return model.position; } set { model.position = value; } }
 	Vector3f rotation { get { return model.rotation; } set { model.rotation = value; } }
 	bool picked { get { return model.picked; } }
@@ -81,7 +81,7 @@ shared abstract class Item {
 	Item(Item::Template@&in origin) {
 		Item::Template@ originTemplate = @origin; // This may seem like it does nothing, but it's actually stopping a crash.
 		@template=@originTemplate;
-		World::ModelPicker @mdl = World::ModelPicker(template.modelPath);
+		Util::ModelPicker @mdl = Util::ModelPicker(template.modelPath);
 		@model=@mdl;
 		if(template.modelScale != 0) {
 			model.scale=Vector3f(template.modelScale);
@@ -90,7 +90,7 @@ shared abstract class Item {
 		name=template.name;
 		Item::instances.insertLast(@this);
 
-		World::Icon @iconData = World::ModelIcon(template.modelPath, template.iconScale, template.iconRot, template.iconPos);
+		Util::Icon @iconData = Util::ModelIcon(template.modelPath, template.iconScale, template.iconRot, template.iconPos);
 		@icon=@iconData.texture;
 		inPVS=true;
 		valid=true;
@@ -120,7 +120,7 @@ shared abstract class Item {
 	void updatePickable() { if(model.picked) { tryPick(); } }
 	bool tryPick() {
 		if(!canPick()) { return false; }
-		if(InventoryMenu::instance.addItem(this)) {
+		if(false) { //InventoryMenu::instance.addItem(this)) {
 			carried=true;
 			onPick();
 			pickable=false;

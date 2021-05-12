@@ -1,138 +1,300 @@
-external class Room;
+// -------------------------------------------------------------------- //
+//									//
+//			SCP : Containment Breach			//
+//									//
+// -------------------------------------------------------------------- //
+// Script: SCPCB/Main.as						//
+// Purpose:								//
+//	- Base Game							//
+//	- Import externals						//
+//	- Prepare environment						//
+//									//
+// -------------------------------------------------------------------- //
+// Authors:								//
+//	- Pyro-Fire							//
+//									//
+//									//
+//									//
+// -------------------------------------------------------------------- \\
+// Documentation
+//
+//
+//	1. Importing
+//		- AngelMath : General math functions and offsets/directions etc for Angelscript.
+//		- Util : Generic utility space, currently used for Model/ModelPicker/ModelIcon utils.
+//		- Hook : A function call replicator.
+//		- Timer : Used for delayed functions.
+//		- FloatInterpolator : Smooths numbers over time.
+//		- GUI : User Interface / Menu Engine.
+//		- Item : Item libraries and register.
+//		- Console : C++ interface.
+//
+//	2. Game Platform
+//		- Player : The player controller.
+//		- Game : General purpose Game namespace.
+//		- Game::World : The gameworld and physics and stuff
+//		- Misc : Other general stuff not yet sorted to a better place.
+//
+//	3. Entrypoint
+//		- Engine Hooks : Tick/render/exit/etc.
+//		- main() : void main, the entry point to the SCPCB script.
+//
+//	4. Scrap code
+//		- If you don't have a better place to put it...
+//
+//
+// -------------------------------------------------------------------- //
+// Begin Script
 
-serialize LightContainmentZone@ lcz;
+bool DEBUGGING = true;
 
-external class Item;
+// --------------------------------
+// SECTION 1. Import
+
+// # import(RootScript/BaseClasses/Utility/AngelMath.as);
+external enum Alignment;
+external bool vectorIsInSquare(Vector2f vec, Vector2f tl, Vector2f br);
 
 
-// TODO: remove these globals, they only exist for testing purposes
-serialize Vector3f whVy = Vector3f(17, 14, 14);
-serialize string uh = "aaah";
-serialize Matrix4x4f worldMatrix = Matrix4x4f::constructWorldMat(Vector3f(0.0, 0.0, 0.0), Vector3f(1.0, 1.0, 1.0), Vector3f(0, 0, 0));
+// # import(RootScript/BaseClasses/Utility/Util.as);
+external class Util::Model;
+external class Util::ModelPicker;
+external class Util::ModelIcon;
+external class Util::Icon;
+external int Util::tick;
 
-PlayerController@ testController;
-Collision::Collection@ testCollCollection;
+external class Hook;
+external void Hook::Destroy(Hook@&in h);
+external Hook@ Hook::Create(string name);
 
-external enum RoomType;
-
-external Zone@ test_shared_global;
-external int testCounter;
-
-void Test(int i, int i2, int i3 = 5) {
-	//Debug::log("Parameter: "+testString);
+external class TickTimer;
+external class Timer;
+namespace Timer {
+	external funcdef void Function();
+	external funcdef void Repeater(Timer@&in tmr);
 }
 
-Billboard@ lol;
-Billboard@ two;
+external void Timer::Start(int tock, Timer::Function@ func);
+external void Timer::On(int tock, Timer::Function@ func);
+external Timer@ Timer::Repeat(int tock, Timer::Repeater@ func);
+external void Timer::Stop(Timer@ tmr);
+external void Timer::Stop(TickTimer@ tmr);
+external void Timer::update();
 
-Model@ mask;
-Model@ mask2;
+external class FloatInterpolator;
 
-Model@ scp173;
 
-external Item@ Item::spawn(const string&in name, const Vector3f&in position);
-external Item@ Item::spawn(const string&in name, const Vector3f&in position, const Vector3f&in rotation);
+// # import(RootScript/BaseClasses/Utility/GUI.as);
+external class GUI; // Blank GUIComponent / container for other GUIComponents.
+external class GUILabel; // Generic text drawer
+external class GUIPanel; // Generic panel that draws a box either colored or textured.
+external class GUIClickable; // A slimmed GUIButton with no textures.
+external class GUIButton; // Generic clickable component.
+external class GUIButtonLabel; // Generic clickable button with text.
+external class GUIScrollPanel; // Panel with a scrollbar
+external class GUITextEntry; // Shoop da whoop
+
+external void GUI::Initialize();
+external void GUI::Draw();
+external void GUI::Think();
+external void GUI::updateResolution();
+
+external float GUI::tileScale;
+external float GUI::aspectScale;
+
+external Vector2f GUI::Mouse();
+external Vector2f GUI::Resolution;
+external Vector2f GUI::Center;
+
+external array<GUI@> GUI::baseInstances; // temporaryz
+
+namespace GUI {
+	external Texture@ Skin::menublack;
+	external Texture@ Skin::menuwhite;
+	external Texture@ Skin::menuMain;
+	external Texture@ Skin::menuPause;
+	external Texture@ Skin::menuSCPLabel;
+	external Texture@ Skin::menuSCP173;
+}
+
+// # import(RootScript/BaseClasses/Entities/Item.as); ----------------
+external class Item;
+
 external void Item::updateAll();
 external void Item::renderAll();
 
-external class MenuManager;
-MenuManager@ menuManager;
-
-int fps;
-external class GUIText;
-GUIText@ fpsCounter;
-
-external enum Alignment;
-
-external class ConsoleMenu;
-external ConsoleMenu@ ConsoleMenu::instance;
-external class HUDMenu;
-//external HUDMenu@ HUDMenu::instance; // TODO why doesn't this work?
-external void Console::addMessage(const string&in msg, const Color&in color = Color::White);
+external Item@ Item::spawn(const string&in name, const Vector3f&in position);
+external Item@ Item::spawn(const string&in name, const Vector3f&in position, const Vector3f&in rotation);
 
 
+// # import(RootScript/BaseClasses/Utility/GUI.as -> $C++/Console) ----------------
+//class ConsoleMenu { ConsoleMenu@ instance; }
+//ConsoleMenu@ ConsoleMenu::instance;
+//external void Console::addMessage(const string&in msg, const Color&in color = Color::White);
+
+// --------------------------------
+// SECTION 2. Game Platform
+
+// # Player{} --------
+namespace Player {
+	PlayerController@ Controller;
+	float Height=15.f;
+	float Radius=Height*(5.f/15.f);
+
+	Vector3f pos { get { return Controller.position; }
+		set { Controller.position=value; }
+	}
+
+	void Initialize() {
+		@Controller=PlayerController(Radius,Height);
+		Controller.setCollisionCollection(@Game::World::Collision);
+		pos=Vector3f(0,Height+5,0);
+
+	}
+}	
+
+// # Game{} --------
+namespace Game {
+	int tick { get { return Util::tick; } set { Util::tick=value; } }
+	Hook@ tickHook=Hook("tick");
+
+	void Initialize() {
+		Game::World::Initialize();
+		Player::Initialize();
+
+		GUI::Initialize();
+		Loadscreen::Initialize();
+		@MainMenu=menu_Main();
+		@PauseMenu=menu_Pause();
+		@ConsoleMenu=menu_Console();
+	}
+
+	void update(float interp) {
+		tick=tick+1;
+		Timer::update();
+		GUI::Think();
+		Game::World::update();
+		tickHook.call();
+		if(queuedNewGame) {
+			BuildNewGame();
+			queuedNewGame=false;
+		}
+		Item::updateAll();
+		if(DEBUGGING) { AngelDebug::update(interp); }
+		updateMenuState();
+	}
+	void render(float interp) {
+		Game::World::render();
+		if(DEBUGGING) { AngelDebug::render(interp); }
+	}
+	void renderMenu(float interp) {
+		GUI::Draw();
+		if(DEBUGGING) { AngelDebug::renderMenu(interp); }
+		if(Input::getHit() & Input::Inventory != 0) { Debug::log("hotkey Open Inventory"); }
+		else if(Input::getHit() & Input::ToggleConsole != 0) { Debug::log("hotkey Open Console"); ConsoleMenu.visible=true; }
+		else if(Input::getHit() & Input::Crouch != 0) { Debug::log("hotkey Crouch"); }
+	}
+
+	void exit() {
+
+	}
+
+
+
+	void updateMenuState() {
+		if(Input::Escape::isHit()) {
+			Debug::log("Escape was pressed11"); // Apparently this code doesn't run without calling a Debug::log. isHit() is weird.
+			bool menuIsOpen=false;
+			for(int i=0; i<GUI::baseInstances.length(); i++) {
+				if(GUI::baseInstances[i].visible==true) {
+					menuIsOpen=true;
+					GUI::baseInstances[i].visible=false;
+				}
+			}
+			if(menuIsOpen==true) {
+				World::paused=false;
+			} else {
+				World::paused=true;
+				PauseMenu.open();
+			}
+		}
+	}
+}
+
+
+
+
+// # Game::World --------
+namespace Game { namespace World {
+	Collision::Collection@ Collision;
+	void Initialize() {
+		::World::paused = true;
+		@Collision=Collision::Collection();
+	}
+	void update() {
+	}
+	void render() {
+	}
+} }
+
+// # Misc --------
+bool queuedNewGame=false;
+void QueueNewGame() {
+	World::paused=false;
+	Loadscreen::Activate("SCP-173");
+	queuedNewGame=true;
+}
+void BuildNewGame() {
+	World::paused=true;
+	initRooms_OBSOLETE();
+	Player::Controller.position=Vector3f(0,Player::Height+5,0);
+	World::paused=false;
+	MainMenu.visible=false;
+	PauseMenu.visible=false;
+	LoadingMenu.visible=false;
+}
+
+// --------------------------------
+// SECTION 3. Entrypoint
+
+
+// # Engine Hooks --------
+void renderMenu(float interp) { Game::renderMenu(interp); if(DEBUGGING) { AngelDebug::renderMenu(interp); } }
+void render(float interp) { Game::render(interp); if(DEBUGGING) { AngelDebug::render(interp); } }
+void update(float interp) { Game::update(interp); if(DEBUGGING) { AngelDebug::update(interp); } }
+void exit() { Game::exit(); Debug::log("GAME OVER, YEAH!"); }
+
+// # main() --------
 void main() {
-	Debug::log("Starting up! ");
+	Game::Initialize();
 
-	@menuManager = MenuManager();
-
-	@fpsCounter = GUIText(null, -50.0 * UI::getAspectRatio(), -50.0, false, false, false);
-	fpsCounter.text = "test";
-
-
-	Item::spawn("Gasmask", Vector3f(-15.0, 5.0, 20.0));
-
-	Item::spawn("FirstAid", Vector3f(0.0, 20.0, 20.0));
-	Item::spawn("SmallFirstAid", Vector3f(10.0, 20.0, 20.0));
-	Item::spawn("BlueFirstAid", Vector3f(5.0, 20.0, 22.0));
-
-	Item::spawn("Battery9v", Vector3f(-12.0, 5.0, 20.0));
-	Item::spawn("Battery18v", Vector3f(-8.0, 5.0, 20.0));
-	Item::spawn("StrangeBattery", Vector3f(-4.0, 5.0, 20.0));
-
-
-	Vector2f test = Vector2f(10.0, 10.0);
-	Vector2f test2 = Vector2f(15.0, 10.0);
-
-	@lol = Billboard::create("SCPCB/GFX/Sprites/smoke_white", Vector3f(1, 7, 5), 0.5, test, Color(1.0, 0.8, 0.5));
-	
-	Billboard::create("SCPCB/GFX/Map/Textures/dirtymetal", Vector3f(1, 4, 1), Vector3f(0, 3, 0), test2, Color(0.0, 1.0, 1.0));
-	@two = Billboard::create("SCPCB/GFX/Map/Textures/dirtymetal", Vector3f(2, 7, 15), Vector3f(0, 3, 0), test2, Color(1.0, 0.0, 1.0));
-
-	@mask = Model::create("SCPCB/GFX/Items/Gasmask/gasmask.fbx");
-	mask.position = Vector3f(10, 5, 0);
-	mask.rotation = Vector3f(-1, 0.1, 0);
-
-	@mask2 = Model::create("SCPCB/GFX/Items/Gasmask/gasmask.fbx");
-	mask2.position = Vector3f(-8, 4, 1);
-	mask2.rotation = Vector3f(-1, -0.1, 0);
-
-
-	// The 173 model takes a long time to load so commented
-	//@scp173 = Model::create("SCPCB/GFX/NPCs/SCP173/173.fbx");
-	//scp173.position = Vector3f(-4, 0, 1);
-	//scp173.rotation = Vector3f(0, 0, 0);
-
-
-	//Debug::log(test_shared_global);
-
-	Console::register("mytest", "THIS COMKMAND IS VERY EPIC", Test);
-	Console::register(
-		"teleport",
-		"Teleports the player to the coordinates sent as input.",
-		function(float x,float y,float z) {
-			Debug::log("Called teleport!");
-			testController.position = Vector3f(x,y,z);
-		}
-	);
-	Console::register(
-		"hElP",
-		":(",
-		function(string s) {
-			Debug::log(s);
-		}
-	);
-	Console::register(
-		"jorge",
-		"There is no help available for you.",
-		function(int i, int i2, int i3) {
-			Console::addMessage("" + 74 + 111 + 114 + 103 + 101 + 32 + 104 + 97 + 115 + 32 + 98 + 101 + 101 + 110 + 32 + 101 + 120 + 112 + 101 + 99 + 116 + 105 + 110 + 103 + 32 + 121 + 111 + 117 + 46, Color::Orange);
-		}
-	);
-	Console::register(
-		"clear",
-		"Clears the console.",
-		function() {
-			ConsoleMenu::instance.clear();
-		}
-	);
-	
 	@lcz = LightContainmentZone();
 	@test_shared_global = @lcz;
-	@testCollCollection = Collision::Collection();
-	@testController = PlayerController(5.0, 15.0);
-	testController.position = Vector3f(0,16,0);
-	testController.setCollisionCollection(testCollCollection);
+
+	if(DEBUGGING) { AngelDebug::Initialize(); }
+
+	PerTick::register(update);
+	PerFrameGame::register(render);
+	PerFrameMenu::register(renderMenu);
+
+}
+
+
+// --------------------------------
+// SECTION 4. Scrap Code
+
+
+
+external class Room;
+serialize LightContainmentZone@ lcz;
+external Zone@ test_shared_global;
+
+external enum RoomType;
+external int testCounter;
+
+void initRooms_OBSOLETE() {
+
+	// OBSOLETE REGISTRATION CODE AND ZONE TESTING --------
 	lcz.registerRoom("hll_plain_4_empty_a", Room4);
 	lcz.registerRoom("hll_plain_4_empty_b", Room4);
 	lcz.registerRoom("hll_plain_4_walkway", Room4);
@@ -161,94 +323,8 @@ void main() {
 	lcz.registerRoom("hll_plain_1_empty_a", Room1);
 	lcz.registerRoom("hll_plain_1_empty_b", Room1);
 	lcz.generate();
-	PerTick::register(update);
-	PerFrameGame::register(renderGame);
-	PerFrameMenu::register(renderMenu);
 }
 
-void exit() {
-	Debug::log("YEAH");
-}
 
-float time = 0.f;
-float blinkTimer = 10.f;
 
-external class FloatInterpolator;
-FloatInterpolator@ blinkInterpolator = FloatInterpolator();
 
-int tick = 0;
-
-void update(float deltaTime) {
-	if (!World::paused) {
-		__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(testController, Input::getDown(), deltaTime);
-		lcz.update(deltaTime);
-		time += deltaTime;
-		if (time > 1.f) { // So you don't get a fucking seizure.
-			lol.visible = !lol.visible;
-			time = 0.f;
-			fpsCounter.text = "FPS: " + toString(fps);
-			fps = 0;
-		}
-		// Blinking
-		blinkTimer -= deltaTime;
-		if (Input::getHit() & Input::Blink != 0) {
-			blinkTimer = 0.f;
-		}
-		if (Input::getDown() & Input::Blink != 0) {
-			blinkTimer = Math::maxFloat(-0.2f, blinkTimer);
-		}
-		
-		if (blinkTimer <= -0.4f) {
-			blinkInterpolator.update(-0.4f);
-			blinkTimer = 10.f;
-		} else {
-			blinkInterpolator.update(blinkTimer);
-		}
-		aaaa.blinkMeter.value = Math::ceil(blinkTimer / 10.f * aaaa.blinkMeter.maxValue);
-	} else if (deltaTime == 0.f) {
-		__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(testController, Input::getDown(), 0.f);
-	}
-	Item::updateAll();
-	menuManager.update();
-
-	tick += 1;
-	//testController.position=Vector3f(tick,0,0);
-}
-
-HUDMenu@ aaaa = HUDMenu();
-
-void renderGame(float interpolation) {
-	if (test_shared_global == null) { return; }
-	test_shared_global.render(interpolation);
-	mask.render();
-	mask2.render();
-	//scp173.render();
-	Billboard::renderAll();
-	Item::renderAll();
-	fpsCounter.render();
-
-	float interpolatedBlink = blinkInterpolator.lerp(interpolation);
-	if (interpolatedBlink < 0.f) {
-		float alpha = 0.f;
-		// Closing eyes.
-		if (interpolatedBlink > -0.1f) {
-			alpha = Math::sin(Math::absFloat(interpolatedBlink / 0.4f * 2.f * Math::PI));
-		// Fully closed.
-		} else if (interpolatedBlink > -0.3f) {
-			alpha = 1.f;
-		// Opening eyes.
-		} else {
-			alpha = Math::absFloat(Math::sin(interpolatedBlink / 20.f * 2.f * Math::PI));
-		}
-		UI::setTextureless();
-		UI::setColor(Color(0.f, 0.f, 0.f, alpha));
-		UI::addRect(Rectanglef(-50.f, -50.f, 50.f, 50.f));
-	}
-
-	fps++;
-}
-
-void renderMenu(float interpolation) {
-	menuManager.render();
-	aaaa.render();
-}

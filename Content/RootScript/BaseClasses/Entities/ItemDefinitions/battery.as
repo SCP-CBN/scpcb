@@ -76,7 +76,7 @@ shared class Item_Battery18v : Item {
 }
 
 
-// 18v Battery --------------------------------------
+// Strange Battery --------------------------------------
 
 class ItemTemplate_StrangeBattery : Item::Template {
 	Item@ MakeInstance() {
