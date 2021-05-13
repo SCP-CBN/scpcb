@@ -55,6 +55,12 @@ bool DEBUGGING = true;
 external enum Alignment;
 external bool vectorIsInSquare(Vector2f vec, Vector2f tl, Vector2f br);
 
+external class Vector2d; // Angel 2d vector lib
+external class Vector3d; // Angel 3d vector lib
+external class Vector4d; // Angel 4d vector lib
+external class Square; // Angel square/rectangle lib
+external class Angle; // angle lib
+
 
 // # import(RootScript/BaseClasses/Utility/Util.as);
 external class Util::Model;
@@ -128,7 +134,7 @@ external Item@ Item::spawn(const string&in name, const Vector3f&in position, con
 
 
 // # import(RootScript/BaseClasses/Utility/GUI.as -> $C++/Console) ----------------
-//class ConsoleMenu { ConsoleMenu@ instance; }
+//external class ConsoleMenu { ConsoleMenu@ instance; }
 //ConsoleMenu@ ConsoleMenu::instance;
 //external void Console::addMessage(const string&in msg, const Color&in color = Color::White);
 
@@ -181,13 +187,13 @@ namespace Game {
 		}
 		Item::updateAll();
 		if(DEBUGGING) { AngelDebug::update(interp); }
-		updateMenuState();
 	}
 	void render(float interp) {
 		Game::World::render();
 		if(DEBUGGING) { AngelDebug::render(interp); }
 	}
 	void renderMenu(float interp) {
+		updateMenuState();
 		GUI::Draw();
 		if(DEBUGGING) { AngelDebug::renderMenu(interp); }
 		if(Input::getHit() & Input::Inventory != 0) { Debug::log("hotkey Open Inventory"); }

@@ -358,7 +358,7 @@ shared class GUI {
 				child.paintSize=Vector2f(paintSize.x-layout[0]-layout[2],paintSize.y-layout[1]-layout[3]);
 				child.paintPos=Vector2f(paintPos.x,paintPos.y);
 				child.paintSize -= Vector2f(child.margin[0]+child.margin[2]+padding[0]+padding[2],child.margin[1]+child.margin[3]+padding[1]+padding[3]);
-				child.paintPos += Vector2f(child.margin[0]+layout[0],child.margin[1]+layout[1]);
+				child.paintPos += Vector2f(child.margin[0]+padding[0]+layout[0],child.margin[1]+padding[1]+layout[1]);
 				break;
 			default:
 				performChildLayout(@child,layout);

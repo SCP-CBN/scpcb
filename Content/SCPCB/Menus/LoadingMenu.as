@@ -32,8 +32,8 @@ namespace Loadscreen {
 	void Activate(string key) {
 		for(int i=0; i<screens.length(); i++) { screens[i].visible=false; }
 		GUILoadscreen@ scn = Fetch(key);
-		scn.updateGraphicPosition();
 		scn.visible=true;
+		scn.updateGraphicPosition();
 		@activeScreen=@scn;
 
 		LoadingMenu.visible=true;
@@ -59,10 +59,13 @@ class GUILoadscreen : GUI {
 	GUILabel@ heading;
 
 	GUILoadscreen(string ttl, Vector2f size, Texture@ texture, bool bgtexture, Alignment alignX, Alignment alignY, string txt1="", string txt2="", string txt3="", string txt4="") {
-		super(@Loadscreen::canvas,"Loadscreen");
+		super(@Loadscreen::canvas,"GUILoadscreen");
 		Loadscreen::screens.insertLast(@this);
+		align=Alignment::Fill;
+
 		@background=GUIPanel(@this);
-		background.align=Alignment::None;
+		background.align=Alignment::Fill;
+
 		@graphic=GUIPanel(@this);
 		graphic.align=Alignment::None;
 		graphic.pos=Vector2f();
@@ -78,12 +81,13 @@ class GUILoadscreen : GUI {
 		bgtex=bgtexture;
 		alignHorizontal=alignX;
 		alignVertical=alignY;
-		stages={txt1,txt2,txt3,txt4};
+		stages[0]=txt1;
+		stages[1]=txt2;
+		stages[2]=txt3;
+		stages[3]=txt4;
 		Debug::log("Made a loadscreen: " + ttl);
 	}
 	void updateGraphicPosition() {
-		background.pos=Vector2f(0,0);
-		background.size=GUI::Resolution;
 		if(bgtex) { graphic.pos=Vector2f(0,0); graphic.size=GUI::Resolution; return; }
 		Vector2f vpos=Vector2f(0,0);
 		switch(alignHorizontal) {
@@ -168,7 +172,7 @@ class menu_Loading : GUI {
 		loadText.alignVertical=Alignment::Top;
 		loadText.text="LoadText";
 		loadText.fontScale=1;
-		loadText.height=8;
+		loadText.height=4;
 		loadText.margin={8,1,8,0};
 	}
 

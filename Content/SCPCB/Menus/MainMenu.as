@@ -1,6 +1,6 @@
 namespace MainMenu {
 	void Initialize() {
-		MainMenu=menu_Main();
+		@MainMenu=menu_Main();
 	}
 }
 

@@ -55,14 +55,14 @@ namespace Util {
 	shared class ModelIcon : Icon {
 		string iconPath;
 		float iconScale;
-		Vector3f iconRot;
-		Vector2f iconPos;
-		ModelIcon(string&in cpath, float&in cscale, Vector3f&in crot, Vector2f&in cpos) { super();
+		Vector3d iconRot;
+		Vector2d iconPos;
+		ModelIcon(string&in cpath, float&in cscale, Vector3d&in crot, Vector2d&in cpos) { super();
 			iconPath=cpath;
 			iconScale=cscale;
 			iconRot=crot;
 			iconPos=cpos;
-			@texture = ModelImageGenerator::generate(iconPath, iconScale, iconRot, iconPos);
+			@texture = ModelImageGenerator::generate(iconPath, iconScale, iconRot(), iconPos());
 		}
 	}
 

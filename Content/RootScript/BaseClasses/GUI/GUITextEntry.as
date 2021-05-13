@@ -69,11 +69,12 @@ shared class GUITextEntry : GUIClickable {
 	array<GUICharacter@> selected;
 	int Carrot=-1;
 
+	void setText(string txt) { while(_children.length()>0) { _children.removeLast(); } keyboardDoTextInput(txt); }
+	string getText() { return fetchText(); }
+
 	GUITextEntry(string vcls="GUITextEntry") { super(vcls); Carrot=-1; }
 	GUITextEntry(GUI@&in parent, string vcls="GUITextEntry") { super(@parent,vcls);
 		appleSelectionInsanityMode = (World::Platform::active == World::Platform::Apple);
-		drillLayout();
-		keyboardDoTextInput("Test");
 	}
 	~GUITextEntry() {
 	}
@@ -158,7 +159,6 @@ shared class GUITextEntry : GUIClickable {
 			GUICharacter@ char=GUICharacter(@this);
 			char.align=Alignment::Left;
 			char.text=append[i];
-			Debug::log("Added character!!! : " + append[i]);
 		}
 	}
 
@@ -166,7 +166,7 @@ shared class GUITextEntry : GUIClickable {
 		if(Input::Escape::isHit()) { keyboardEscape(); return; }
 		if(pressed) { selectCharacters(); return; }
 		string append=Input::getTextInput();
-		if(append!="") { Debug::log("Got text input! : " + append); keyboardDoTextInput(append); }
+		if(append!="") { keyboardDoTextInput(append); }
 
 		if(Input::selectAllIsHit()) { keyboardDoSelectAll(); }
 		else if(Input::LeftArrow::isHit() || Input::RightArrow::isHit()) { keyboardDoArrow(Input::RightArrow::isHit()); }

@@ -36,7 +36,7 @@ shared class GUILabel : GUI {
 				textPos.y += (paintSize.y/2)-(textSize.y/2);
 				break;
 			case Alignment::Top:
-				// Do nothing
+				// do nothing.
 				break;
 			case Alignment::Bottom:
 				textPos.y += paintSize.y-textSize.y;
