@@ -1,27 +1,28 @@
-
-
-// GUIPanel --------
-// A simple panel that draws a box.
-//
-// Use "GUI(@parent)" for a panel that doesn't draw anything.
+// # GUIPanel --------
+// A simple blank panel that draws a box with or without a texture.
 
 shared class GUIPanel : GUI {
-	GUIPanel() { super("panel"); }
-	GUIPanel(GUI@&in parent) { super(@parent,"panel"); }
 
-	Texture@ texture;
-	bool tile;
+	// # Constructor
+	GUIPanel(string vcls="GUIPanel") { super(vcls); }
+	GUIPanel(GUI@&in parent, string vcls="GUIPanel") { super(@parent,vcls); }
+
+	// # Basic background/draw panel.
 	Color color=Color::White;
+	Texture@ texture;
+	bool tiledTexture;
 
-	Rectanglef square;
+	// # Layout
+	Rectanglef paintSquare;
 	void doneLayout() {
-		square=Rectanglef((paintPos)-GUI::Center,(paintPos+paintSize)-GUI::Center);
+		paintSquare=Rectanglef((paintPos)-GUI::Center,(paintPos+paintSize)-GUI::Center);
 	}
 
-	void Paint() {
-		if(@texture==null) { UI::setTextureless(); } else { UI::setTextured(texture, tile); }
+	// # Draw()
+	void paint() {
+		if(@texture==null) { UI::setTextureless(); } else { UI::setTextured(texture, tiledTexture); }
 		color.alpha=opacity;
 		UI::setColor(color);
-		UI::addRect(square);
+		UI::addRect(paintSquare);
 	}
 }

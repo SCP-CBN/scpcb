@@ -1,20 +1,31 @@
-
-
-// GUIPanel --------
-// A simple panel that draws a box.
-//
-// Use "GUI(@parent)" for a panel that doesn't draw anything.
-
+// # *INTERNAL* : GUIScrollBarTopArrow --------
+// The upper arrow of the scrollbar.
 shared class GUIScrollBarTopArrow : GUIScrollBarArrow {
-	GUIScrollBarTopArrow(GUI@&in parent) { super(@parent,"scrollbarTopArrow"); align=Alignment::Top; @graphic.texture=@GUI::Skin::ScrollBar::topArrowTexture; top=true; }
+	GUIScrollBarTopArrow(GUI@&in parent, string vcls="GUI::ScrollBarTopArrow") { super(@parent,vcls);
+		align=Alignment::Top;
+		@graphic.texture=@GUI::Skin::ScrollBar::topArrowTexture;
+		isTopArrow=true;
+	}
 }
+
+// # *INTERNAL* : GUIScrollBarBtmArrow --------
+// The lower arrow of the scrollbar.
 shared class GUIScrollBarBtmArrow : GUIScrollBarArrow {
-	GUIScrollBarBtmArrow(GUI@&in parent) { super(@parent,"scrollbarBtmArrow"); align=Alignment::Bottom; @graphic.texture=@GUI::Skin::ScrollBar::btmArrowTexture; top=false; }
+	GUIScrollBarBtmArrow(GUI@&in parent, string vcls="GUI::ScrollBarBtmArrow") { super(@parent,vcls);
+		align=Alignment::Bottom;
+		@graphic.texture=@GUI::Skin::ScrollBar::btmArrowTexture;
+		isTopArrow=false;
+	}
 }
+
+// # *INTERNAL* : GUIScrollBarArrow --------
+// Baseclass for the scrollbar arrows
 shared class GUIScrollBarArrow : GUIButton {
+
+	// # Constructor
 	GUIPanel@ graphic;
-	bool top;
-	GUIScrollBarArrow(GUI@&in parent,string scls="scrollbarArrow") { super(@parent,scls);
+	GUIScrollBarArrow(GUI@&in parent, string vcls="GUI::ScrollBarArrow") { super(@parent,vcls);
+		// Skin
 		height=GUI::Skin::ScrollBar::arrowHeight;
 		@background.texture=@GUI::Skin::ScrollBar::bgtexture;
 		foreground.margin=GUI::Skin::ScrollBar::fgMargin;
@@ -22,15 +33,18 @@ shared class GUIScrollBarArrow : GUIButton {
 		foreground.color=GUI::Skin::ScrollBar::fgColor;
 		background.color=GUI::Skin::ScrollBar::bgColor;
 
+		// Arrow graphic
 		@graphic=GUIPanel(@this);
 		graphic.align=Alignment::Fill;
-		graphic.visible=true;
 		graphic.margin=GUI::Skin::ScrollBar::arrowMargin;
 		graphic.color=GUI::Skin::ScrollBar::whiteColor;
-
 	}
 
-	void skinColors() {
+	// # Arrow handler
+	bool isTopArrow;
+
+	// # Click state
+	void updateClickable() {
 		if(pressed) {
 			background.color=GUI::Skin::ScrollBar::hoverColor;
 			foreground.color=GUI::Skin::ScrollBar::downColor;
@@ -42,9 +56,23 @@ shared class GUIScrollBarArrow : GUIButton {
 			foreground.color=GUI::Skin::ScrollBar::whiteColor;
 		}
 	}
+
+	void doClick() {
+		if(isTopArrow) {
+
+		} else {
+
+		}
+	}
 }
+
+
+// # *INTERNAL* : GUIScrollBarHandle --------
+// The physical bar of the scrollbar that is clicked and dragged.
 shared class GUIScrollBarHandle : GUIButton {
-	GUIScrollBarHandle(GUI@&in parent) { super(@parent,"scrollBarHandle");
+
+	// # Constructor
+	GUIScrollBarHandle(GUI@&in parent, string vcls="GUI::ScrollBarHandle") { super(@parent,vcls);
 		align=Alignment::Manual;
 		foreground.margin=GUI::Skin::ScrollBar::barfgMargin;
 		@background.texture=@GUI::Skin::ScrollBar::bgtexture;
@@ -53,7 +81,11 @@ shared class GUIScrollBarHandle : GUIButton {
 		foreground.color=GUI::Skin::ScrollBar::barfgColor;
 	}
 
-	void skinColors() {
+	// # Click state
+	Vector2f originClick;
+	void startClick(Vector2f mpos) { originClick=mpos; }
+
+	void updateClickable() {
 		if(pressed) {
 			background.color=GUI::Skin::ScrollBar::hoverColor;
 			foreground.color=GUI::Skin::ScrollBar::downColor;
@@ -67,18 +99,17 @@ shared class GUIScrollBarHandle : GUIButton {
 			foreground.color=GUI::Skin::ScrollBar::whiteColor;
 		}
 	}
-
-	void performLayout() {}
-
-	Vector2f originClick;
-	void startClick(Vector2f mpos) { originClick=mpos; }
 }
+
+// # *INTERNAL* : GUIScrollBar --------
+// The entire panel on the right hand side which contains the scrollbar and the arrows, and generally deals with the scrolling part of the scrollbar.
 shared class GUIScrollBar : GUI {
+
+	// # Constructor
 	GUIScrollBarArrow@ topArrow;
 	GUIScrollBarArrow@ btmArrow;
-	GUIButton@ bar;
-	float barLength;
-	GUIScrollBar(GUI@&in parent,string ccls="scrollBar") { super(@parent,ccls);
+	GUIScrollBarHandle@ bar;
+	GUIScrollBar(GUI@&in parent,string vcls="GUI::ScrollBar") { super(@parent,vcls);
 		align=Alignment::Right;
 		width=GUI::Skin::ScrollBar::width;
 		@topArrow=GUIScrollBarTopArrow(@this);
@@ -87,14 +118,13 @@ shared class GUIScrollBar : GUI {
 
 	}
 
-	void doneChildLayout() {
-		//_parent.layout[1]+=80;
-	}
+	// # Scrollbar handle handler.
+	float barLength; // This is set by the parent scrollbar
 
-	void performChildLayout(GUI@&in child, array<float> &layout) { // handle
+	void performChildLayout(GUI@&in child, array<float> &layout) {
 		GUIScrollBarHandle@ chandle=cast<GUIScrollBarHandle@>(child);
 		GUIScrollPanel@ scroller=cast<GUIScrollPanel@>(_parent);
-		if(@chandle==null || @scroller==null) {Debug::log("nohandle!"); return; }
+		if(@chandle==null || @scroller==null) { Debug::error("Tried to lay out a scrollbar without a handle or scrollpanel!"); return; }
 		chandle.paintSize.x=paintSize.x-layout[0]-layout[2]-chandle.margin[0]-chandle.margin[2]-padding[0]-padding[2];
 		chandle.paintSize.y=paintSize.y-layout[1]-layout[3]-chandle.margin[1]-chandle.margin[3]-padding[1]-padding[3];
 
@@ -108,15 +138,23 @@ shared class GUIScrollBar : GUI {
 		float capY=Math::maxFloat(Math::minFloat(chandle.pos.y,originMaxY),originPosY)-originPosY;
 		float Yrange=originMaxY-originPosY;
 		float pctY=capY/Yrange;
-		scroller.scroll=pctY;
 		chandle.paintPos.y=chandle.paintPos.y+capY-chandle.paintSize.y/2;
+
+		scroller.scroll=pctY;
 	}
 }
 
+// # *INTERNAL* : GUIScrollPanelCanvas --------
+// A blank panel which all elements parented to the scrollpanel will actually be parented to, to enable special layout handling for the scrollbar and scrolling.
+// And yes, all elements need to be calculated to determine scroll position versus element sizes.
+// While most scrollpanels will have elements of the same size, this doesn't let you expand/contract some panels for inspection.
 shared class GUIScrollPanelCanvas : GUI {
-	GUIScrollPanelCanvas(GUI@&in parent,string ccls="scrollpanelCanvas") { super(@parent,ccls);
-		align=Alignment::Fill;
-	}
+
+	// # Constructor
+	GUIScrollPanelCanvas(GUI@&in parent, string vcls="GUI::ScrollPanelCanvas") { super(@parent,vcls); align=Alignment::Fill; }
+
+	// # Scroll manager
+	void invalidateLayout() { _parent.invalidateLayout(); }
 	void internalDoneLayout() {
 		GUIScrollPanel@ scroller=cast<GUIScrollPanel@>(_parent);
 		for(int i=0; i<_children.length(); i++) {
@@ -125,37 +163,34 @@ shared class GUIScrollPanelCanvas : GUI {
 			child.isInParent();
 		}
 	}
-	void invalidateLayout() { _parent.invalidateLayout(); }
-
-
 }
+
+// # GUIScrollPanel --------
+// The actual scroll panel. It can be treated like a regular panel, all scrolling/whatnot is handled automatically.
 shared class GUIScrollPanel : GUI {
+
+	// # Constructor
 	GUIScrollBar@ scrollbar;
 	GUIScrollPanelCanvas@ canvas;
-
-	GUIScrollPanel(GUI@&in parent, string ccls="scrollpanel") { super(@parent,ccls);
+	GUIScrollPanel(GUI@&in parent, string ccls="GUI::ScrollPanel") { super(@parent,ccls);
 		@scrollbar=GUIScrollBar(@this);
 		@canvas=GUIScrollPanelCanvas(@this);
 	}
+	// # Scroll parenting
 	void onAddChild(GUI@&in child) { if(@canvas != null) { child.setParent(@canvas); } }
-	void onRemoveChild(GUI@&in child) {}
 
-	float scroll=0.f;
+	// # Scroll scrolling
+	// This requires reverse handling to translate a scroll percentage into a position where the mouse would be to achieve that percentage.
+	// This is probably not needed for anything.
 	bool scrollEnabled;
+	float _scroll;
+	float scroll { get { return _scroll; } set { _scroll=value; invalidateLayout(); } } 
 
-	Rectanglef square;
 	void internalPostLayout() {
-		scrollEnabled=canvas.paintSize.y<canvas.layout[1];
-		if(scrollEnabled) { layoutScroll(); } else { scrollbar.visible=false; }
-		square=Rectanglef((paintPos)-GUI::Center,(paintPos+paintSize)-GUI::Center);
+		scrollEnabled=(canvas.paintSize.y<canvas.layout[1]);
+		if(!scrollEnabled) { scrollbar.visible=false; } else {
+			scrollbar.visible=true;
+			scrollbar.barLength=canvas.paintSize.y/(canvas.layout[1]-canvas.paintSize.y);
+		}
 	}
-	void layoutScroll() {
-		scrollbar.visible=true;
-		scrollbar.barLength=canvas.paintSize.y/(canvas.layout[1]-canvas.paintSize.y);
-	}
-
-	void Paint() {
-		//UI::addRect(square);
-	}
-
 }

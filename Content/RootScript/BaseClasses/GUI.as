@@ -15,6 +15,10 @@ namespace GUI { namespace Skin {
 		shared const Color whiteColor = Color::White;
 		shared const array<float> fgMargin = {0.5,0.5,0.5,0.5};
 		shared const array<float> labelMargin = {0.5,0.5,0.5,0.5};
+
+		shared Font@ font = Font::large;
+		shared const Color fontColor = Color::White;
+		shared const float fontScale = 2;
 	}
 
 	namespace Label {
@@ -84,7 +88,7 @@ namespace GUI {
 	shared void updateResolution() {
 		aspectScale=tileScale*UI::getAspectRatio()*2.f;
 		Resolution=Vector2f(UI::getScreenWidth(),UI::getScreenHeight())*aspectScale;
-		uiScale=Resolution / originResolution;
+		//uiScale=Resolution / originResolution;
 		Center=Resolution/2;
 		for(int i=0; i<baseInstances.length(); i++) { baseInstances[i].invalidateLayout(); }
 	}
@@ -207,9 +211,10 @@ shared class GUI {
 				vectorIsInSquare(paintPos+paintSize-1,_parent.paintPos,_parent.paintPos+_parent.paintSize) );
 		} else { inParent=true; }
 	}
-	void removeChild(GUI@&in child) { _children.removeAt(_children.findByRef(@child)); hasChild=(_children.length()>0); invalidateLayout(); onRemoveChild(@child); }
+	void removeChild(GUI@&in child) { onRemoveChild(@child); _children.removeAt(_children.findByRef(@child)); hasChild=(_children.length()>0); }
+	void removeChildren() { for(int i=_children.length()-1; i>=0; i--) { onRemoveChild(@_children[i]); _children.removeLast(); } }
 	void onRemoveChild(GUI@&in child) {}
-	void addChild(GUI@&in child) { hasChild=true; _children.insertLast(@child); invalidateLayout(); onAddChild(@child); }
+	void addChild(GUI@&in child) { hasChild=true; _children.insertLast(@child); onAddChild(@child); }
 	void onAddChild(GUI@&in child) {}
 
 	int findChild(GUI@&in child) { for(int i=0; i<_children.length(); i++) { if(@_children[i]==@child) { return i; } } return -1; }
@@ -255,6 +260,7 @@ shared class GUI {
 	void invalidateLayout() { GUI::InvalidateLayout(@this); }
 	void drillLayout() { 
 		GUI::cacheLayout(@this);
+		layout={0,0,0,0};
 		prepareLayout();
 		internalPreLayout();
 		if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible) { layoutChild(@_children[i]); } } }
@@ -275,7 +281,6 @@ shared class GUI {
 	Vector2f paintSize;
 
 	void prepareLayout() {
-		layout={0,0,0,0};
 		if(!hasParent) { switch(_align) {
 			case Alignment::None:
 				paintPos=pos-GUI::Center;
@@ -408,7 +413,7 @@ shared class GUI {
 	~GUI() { } // Destructor(); }
 
 
-	// Mouse handling --------
+	// # Mouse handling --------
 	bool isHovered() {
 		Vector2f mpos=GUI::Mouse();
 		bool hover=vectorIsInSquare(mpos, paintPos, paintPos+paintSize);
@@ -479,12 +484,12 @@ shared class GUI {
 
 	void drillPreRender() { PreRender(); if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible && _children[i].inParent) { _children[i].drillPreRender(); } } } }
 	void drillRender() { doRender(); if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible && _children[i].inParent) { _children[i].drillRender(); } } } }
-	void doRender() {  Paint(); }
-	void PreRender() { PrePaint(); }
+	void doRender() {  paint(); }
+	void PreRender() { prePaint(); }
 	void skinColors() {}
 
-	void PrePaint() {} // Override
-	void Paint() {} // Override
+	void prePaint() {} // Override
+	void paint() {} // Override
 
 }
 

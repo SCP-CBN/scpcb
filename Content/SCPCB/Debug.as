@@ -37,13 +37,6 @@ FloatInterpolator@ blinkInterpolator = FloatInterpolator();
 void Initialize() { // This is the first function that is called lol.
 	Debug::log("AngelDebug - Start Testing Area");
 
-	Vector2d tester = Vector2d(2,2);
-	Vector2d xx = Vector2d(3,3);
-	Vector2d testResult = tester*xx;
-
-	Debug::log(testResult.toString());
-
-
 	@testController=@Player::Controller;
 	@testCollCollection=@Game::World::Collision;
 

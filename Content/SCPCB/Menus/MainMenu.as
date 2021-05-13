@@ -103,14 +103,14 @@ class menu_Main : GUI {
 
 	FloatInterpolator rngLerp;
 
-	void PrePaint() {
+	void prePaint() {
 		float rng=rnjesus.nextFloat(); // rnjesus.pray();
 		rng/=2;
 		rng+=0.1;
 		rngLerp.update(rng); // smoothing
 		SCP173.opacity=rngLerp.lerp(rng);
 	}
-	void Paint() {
+	void paint() {
 		UI::setTextured(GUI::Skin::menuMain, false);
 		UI::setColor(Color(1.f,1.f,1.f,1.f));
 		UI::addRect(square);

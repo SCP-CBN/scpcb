@@ -21,6 +21,7 @@
 //
 //	1. Importing
 //		- AngelMath : General math functions and offsets/directions etc for Angelscript.
+//		- AngelString : General string functions for Angelscript.
 //		- Util : Generic utility space, currently used for Model/ModelPicker/ModelIcon utils.
 //		- Hook : A function call replicator.
 //		- Timer : Used for delayed functions.
@@ -61,6 +62,9 @@ external class Vector4d; // Angel 4d vector lib
 external class Square; // Angel square/rectangle lib
 external class Angle; // angle lib
 
+// # import(RootScript/BaseClasses/Utility/AngelString.as);
+external array<string> String::explode(string str, string delim);
+external string String::implode(array<string> words, string delim);
 
 // # import(RootScript/BaseClasses/Utility/Util.as);
 external class Util::Model;
@@ -93,6 +97,7 @@ external class FloatInterpolator;
 // # import(RootScript/BaseClasses/Utility/GUI.as);
 external class GUI; // Blank GUIComponent / container for other GUIComponents.
 external class GUILabel; // Generic text drawer
+external class GUILabelBox; // A word-wrapped GUILabel.
 external class GUIPanel; // Generic panel that draws a box either colored or textured.
 external class GUIClickable; // A slimmed GUIButton with no textures.
 external class GUIButton; // Generic clickable component.
@@ -176,6 +181,7 @@ namespace Game {
 	}
 
 	void update(float interp) {
+		updateMenuState(); // Escape doesn't always capture in renderMenu ??
 		tick=tick+1;
 		Timer::update();
 		GUI::Think();
@@ -193,12 +199,8 @@ namespace Game {
 		if(DEBUGGING) { AngelDebug::render(interp); }
 	}
 	void renderMenu(float interp) {
-		updateMenuState();
 		GUI::Draw();
 		if(DEBUGGING) { AngelDebug::renderMenu(interp); }
-		if(Input::getHit() & Input::Inventory != 0) { Debug::log("hotkey Open Inventory"); }
-		else if(Input::getHit() & Input::ToggleConsole != 0) { Debug::log("hotkey Open Console"); ConsoleMenu.visible=true; }
-		else if(Input::getHit() & Input::Crouch != 0) { Debug::log("hotkey Crouch"); }
 	}
 
 	void exit() {
@@ -208,7 +210,10 @@ namespace Game {
 
 
 	void updateMenuState() {
-		if(Input::Escape::isHit()) {
+		if(Input::getHit() & Input::Inventory != 0) { Debug::log("hotkey Open Inventory"); }
+		else if(Input::getHit() & Input::ToggleConsole != 0) { Debug::log("hotkey Open Console"); ConsoleMenu.visible=true; }
+		else if(Input::getHit() & Input::Crouch != 0) { Debug::log("hotkey Crouch"); }
+		else if(Input::Escape::isHit()) {
 			Debug::log("Escape was pressed11"); // Apparently this code doesn't run without calling a Debug::log. isHit() is weird.
 			bool menuIsOpen=false;
 			for(int i=0; i<GUI::baseInstances.length(); i++) {

@@ -123,7 +123,7 @@ class menu_Loading : GUI {
 	GUILabel@ loadbar;
 	GUILabel@ loadpct;
 	GUILabel@ loadTitle;
-	GUILabel@ loadText;
+	GUILabelBox@ loadText;
 
 	menu_Loading() { super("LoadingMenu");
 		align=Alignment::Fill;
@@ -131,13 +131,11 @@ class menu_Loading : GUI {
 
 		@screenCanvas=GUI(@this);
 		screenCanvas.align=Alignment::Fill;
-		screenCanvas.visible=true;
 
 		@canvas=GUI(@this);
 		canvas.align=Alignment::Center;
 		canvas.pos=GUI::Center-GUI::Resolution/4;
-		canvas.size=GUI::Resolution/2;
-		canvas.visible=true;
+		canvas.size=Vector2f(GUI::Resolution.x/2,GUI::Resolution.y/1.75);
 
 		@loadpct=GUILabel(@canvas);
 		loadpct.align=Alignment::Top;
@@ -166,8 +164,8 @@ class menu_Loading : GUI {
 		loadTitle.height=2.5;
 		loadTitle.margin={8,12,8,1};
 
-		@loadText=GUILabel(@canvas);
-		loadText.align=Alignment::Top;
+		@loadText=GUILabelBox(@canvas);
+		loadText.align=Alignment::Fill;
 		loadText.alignHorizontal=Alignment::Center;
 		loadText.alignVertical=Alignment::Top;
 		loadText.text="LoadText";
@@ -183,10 +181,10 @@ class menu_Loading : GUI {
 
 
 
-	void PrePaint() {
+	void prePaint() {
 		// float rng=rnjesus.nextFloat(); // rnjesus.pray();
 	}
-	void Paint() {
+	void paint() {
 		UI::setTextureless();
 		UI::setColor(Color(0.f,0.f,0.f,1.f));
 		UI::addRect(square);
