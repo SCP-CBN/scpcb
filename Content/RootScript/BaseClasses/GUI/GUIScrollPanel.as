@@ -83,14 +83,17 @@ shared class GUIScrollBarHandle : GUIButton {
 
 	// # Click state
 	Vector2f originClick;
-	void startClick(Vector2f mpos) { originClick=mpos; }
+	void internalStartClick(Vector2f mpos) { originClick=mpos; }
 
+	void internalUpdateClickable() {
+		float my=GUI::mouse().y;
+		if(my!=pos.y) { pos.y=my; _parent._parent.invalidateLayout(); }
+	}
 	void updateClickable() {
 		if(pressed) {
 			background.color=GUI::Skin::ScrollBar::hoverColor;
 			foreground.color=GUI::Skin::ScrollBar::downColor;
-			float my=GUI::Mouse().y;
-			if(my!=pos.y) { _pos.y=my; _parent._parent.invalidateLayout(); }
+
 		} else if(isHovered()) {
 			background.color=GUI::Skin::ScrollBar::hoverColor;
 			foreground.color=GUI::Skin::ScrollBar::whiteColor;
@@ -121,7 +124,7 @@ shared class GUIScrollBar : GUI {
 	// # Scrollbar handle handler.
 	float barLength; // This is set by the parent scrollbar
 
-	void performChildLayout(GUI@&in child, array<float> &layout) {
+	void manualLayoutChild(GUI@&in child, array<float> &layout) {
 		GUIScrollBarHandle@ chandle=cast<GUIScrollBarHandle@>(child);
 		GUIScrollPanel@ scroller=cast<GUIScrollPanel@>(_parent);
 		if(@chandle==null || @scroller==null) { Debug::error("Tried to lay out a scrollbar without a handle or scrollpanel!"); return; }
@@ -139,7 +142,7 @@ shared class GUIScrollBar : GUI {
 		float Yrange=originMaxY-originPosY;
 		float pctY=capY/Yrange;
 		chandle.paintPos.y=chandle.paintPos.y+capY-chandle.paintSize.y/2;
-
+		chandle.isInParent();
 		scroller.scroll=pctY;
 	}
 }
@@ -155,7 +158,7 @@ shared class GUIScrollPanelCanvas : GUI {
 
 	// # Scroll manager
 	void invalidateLayout() { _parent.invalidateLayout(); }
-	void internalDoneLayout() {
+	void internalDoLayout() {
 		GUIScrollPanel@ scroller=cast<GUIScrollPanel@>(_parent);
 		for(int i=0; i<_children.length(); i++) {
 			GUI@ child=@_children[i];
@@ -177,11 +180,11 @@ shared class GUIScrollPanel : GUI {
 		@canvas=GUIScrollPanelCanvas(@this);
 	}
 	// # Scroll parenting
-	void onAddChild(GUI@&in child) { if(@canvas != null) { child.setParent(@canvas); } }
+	void onChildAdded(GUI@&in child) { if(@canvas != null) { child.setParent(@canvas); } }
 
 	// # Scroll scrolling
 	// This requires reverse handling to translate a scroll percentage into a position where the mouse would be to achieve that percentage.
-	// This is probably not needed for anything.
+	// This is probably not needed for anything though.
 	bool scrollEnabled;
 	float _scroll;
 	float scroll { get { return _scroll; } set { _scroll=value; invalidateLayout(); } } 

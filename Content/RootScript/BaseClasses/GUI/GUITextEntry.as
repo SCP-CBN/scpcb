@@ -1,12 +1,8 @@
 
-// GUITextEntry --------
+// # GUITextEntry --------
 // Text Input beast.
 // One line only.
 // Text boxes maybe another day, game doesn't need it.
-
-namespace GUI { namespace TextEntry {
-
-} }
 
 shared Font@ tempFont=Font::large;
 
@@ -26,7 +22,7 @@ shared class GUICharacter : GUIClickable {
 
 		@label=GUILabel(@this);
 		label.align=Alignment::Fill;
-		label._margin={0.2,0.2,0.2,0.2};
+		label.margin={0.2,0.2,0.2,0.2};
 		label.text="B";
 		@label.font=@tempFont;
 	}
@@ -40,11 +36,11 @@ shared class GUICharacter : GUIClickable {
 		par.startCharClick(@this);
 	}
 
-	void skinColors() {
+	void updateClickable() {
 
 	}
 
-	void Paint() {
+	void paint() {
 		if(textSelected) {
 			label.fontColor=Color::Green;
 		} else {
@@ -84,15 +80,15 @@ shared class GUITextEntry : GUIClickable {
 	}
 	string fetchText() { string chr=""; for(int i=0; i<_children.length(); i++) { chr=chr+cast<GUICharacter@>(_children[i]).text; } return chr; }
 
-	void Paint() {
+	void paint() {
 		// UI::setTextureless();
 		// UI::setColor(Color::White);
-		// tempFont.draw(_text, textPos-GUI::Center, fontScale*GUI::aspectScale, textRotation, fontColor);
+		// tempFont.draw(_text, textPos-GUI::center, fontScale*GUI::aspectScale, textRotation, fontColor);
 	}
 
 	void selectCharacters() {
 		if(_children.length()<=0) { return; }
-		Vector2f mpos=GUI::Mouse();
+		Vector2f mpos=GUI::mouse();
 		if(mselectStart.distance(mpos)<1) { return; }
 
 		selected={};
@@ -113,12 +109,12 @@ shared class GUITextEntry : GUIClickable {
 	void stopCharClick(GUICharacter@&in child) { selectCharacters(); }
 	void startCharClick(GUICharacter@&in child) { if(_children.length()==0) { return; } mselectStart=child.paintPos+(child.paintSize/2); Carrot=findChild(@child); }
 
-	void addChild(GUI@&in child) { hasChild=true; Carrot++; _children.insertAt(Carrot,@child); invalidateLayout(); layoutChild(@child); child.drillLayout(); onAddChild(@child); }
+	void addChild(GUI@&in child) { hasChild=true; Carrot++; _children.insertAt(Carrot,@child); invalidateLayout(); layoutChild(@child); child.drillLayout(); onChildAdded(@child); }
 	void removeChild(GUI@&in x) { Debug::log("Warning: TextEntry tried to remove child with GUI element"); }
 	void removeChild() {
 		GUI@ child=@_children[Carrot];
 		_children.removeAt(Carrot); Carrot--;
-		hasChild=(_children.length()>0); invalidateLayout(); onRemoveChild(@child);
+		hasChild=(_children.length()>0); invalidateLayout(); onChildRemoved(@child);
 	}
 	bool shiftDown() { return Input::anyShiftDown(); }
 	bool shortcutDown() { return Input::anyShortcutDown(); }
@@ -146,12 +142,12 @@ shared class GUITextEntry : GUIClickable {
 		GUI::stopTextEntering();
 	}
 	void keyboardDoMouse1(int clicks) {
-		Vector2f mpos=GUI::Mouse();
-		if(!vectorIsInSquare(mpos,paintPos,paintPos+paintSize)) { keyboardEscape(); return; }
+		Vector2f mpos=GUI::mouse();
+		if(!GUI::pointInSquare(mpos,paintPos,paintSize)) { keyboardEscape(); return; }
 	}
 	void keyboardDoMouse2(int clicks) {
-		Vector2f mpos=GUI::Mouse();
-		if(!vectorIsInSquare(mpos,paintPos,paintPos+paintSize)) { keyboardEscape(); return; }
+		Vector2f mpos=GUI::mouse();
+		if(!GUI::pointInSquare(mpos,paintPos,paintSize)) { keyboardEscape(); return; }
 	}
 	void keyboardDoTextInput(string append) {
 		keyboardDoDelete(true);
@@ -162,7 +158,7 @@ shared class GUITextEntry : GUIClickable {
 		}
 	}
 
-	void updateText() {
+	void updateTextEntering() {
 		if(Input::Escape::isHit()) { keyboardEscape(); return; }
 		if(pressed) { selectCharacters(); return; }
 		string append=Input::getTextInput();

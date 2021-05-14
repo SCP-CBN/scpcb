@@ -88,25 +88,25 @@ class GUILoadscreen : GUI {
 		Debug::log("Made a loadscreen: " + ttl);
 	}
 	void updateGraphicPosition() {
-		if(bgtex) { graphic.pos=Vector2f(0,0); graphic.size=GUI::Resolution; return; }
+		if(bgtex) { graphic.pos=Vector2f(0,0); graphic.size=GUI::resolution; return; }
 		Vector2f vpos=Vector2f(0,0);
 		switch(alignHorizontal) {
 			case Alignment::Left:
 				break;
 			case Alignment::Right:
-				vpos.x=GUI::Resolution.x-graphic.size.x/2;
+				vpos.x=GUI::resolution.x-graphic.size.x/2;
 				break;
 			default:
-				vpos=GUI::Center-graphic.size/2;
+				vpos=GUI::center-graphic.size/2;
 				break;
 		}
 		switch(alignVertical) {
 			case Alignment::Top:
 				break;
 			case Alignment::Bottom:
-				vpos.y=GUI::Resolution.y-graphic.size.y; break;
+				vpos.y=GUI::resolution.y-graphic.size.y; break;
 			default:
-				vpos.y=GUI::Center.y-graphic.size.y/2; break;
+				vpos.y=GUI::center.y-graphic.size.y/2; break;
 		}
 		graphic.pos=vpos;
 	}
@@ -134,8 +134,8 @@ class menu_Loading : GUI {
 
 		@canvas=GUI(@this);
 		canvas.align=Alignment::Center;
-		canvas.pos=GUI::Center-GUI::Resolution/4;
-		canvas.size=Vector2f(GUI::Resolution.x/2,GUI::Resolution.y/1.75);
+		canvas.pos=GUI::center-GUI::resolution/4;
+		canvas.size=Vector2f(GUI::resolution.x/2,GUI::resolution.y/1.75);
 
 		@loadpct=GUILabel(@canvas);
 		loadpct.align=Alignment::Top;
@@ -174,8 +174,8 @@ class menu_Loading : GUI {
 		loadText.margin={8,1,8,0};
 	}
 
-	void doneLayout() {
-		square=Rectanglef((paintPos)-GUI::Center,(paintPos+paintSize)-GUI::Center);
+	void doLayout() {
+		square=Rectanglef((paintPos)-GUI::center,(paintPos+paintSize)-GUI::center);
 	}
 	Rectanglef square;
 

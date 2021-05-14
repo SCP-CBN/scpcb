@@ -19,13 +19,13 @@ class menu_Pause : GUI {
 	GUILabel@ header=GUILabel(@this);
 	header.text="PAUSED";
 	header.align=Alignment::Top;
-	header.height=GUI::Resolution.y*0.07;
+	header.height=GUI::resolution.y*0.07;
 	header.fontScale=3;
-	header.margin={4,GUI::Resolution.y*0.035,4,1};
+	header.margin={4,GUI::resolution.y*0.035,4,1};
 
 	@canvas=GUI(@this);
 	canvas.align=Alignment::Fill;
-	canvas.margin={GUI::Resolution.x*0.07,GUI::Resolution.y*0.01,2,0};
+	canvas.margin={GUI::resolution.x*0.07,GUI::resolution.y*0.01,2,0};
 
 
 	// Main section ----
@@ -41,7 +41,7 @@ class menu_Pause : GUI {
 	@PauseMenu_ButtonPanel=menu_Pause_ButtonPanel(@canvasMain);
 	PauseMenu_ButtonPanel.align=Alignment::Fill;
 	PauseMenu_ButtonPanel.margin={1,0.5,1,1};
-	//PauseMenu_ButtonPanel.width=GUI::Resolution.x*0.375;
+	//PauseMenu_ButtonPanel.width=GUI::resolution.x*0.375;
 
 	@PauseMenu_ContinueBtn=menu_Pause_ContinueButton(@PauseMenu_ButtonPanel);
 	PauseMenu_ContinueBtn.align=Alignment::Top;
@@ -177,12 +177,11 @@ class menu_Pause : GUI {
 
 }
 
-	void doneLayout() {
-		Debug::log("Layed out Pause Menu");
-		square=Rectanglef((paintPos)-GUI::Center,(paintPos+paintSize)-GUI::Center);
+	void doLayout() {
+		square=Rectanglef((paintPos)-GUI::center,(paintPos+paintSize)-GUI::center);
 	}
 	Rectanglef square;
-	void Paint() {
+	void paint() {
 		UI::setTextured(GUI::Skin::menuPause, false);
 		UI::setColor(Color(1.f,1.f,1.f,1.f));
 		UI::addRect(square);

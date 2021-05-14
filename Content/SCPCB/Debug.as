@@ -40,12 +40,12 @@ void Initialize() { // This is the first function that is called lol.
 	@testController=@Player::Controller;
 	@testCollCollection=@Game::World::Collision;
 
-	Vector2d test = Vector2d(10.0, 10.0);
-	Vector2d test2 = Vector2d(15.0, 10.0);
-	@lol = Billboard::create("SCPCB/GFX/Sprites/smoke_white", Vector3f(1, 7, 5), 0.5, test(), Color(1.0, 0.8, 0.5));
+	Vector2f test = Vector2f(10.0, 10.0);
+	Vector2f test2 = Vector2f(15.0, 10.0);
+	@lol = Billboard::create("SCPCB/GFX/Sprites/smoke_white", Vector3f(1, 7, 5), 0.5, test, Color(1.0, 0.8, 0.5));
 
-	Billboard::create("SCPCB/GFX/Map/Textures/dirtymetal", Vector3f(1, 4, 1), Vector3f(0, 3, 0), test2(), Color(0.0, 1.0, 1.0));
-	@two = Billboard::create("SCPCB/GFX/Map/Textures/dirtymetal", Vector3f(2, 7, 15), Vector3f(0, 3, 0), test2(), Color(1.0, 0.0, 1.0));
+	Billboard::create("SCPCB/GFX/Map/Textures/dirtymetal", Vector3f(1, 4, 1), Vector3f(0, 3, 0), test2, Color(0.0, 1.0, 1.0));
+	@two = Billboard::create("SCPCB/GFX/Map/Textures/dirtymetal", Vector3f(2, 7, 15), Vector3f(0, 3, 0), test2, Color(1.0, 0.0, 1.0));
 
 	@mask = Model::create("SCPCB/GFX/Items/Gasmask/gasmask.fbx");
 	mask.position = Vector3f(10, 5, 0);

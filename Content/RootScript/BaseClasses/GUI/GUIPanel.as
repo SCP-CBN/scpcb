@@ -14,8 +14,8 @@ shared class GUIPanel : GUI {
 
 	// # Layout
 	Rectanglef paintSquare;
-	void doneLayout() {
-		paintSquare=Rectanglef((paintPos)-GUI::Center,(paintPos+paintSize)-GUI::Center);
+	void doLayout() {
+		paintSquare=Rectanglef((paintPos)-GUI::center,(paintPos+paintSize)-GUI::center);
 	}
 
 	// # Draw()

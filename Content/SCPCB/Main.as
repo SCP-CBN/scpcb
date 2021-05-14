@@ -54,13 +54,14 @@ bool DEBUGGING = true;
 
 // # import(RootScript/BaseClasses/Utility/AngelMath.as);
 external enum Alignment;
-external bool vectorIsInSquare(Vector2f vec, Vector2f tl, Vector2f br);
 
-external class Vector2d; // Angel 2d vector lib
-external class Vector3d; // Angel 3d vector lib
-external class Vector4d; // Angel 4d vector lib
-external class Square; // Angel square/rectangle lib
-external class Angle; // angle lib
+
+//external class Vector2d; // Angel 2d vector lib
+//external class Vector3d; // Angel 3d vector lib
+//external class Vector4d; // Angel 4d vector lib
+//external class Square; // Angel square/rectangle lib
+//external class Angle; // angle lib
+
 
 // # import(RootScript/BaseClasses/Utility/AngelString.as);
 external array<string> String::explode(string str, string delim);
@@ -105,17 +106,20 @@ external class GUIButtonLabel; // Generic clickable button with text.
 external class GUIScrollPanel; // Panel with a scrollbar
 external class GUITextEntry; // Shoop da whoop
 
+external bool GUI::squareInSquare(Vector2f&in pos, Vector2f&in size, Vector2f&in sPos, Vector2f&in sSize);
+external bool GUI::pointInSquare(Vector2f&in point, Vector2f&in pos, Vector2f&in size);
+
 external void GUI::Initialize();
-external void GUI::Draw();
-external void GUI::Think();
+external void GUI::startRender();
+external void GUI::startUpdate();
 external void GUI::updateResolution();
 
 external float GUI::tileScale;
 external float GUI::aspectScale;
 
-external Vector2f GUI::Mouse();
-external Vector2f GUI::Resolution;
-external Vector2f GUI::Center;
+external Vector2f GUI::mouse();
+external Vector2f GUI::resolution;
+external Vector2f GUI::center;
 
 external array<GUI@> GUI::baseInstances; // temporaryz
 
@@ -184,7 +188,7 @@ namespace Game {
 		updateMenuState(); // Escape doesn't always capture in renderMenu ??
 		tick=tick+1;
 		Timer::update();
-		GUI::Think();
+		GUI::startUpdate();
 		Game::World::update();
 		tickHook.call();
 		if(queuedNewGame) {
@@ -199,7 +203,7 @@ namespace Game {
 		if(DEBUGGING) { AngelDebug::render(interp); }
 	}
 	void renderMenu(float interp) {
-		GUI::Draw();
+		GUI::startRender();
 		if(DEBUGGING) { AngelDebug::renderMenu(interp); }
 	}
 

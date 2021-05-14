@@ -1,3 +1,6 @@
+// # GUI Skin --------
+// All the colors and textures and stuff.
+
 namespace GUI { namespace Skin {
 	shared Texture@ menublack = Texture::get("SCPCB/GFX/Menu/menublack");
 	shared Texture@ menuwhite = Texture::get("SCPCB/GFX/Menu/menuwhite");
@@ -60,266 +63,320 @@ namespace GUI { namespace Skin {
 		
 } }
 
+// # GUI Namespace --------
+// Gui central.
+
 namespace GUI {
-	shared Texture@ menuwhite = Texture::get("SCPCB/GFX/Menu/menuwhite");
-	shared Texture@ menublack = Texture::get("SCPCB/GFX/Menu/menublack");
+	// #### Math & Generic ----
+	shared bool squareInSquare(Vector2f&in pos, Vector2f&in size, Vector2f&in sPos, Vector2f&in sSize) {
+		return (pos.x>=sPos.x && pos.y>=sPos.y && pos.x+size.x<=sPos.x+sSize.x && pos.y+size.y<=sPos.y+sSize.y);
+	}
+	shared bool pointInSquare(Vector2f&in point, Vector2f&in pos, Vector2f&in size) { return squareInSquare(point,Vector2f(),pos,size); }
+
+	// #### GUI Base Instances ----
+	// basically, any gui element that does not have a parent is a baseinstance, i.e mainmenu, pausemenu etc.
 	shared array<GUI@> baseInstances;
 
-	// Origin Resolution --------
-	// The original resolution at which the GUI was constructed
 
+	// #### GUI Resolution Scaling ----
 	shared float tileScale=0.04f; // Why is this even a thing??? :[
 
-	shared Vector2f realOriginResolution=Vector2f(1280,720);
-	shared Vector2f originResolution=(realOriginResolution*tileScale)*(realOriginResolution.x/realOriginResolution.y)*2.f;
+	// # Origin resolution, if you need it.
+	shared float originAspect=1280.f/720.f;
+	shared Vector2f originResolution=Vector2f(1280.f,720.f)*tileScale*originAspect*2.f;
 
-
-	// Resolution Scaler --------
-	// Scaling GUI's proportionately to a different resolution.
-	// *width/height*scale for rectangles. w&h *ratio for perfect squares.
-
-	shared Vector2f Resolution;
-	shared Vector2f uiScale; // UI scale for bigger monitors compared to origin
-
-	shared Vector2f Center; // Center of screen from origin.
-
+	// # Resolution data
+	shared Vector2f resolution;
 	shared float aspectScale;
+	shared Vector2f center; // Center of screen from origin.
 
+	// # Resolution change hook.
 	shared void updateResolution() {
 		aspectScale=tileScale*UI::getAspectRatio()*2.f;
-		Resolution=Vector2f(UI::getScreenWidth(),UI::getScreenHeight())*aspectScale;
-		//uiScale=Resolution / originResolution;
-		Center=Resolution/2;
-		for(int i=0; i<baseInstances.length(); i++) { baseInstances[i].invalidateLayout(); }
+		resolution=Vector2f(UI::getScreenWidth(),UI::getScreenHeight())*aspectScale;
+		center=resolution/2;
+		for(int i=0; i<baseInstances.length(); i++) { baseInstances[i].invalidateLayout(); } // Update all menus.
 	}
 
 
-	// Cascade Layout Validator ----
-	// ValidateLayout cascade position/size/alignment update at end of frame --------
+	// #### Layout manager ----
+	// Cascade method to update all elements in a gui parent/child tree.
+	// Layouts run at the start of each frame.
+	// This system is special, where gui element trees can be updated part-way down the tree.
+	// this is so that only the things that have changed are updated.
+	// call gui_element.invalidateLayout(); to mark a GUI element as invalid to be updated next frame.
 	shared array<GUI@> invalidLayout;
 	shared bool isInvalidLayout;
-	shared void InvalidateLayout(GUI@&in element) { isInvalidLayout=true; if(invalidLayout.findByRef(@element)<0) { invalidLayout.insertLast(@element); } }
-	shared void ValidateLayout() { if(isInvalidLayout) { isInvalidLayout=false;
-		while(invalidLayout.length()>0) { GUI@ x=invalidLayout[0]; invalidLayout.removeAt(0); x.drillLayout(); }
-	} }
-	shared void cacheLayout(GUI@&in element) { int idx=invalidLayout.findByRef(@element); if(idx>=0) { invalidLayout.removeAt(idx); } }
 
-	// Animator --------
-	shared array<GUI@> animators;
-	shared void StartAnimation(GUI@&in element) { if(animators.findByRef(@element)<0) { animators.insertLast(@element); } }
-	shared void StopAnimation(GUI@&in element) { int idx=animators.findByRef(@element); if(idx>=0) { animators.removeAt(idx); } }
+	// Cascade layout validator entrypoint
+	shared void executeLayout() { if(isInvalidLayout) { isInvalidLayout=false; while(invalidLayout.length()>0) {
+		GUI@ x=invalidLayout[0]; invalidLayout.removeAt(0); x.drillLayout();
+	} } }
 
+	// When an element is updated, remove itself from the invalid layouts list so it is not updated twice. This is can probably be removed.
+	shared void markValid(GUI@&in element) { int idx=invalidLayout.findByRef(@element); if(idx>=0) { invalidLayout.removeAt(idx); } }
 
-	// Mouse Clicking --------
+	// Mark an element as invalid and trigger a layout update next frame.
+	shared void markInvalid(GUI@&in element) { isInvalidLayout=true; if(invalidLayout.findByRef(@element)<0) { invalidLayout.insertLast(@element); } }
 
-	shared Vector2f Mouse() { return Input::getMousePosition()+Center; }
+	// #### Main Click & Mouse handler ----
+	// Cascade method to run a click operation on all elements underneath the mouse.
+	// All menu elements are positioned relative to 0,0, so it is easier for the mouse to be positioned there and not vica-versa.
+	// A lot of the math simply does not work with the negatives involved otherwise, how the top left corner of the screen is -resolution/2.
+	shared Vector2f mouse() { return Input::getMousePosition()+center; }
 	shared bool isMouse1Down;
-	shared void startClick() {
-		Vector2f mpos = Mouse();
-		if(@textEntryFocus!=null) {
-			if(!vectorIsInSquare(mpos,textEntryFocus.paintPos,textEntryFocus.paintSize)) {
-				stopTextEntering();
-			}
-		}
 
-		array<GUI@> clickables; // Stops menu changes causing multiple things to be clicked at the same time when they should not
+	// # onClick() global event.
+	shared void onClick() {
+		Vector2f mpos = mouse();
+		clickedTextEntering(mpos); // Update text entering (defocus if click outside)
+
+		// If a menu changes the menu, new elements could be clicked in this call, so this deals with that.
+		array<GUI@> clickables;
 		for(int i=0; i<baseInstances.length(); i++) {
 			GUI@ instance=baseInstances[i];
-			if( instance.visible && vectorIsInSquare(mpos, instance.paintPos,instance.paintPos+instance.paintSize) ) { baseInstances[i].drillClick(mpos,clickables); }
+			if( instance.visible&&GUI::pointInSquare(mpos,instance.paintPos,instance.paintSize) ) { baseInstances[i].drillClick(mpos,clickables); }
 		}
 		for(int i=0; i<clickables.length(); i++) { clickables[i].callClick(mpos); }
 	}
-	shared void monitorMouse() {
-		bool is1hit=Input::Mouse1::isHit();
+
+	// # Monitor the mouse for clicks.
+	shared void updateMouse() {
+		// bool is1hit=Input::Mouse1::isHit(); // This is not necessary.
 		bool is1down=Input::Mouse1::isDown();
-		if(is1hit || is1down) {
-			if(!isMouse1Down) { startClick(); isMouse1Down=true; }
-		} else if (!is1down && isMouse1Down) {
-			isMouse1Down=false;
-		}
+		if(is1down) { if(!isMouse1Down) { onClick(); isMouse1Down=true; } }
+		else if (!is1down && isMouse1Down) { isMouse1Down=false; }
 	}
 
-	// Text Entry --------
+
+	// #### Text Entry ----
+	// Handles textentry focus and the input capturer.
+	// Mostly used and managed by GUI::TextEntry instances.
 	shared GUITextEntry@ textEntryFocus;
-	shared void startTextEntering(GUITextEntry@ gui) {
-		@textEntryFocus=@gui;
-		Input::startTextInputCapture();
-	}
-	shared bool isTextEntering() { return @textEntryFocus!=null; }
-	shared void stopTextEntering() {
-		@textEntryFocus=null;
-		Input::stopTextInputCapture();
+	shared bool validTextEntering() { if(@textEntryFocus!=null) { if(textEntryFocus.visible=false) { @textEntryFocus=null; return false; } return true; } return false; }
+
+	shared void startTextEntering(GUITextEntry@ gui) { @textEntryFocus=@gui; Input::startTextInputCapture(); }
+	shared void stopTextEntering() { @textEntryFocus=null; Input::stopTextInputCapture(); }
+	shared void updateTextEntering() { if(validTextEntering()) { textEntryFocus.updateTextEntering(); } }
+	shared void clickedTextEntering(Vector2f mpos) {
+		if(validTextEntering() && !GUI::pointInSquare(mpos,textEntryFocus.paintPos,textEntryFocus.paintSize)) { stopTextEntering(); }
 	}
 
-	// Initiate Drill Renderers --------
-	shared void Draw() {
+
+	// #### Cascade GUI Renderer & Updater.
+	shared void startRender() {
 		UI::setTextureless();
 		UI::setColor(Color::White);
-		if(animators.length()>0) { for(int i=0; i<animators.length(); i++) { animators[i].Animate(); } }
-		int baseLen=baseInstances.length();
-		for(int i=0; i<baseLen; i++) { if(baseInstances[i].visible) { baseInstances[i].drillPreRender(); } }
-		GUI::ValidateLayout();
-		for(int i=0; i<baseLen; i++) { if(baseInstances[i].visible) { baseInstances[i].drillRender(); } }
+		for(int i=0; i<baseInstances.length(); i++) { if(baseInstances[i].visible) { baseInstances[i].drillPreRender(); } }
+		executeLayout();
+		for(int i=0; i<baseInstances.length(); i++) { if(baseInstances[i].visible) { baseInstances[i].drillRender(); } }
 		UI::setTextureless();
 		UI::setColor(Color::White);
 	}
 
-	shared void Think() {
-		monitorMouse();
+	shared void startUpdate() {
+		updateMouse();
 		int baseLen=baseInstances.length();
 		for(int i=0; i<baseLen; i++) { if(baseInstances[i].visible) { baseInstances[i].drillUpdate(); } }
-		if(@textEntryFocus!=null) {
-			textEntryFocus.updateText();
-		}
-	}
 
+	}
 
 	shared void Initialize() {
 		updateResolution();
-	}
-		
+	}	
 }
 
+
+
+
+// # GUI Base Class --------
+// The base GUI class on which all GUI classes are based.
+// On its own, it acts like a container for other GUI elements.
+// All GUI elements are derived from this class with overrides and constructors to give behaviour and purpose.
+// Created with GUI@ gui_panel = GUI();
+// To create a panel parented to another, simply use GUI@ child_panel = GUI(@parent_panel);
+// Then configure the child, such as .align=Alignment::Fill.
+// To manage layouts, you must call invalidateLayout() manually as-needed (in the majority of cases), as this is rarely called automatically.
+// layout updates are costly, requiring repositioning and resizing of all children elements, but the elements do not change often so this is worthwhile.
+// And sometimes you must change layout data without triggering an update, so having no automatic updates helps with that.
+
 shared class GUI {
+
+	// #### Base Class ----
+
+	// # Class
+	// Stores a string representing the type of the current GUI element.
 	string cls = "GUI";
 
-	// Parenting system --------
-	GUI@ _parent;
-	array<GUI@> _children;
-	void setParent() {
-		if(hasParent) { _parent.removeChild(@this); @_parent=null; hasParent=false; }
-	}
-	void setParent(GUI@&in parx) {
-		GUI@ par=@parx; // crash prevention
-		if(not hasParent) {
-			@_parent=@par;
-			_parent.addChild(@this);
-		} else if(@_parent != @par) {
-			_parent.removeChild(@this);
-			@_parent=@par;
-			_parent.addChild(@this);
-		}
-		hasParent=true;
-	}
+	// # Visibility
+	// Elements with .visible=false are ignored in most operations like rendering and updating.
+	// This also stops child elements from being rendered.
+	bool visible;
 
-	bool hasChild;
-	bool hasParent;
-	bool inParent;
-	void isInParent() {
-		if(hasParent) {
-			inParent=(vectorIsInSquare(paintPos+1,_parent.paintPos,_parent.paintPos+_parent.paintSize) &&
-				vectorIsInSquare(paintPos+paintSize-1,_parent.paintPos,_parent.paintPos+_parent.paintSize) );
-		} else { inParent=true; }
-	}
-	void removeChild(GUI@&in child) { onRemoveChild(@child); _children.removeAt(_children.findByRef(@child)); hasChild=(_children.length()>0); }
-	void removeChildren() { for(int i=_children.length()-1; i>=0; i--) { onRemoveChild(@_children[i]); _children.removeLast(); } }
-	void onRemoveChild(GUI@&in child) {}
-	void addChild(GUI@&in child) { hasChild=true; _children.insertLast(@child); onAddChild(@child); }
-	void onAddChild(GUI@&in child) {}
-
-	int findChild(GUI@&in child) { for(int i=0; i<_children.length(); i++) { if(@_children[i]==@child) { return i; } } return -1; }
-
-	// Generic Immediate-Drill Properties --------
-	bool _visible;
-	bool visible { get { return _visible; } set { _visible=value; } } // if(hasChild) { for(int i=0; i<_children.length(); i++) { _children[i].visible=value; } } } }
+	// # Opacity
+	// Generally, the alpha color property. It is drilled down from the element it is set to, enabling fading animations.
+	// the opacity property is offered as a tool for this purpose and is used by default wherever possible.
 	float _opacity;
 	float opacity { get { return _opacity; } set { _opacity=value; if(hasChild) { for(int i=0; i<_children.length(); i++) { _children[i].opacity=value; } } } }
 
-	// Docking Layout System --------
-	// Uses a delayed drill system to shift all elements of a gui parent/child at the same time so no weird visual artefacts.
-	// Efficient enough to be used in menu animations.
-	// invalidate and drill are line-compressed because all validators are the same with different variables.
-	// Based on Derma system in Garry's Mod.
+	// #### Parenting system ----
+	array<GUI@> _children;
+	GUI@ _parent;
+	bool hasChild;
+	bool hasParent;
+
+	void setParent() { if(hasParent) { _parent.removeChild(@this); @_parent=null; hasParent=false; } } // setparent to null, for whatever reason?
+	void setParent(GUI@&in parx) {
+		GUI@ par=@parx; // crash prevention
+		if(not hasParent) { @_parent=@par; _parent.addChild(@this); }
+		else if(@_parent != @par) { _parent.removeChild(@this); @_parent=@par; _parent.addChild(@this); }
+		hasParent=true;
+		onSetParent(@par);
+	}
+	void removeChildren() { for(int i=_children.length()-1; i>=0; i--) { onChildRemoved(@_children[i]); _children.removeLast(); } }
+	void removeChild(GUI@&in child) { onChildRemoved(@child); _children.removeAt(_children.findByRef(@child)); hasChild=(_children.length()>0); }
+	void addChild(GUI@&in child) { hasChild=true; _children.insertLast(@child); onChildAdded(@child); }
+	int findChild(GUI@&in child) { for(int i=0; i<_children.length(); i++) { if(@_children[i]==@child) { return i; } } return -1; }
+
+	// # overrides
+	void onSetParent(GUI@&in parent) {}
+	void onChildRemoved(GUI@&in child) {}
+	void onChildAdded(GUI@&in child) {}
+
+	// Mostly used to avoid rendering scrollpanel elements outside of the scroll area.
+	// That can probably be done better, but this function is still useful.
+	bool inParent;
+	bool isInParent() { if(!hasParent) { inParent=true; } else { inParent=_parent.contains(@this); } return inParent; }
+	bool contains(GUI@&in panel) { return GUI::squareInSquare(panel.paintPos+1,panel.paintSize-1,paintPos,paintSize); }
+
+	// #### Docking Layout Positioning and Alignment System ----
+	// Aligns menu elements to the parent element, or the screen in the case of no parent.
+	// Uses a delayed drill system to shift all elements of a gui parent/child tree at once so there are no weird visual artifacts.
+	// Efficient enough to be used in animated menus.
+	// Depending on the alignment, the menu will behave differently.
+	// In all cases except Alignment::Manual, the output position is relative to the GUI Origin (0+,0+).
+	// In the case of Alignment::Left/Right/Top/Bottom, the remaining height/width refers to how child element sizes are accumulated.
+	// In essence, the layout array accumulates the sizes and margins of children to determine the offset of the next element.
+	// This works in all directions, such that if there is a panel on the left with width 10 is on the left, the next panel on the top will be less 10 width.
+	// While left/right inherits the height of the panel, the width of a left/right panel is deterimed by size.x, and vica-versa to size.y for top/bottom.
+	// Panels are layed out in the order of _children, which is the same order as they are created, unless that is changed.
+	// This panel operation ordering also applies to rendering.
+	// Because the GUI Origin is in the center of the screen, draw functions must subtract GUI::center to draw in the correct location on the physical monitor.
+	// GUI::mouse() exists to align the mouse to the GUI Origin.
+	// Margin adds an offset for each direction on a child element.
+	// Padding adds an offset for each direction for each child element contained within the element with padding. This can probably be removed, margin is better imho.
+	// When a layout is completed, the final position and size of the element is stored in .paintPos and .paintSize, and the total size of all aligned children stored in .layout.
+	// These variables can be written to directly to change where an element will be rendered, and stores the calculated size.
+	//
+	// A list alignment effects are as follows:
+	//	- Alignment::Left/Right = Aligns to the left/right edges of the parent, and stretches to the height (remaining) of the parent.
+	//	- Alignment::Top/Bottom = Aligns to an edge of the parent, and stretches to the width (remaining) of the parent.
+	//	- Alignment::None = Align to .pos and .size relative to GUI Origin, regardless of parent.
+	//	- Alignment::Center = Align to the center of the parent, relative to GUI Origin using .size.
+	//	- Alignment::Fill = Aligns to the center of the parent, and stretches to the width and height of the parent.
+	//	- Alignment::Manual = Alignment is handled by a function.
+	//
+	// margin/layout[0] = left
+	// margin/layout[1] = top
+	// margin/layout[2] = right
+	// margin/layout[3] = bottom
 	//
 	// Usage:
-	// call - this.invalidateLayout() when changing the position of a gui element (usually in an animation).
+	// call this.invalidateLayout() when changing the position or size of a gui element, or
+	//  something that affects position or size. (usually in an animation).
 
-	// Layout (position,size,alignment) ----
+	Vector2f pos;
+	Vector2f size;
+	float x { get { return pos.x; } set { pos.x=value; } }
+	float y { get { return pos.y; } set { pos.y=value; } }
+	float width { get { return size.x; } set { size.x=value; } }
+	float height { get { return size.y; } set { size.y=value; } }
 
-	Alignment _align=Alignment::None;
-	Alignment align { get { return _align; } set { _align=value; } } // invalidateLayout();
-
-	Vector2f _pos;
-	float x { get { return _pos.x; } set { _pos.x=value; } }
-	float y { get { return _pos.y; } set { _pos.y=value; } }
-	Vector2f pos { get { return _pos; } set { _pos=value; } }
-
-	Vector2f _size;
-	float width { get { return _size.x; } set { _size.x=value; } }
-	float height { get { return _size.y; } set { _size.y=value; } }
-	Vector2f size { get { return _size; } set { _size=value; } }
-
-	array<float> _padding;
-	array<float> padding { get { return _padding; } set { _padding=value; } }
-	array<float> _margin;
-	array<float> margin { get { return _margin; } set { _margin=value; } }
-
-	float rotation; // No rotation for UI::addRect?? :(
-
-	// Layout validator ----
-	void invalidateLayout() { GUI::InvalidateLayout(@this); }
-	void drillLayout() { 
-		GUI::cacheLayout(@this);
-		layout={0,0,0,0};
-		prepareLayout();
-		internalPreLayout();
-		if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible) { layoutChild(@_children[i]); } } }
-		doneLayout();
-		internalDoneLayout();
-		isInParent();
-		if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible) { _children[i].drillLayout(); } } }
-		internalPostLayout();
-		postLayout();
-	}
-
-	void internalDoneLayout() {} // Override for base classes
-	void internalPostLayout() {} // base class
-	void internalPreLayout() {}
+	Alignment align=Alignment::None;
+	array<float> padding;
+	array<float> margin;
 
 	array<float> layout;
 	Vector2f paintPos;
 	Vector2f paintSize;
 
-	void prepareLayout() {
-		if(!hasParent) { switch(_align) {
+	bool alwaysLayout;
+
+	// # Layout validator drill ----
+	// Triggers a layout update operation.
+	void invalidateLayout() { GUI::markInvalid(@this); }
+
+	// Executes a cascading layout update operation.
+	void drillLayout() {
+		GUI::markValid(@this);
+		layout={0,0,0,0};
+		// executePreLayout();
+		layoutThis();
+		internalPreLayout();
+		preLayout();
+
+		// executeLayout();
+		if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible && !_children[i].alwaysLayout) { layoutChild(@_children[i]); } } }
+		internalDoLayout();
+		doLayout();
+
+		// executePostLayout();
+		if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible && !_children[i].alwaysLayout) { _children[i].drillLayout(); } } }
+		internalPostLayout();
+		postLayout();
+	}
+
+
+	// # Primary overrides ----
+	void internalPreLayout() {} // Override
+	void internalDoLayout() {} // Override for base classes
+	void internalPostLayout() {} // base class
+
+	void preLayout() {} // override
+	void doLayout() {} //override
+	void postLayout() {} // override
+
+
+	// # Layout functions ----
+	void layoutThis() {
+		if(!hasParent) { switch(align) {
 			case Alignment::None:
-				paintPos=pos-GUI::Center;
+				paintPos=pos-GUI::center;
 				paintSize=size;
 				break;
 			case Alignment::Center:
 				paintSize=size;
-				paintPos=GUI::Center-(paintSize/2);
+				paintPos=GUI::center-(paintSize/2);
 				break;
 			case Alignment::Left:
-				paintSize=Vector2f(width-(margin[0]+margin[2]),GUI::Resolution.y-(margin[1]+margin[3]));
+				paintSize=Vector2f(width-(margin[0]+margin[2]),GUI::resolution.y-(margin[1]+margin[3]));
 				paintPos=Vector2f(margin[0],margin[1]);
 				break;
 			case Alignment::Right:
-				paintSize=Vector2f(width-(margin[0]+margin[2]),GUI::Resolution.y-(margin[1]+margin[3]));
-				paintPos=Vector2f(GUI::Resolution.x-width-margin[2],margin[1]);
+				paintSize=Vector2f(width-(margin[0]+margin[2]),GUI::resolution.y-(margin[1]+margin[3]));
+				paintPos=Vector2f(GUI::resolution.x-width-margin[2],margin[1]);
 				break;
 			case Alignment::Bottom:
-				paintSize=Vector2f(GUI::Resolution.x-(margin[0]+margin[3]),height-(margin[1]+margin[3]));
-				paintPos=Vector2f(margin[0],GUI::Resolution.y-height-margin[1]);
+				paintSize=Vector2f(GUI::resolution.x-(margin[0]+margin[3]),height-(margin[1]+margin[3]));
+				paintPos=Vector2f(margin[0],GUI::resolution.y-height-margin[1]);
 				break;
 			case Alignment::Top:
-				paintSize=Vector2f(GUI::Resolution.x-(margin[0]+margin[3]),height-(margin[1]+margin[3]));
+				paintSize=Vector2f(GUI::resolution.x-(margin[0]+margin[3]),height-(margin[1]+margin[3]));
 				paintPos=Vector2f(margin[0],margin[1]);
 				break;
 			case Alignment::Fill:
 				paintPos=Vector2f(margin[0],margin[1]);
-				paintSize=GUI::Resolution;
+				paintSize=GUI::resolution;
 				break;
 			default:
-				performLayout();
+				manualLayoutThis();
 				break;
 		} }
 	}
-
-
+	void manualLayoutThis() {} // Alignment::Manual override.
 
 	void layoutChild(GUI@&in child) {
-		switch(child._align) {
+		switch(child.align) {
 			case Alignment::None:
 				child.paintPos=child.pos;
 				child.paintSize=child.size;
@@ -366,26 +423,74 @@ shared class GUI {
 				child.paintPos += Vector2f(child.margin[0]+padding[0]+layout[0],child.margin[1]+padding[1]+layout[1]);
 				break;
 			default:
-				performChildLayout(@child,layout);
+				manualLayoutChild(@child,layout);
 				break;
 		}
-		child.doneChildLayout();
-		performedChildLayout(@child);
+		child.layoutParent(@this);
+		postLayoutChild(@child);
 	}
+	void manualLayoutChild(GUI@&in child, array<float> &layout) {} // Alignment::Manual override (ONLY where @child has Alignment::Manual).
+	void layoutParent(GUI@&in parent) {} //override, for a child to affect its parents layout.
+	void postLayoutChild(GUI@&in child) {} // override
 
-	void performLayout() {} //override
-	void performChildLayout(GUI@&in child, array<float> &layout) {} //override
-	void doneLayout() {} //override
-	void doneChildLayout() {} // override
-	void performedChildLayout(GUI@&in child) {} // override
-	void postLayout() {} // override
+	// #### Mouse handling ----
+	// Exactly what it says on the tin.
+
+	// # isHovered();
+	// Must be called manually in the update function for panels that use it.
+	bool hovering;
+	bool wasHovered;
+	bool isHovered() {
+		Vector2f mpos=GUI::mouse();
+		bool hover=GUI::pointInSquare(mpos, paintPos, paintSize);
+		if(wasHovered && !hover) { internalStopHover(); hovering=false; }
+		else if(!wasHovered && hover) { internalStartHover(); hovering=true; }
+		wasHovered=hovering;
+		return hovering;
+	}
+	void internalStopHover() { stopHovering(); }
+	void internalStartHover() { startHovering(); }
+	void stopHovering() {}; // override
+	void startHovering() {}; // override
+
+	// # Clicking
+	// Generally handled by GUI::Clickable, but the base class requires the click drill functions to propogate clicks to the clickables.
+	void drillClick(Vector2f mpos,array<GUI@> &clickables) { clickables.insertLast(@this); if(hasChild) { for(int i=0; i<_children.length(); i++) {
+		GUI@ child=@_children[i]; if( child.visible && GUI::pointInSquare(mpos,child.paintPos,child.paintSize)) { child.drillClick(mpos,clickables); }
+	} } }
+
+	void callClick(Vector2f mpos) { internalClick(mpos); doClick(mpos); hovering=false; wasHovered=false; }
+	void internalClick(Vector2f mpos) {} // internal override
+	void doClick(Vector2f mpos) {doClick();} // Vector2f override
+	void doClick() {} // Override without Vector2f / alias.
+
+	// #### Update/Tick/Think functions ----
+	void drillUpdate() { doUpdate(); if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible) { _children[i].drillUpdate(); } } } }
+	void doUpdate() { internalUpdate(); update(); }
+
+	void internalUpdate() {} // override
+	void update() {} // override
+
+	// #### Rendering function ----
+	// Named `paint` because reasons.
+
+	void drillPreRender() { preRender(); if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible && _children[i].inParent) { _children[i].drillPreRender(); } } } }
+	void drillRender() { doRender(); if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible && _children[i].inParent) { _children[i].drillRender(); } } } }
+	void doRender() { internalPaint(); paint(); }
+	void preRender() { internalPrePaint(); prePaint(); }
+
+	void internalPrePaint() {}
+	void internalPaint() {}
+
+	void prePaint() {} // override
+	void paint() {} // override
 
 
-	// Constructor --------
+	// #### Constructor ----
 	bool baseInstance;
 	GUI(string clstype="GUI") {
-		cls=clstype;
 		GUI::baseInstances.insertLast(@this);
+		cls=clstype;
 		baseInstance=true;
 		pos=Vector2f();
 		size=Vector2f(5);
@@ -409,90 +514,11 @@ shared class GUI {
 	}
 
 
-	// Destructor
+	// #### Destructor ----
 	~GUI() { } // Destructor(); }
-
-
-	// # Mouse handling --------
-	bool isHovered() {
-		Vector2f mpos=GUI::Mouse();
-		bool hover=vectorIsInSquare(mpos, paintPos, paintPos+paintSize);
-		if(wasHovered && !hover) {
-			exitHover();
-			hovering=false;
-		} else if(!wasHovered && hover) {
-			enterHover();
-			hovering=true;
-		}
-		wasHovered=hovering;
-		return hovering;
-	}
-	bool hovering;
-	bool wasHovered;
-	void exitHover() {
-		stopHovering();
-	}
-	void enterHover() {
-		startHovering();
-	}
-	void stopHovering() {}; // override
-	void startHovering() {}; // override
-
-	void drillClick(Vector2f mpos,array<GUI@> &clickables) {
-		clickables.insertLast(@this);
-		if(hasChild) {
-			for(int i=0; i<_children.length(); i++) {
-				GUI@ child=@_children[i];
-				if( child.visible && vectorIsInSquare(mpos, child.paintPos,child.paintPos+child.paintSize) ) { child.drillClick(mpos,clickables); }
-			}
-		}
-	}
-	void callClick(Vector2f mpos) {
-		internalClick(mpos);
-		doClick(mpos);
-		wasHovered=false;
-	}
-	void internalClick(Vector2f mpos) {} // internal override
-	void doClick(Vector2f mpos) {doClick();} // Vector2f override
-	void doClick() {} // Override without Vector2f / alias.
-
-	// Events ----
-	void onClose() {}
-	void onOpen() {}
-
-	// Tick functions ----
-	void drillUpdate() { doUpdate(); if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible) { _children[i].drillUpdate(); } } } }
-	void doUpdate() {
-		internalUpdate();
-		update();
-	}
-	void internalUpdate() {};
-	void update() {}; // override
-
-
-	// Animations (Runs before Painter) --------
-
-	void startAnimation() { GUI::StartAnimation(@this); onStartAnimation(); }
-	void stopAnimation() { GUI::StopAnimation(@this); onStopAnimation(); }
-	void onStartAnimation() {};
-	void Animate() {};
-	void onStopAnimation() {};
-
-
-	// Painter ----
-
-
-	void drillPreRender() { PreRender(); if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible && _children[i].inParent) { _children[i].drillPreRender(); } } } }
-	void drillRender() { doRender(); if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible && _children[i].inParent) { _children[i].drillRender(); } } } }
-	void doRender() {  paint(); }
-	void PreRender() { prePaint(); }
-	void skinColors() {}
-
-	void prePaint() {} // Override
-	void paint() {} // Override
-
 }
 
+// # TODO: Console menu stuff.
 
 shared class ConsoleMenu {
 	ConsoleMenu() {}

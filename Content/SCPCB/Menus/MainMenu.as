@@ -28,8 +28,8 @@ class menu_Main : GUI {
 
 	@MainMenu_ButtonPanel=menu_Main_ButtonPanel(@this);
 	MainMenu_ButtonPanel.align=Alignment::Left;
-	MainMenu_ButtonPanel.margin={GUI::Resolution.x*0.14,GUI::Resolution.y*0.3,0,GUI::Resolution.y*0.1};
-	MainMenu_ButtonPanel.width=GUI::Resolution.x*0.35;
+	MainMenu_ButtonPanel.margin={GUI::resolution.x*0.14,GUI::resolution.y*0.3,0,GUI::resolution.y*0.1};
+	MainMenu_ButtonPanel.width=GUI::resolution.x*0.35;
 
 	@MainMenu_ContinueBtn=menu_Main_ContinueButton(@MainMenu_ButtonPanel);
 	MainMenu_ContinueBtn.align=Alignment::Top;
@@ -62,15 +62,15 @@ class menu_Main : GUI {
 	MainMenu_QuitBtn.height=8;
 	MainMenu_QuitBtn.text="Quit";
 
-	float SCPwidth=GUI::Resolution.x*0.3;
+	float SCPwidth=GUI::resolution.x*0.3;
 	float SCPheight=SCPwidth*(60.f/550.f);
 	GUIPanel@ SCPLabel=GUIPanel(@this);
 	SCPLabel.align=Alignment::None;
-	SCPLabel.pos=Vector2f(GUI::Center.x-SCPwidth/2,GUI::Resolution.y-SCPheight-4);
+	SCPLabel.pos=Vector2f(GUI::center.x-SCPwidth/2,GUI::resolution.y-SCPheight-4);
 	SCPLabel.size=Vector2f(SCPwidth,SCPheight);
 	@SCPLabel.texture=GUI::Skin::menuSCPLabel;
 
-	float height173=GUI::Resolution.y*0.55;
+	float height173=GUI::resolution.y*0.55;
 	GUI@ SCP173panel=GUI(@this);
 	SCP173panel.align=Alignment::Right;
 	SCP173panel.width=height173*( 312.f/441.f );
@@ -82,7 +82,7 @@ class menu_Main : GUI {
 
 	GUILabel@ version=GUILabel(@this);
 	version.align=Alignment::None;
-	version.pos=Vector2f(4,GUI::Resolution.y-4);
+	version.pos=Vector2f(4,GUI::resolution.y-4);
 	version.alignHorizontal=Alignment::Left;
 	version.alignVertical=Alignment::Bottom;
 	version.text="v1.4.0 Beta";
@@ -91,9 +91,9 @@ class menu_Main : GUI {
 	@rnjesus=Random();
 	rngLerp=FloatInterpolator();
 	}
-	void doneLayout() {
+	void doLayout() {
 		Debug::log("Layed out Main Menu");
-		square=Rectanglef((paintPos)-GUI::Center,(paintPos+paintSize)-GUI::Center);
+		square=Rectanglef((paintPos)-GUI::center,(paintPos+paintSize)-GUI::center);
 	}
 	Rectanglef square;
 

@@ -30,7 +30,7 @@ shared class GUILabel : GUI {
 		textPos=paintPos;
 		textSize=Vector2f(font.stringWidth(text,fontScale*GUI::aspectScale), font.getHeight(fontScale*GUI::aspectScale) );
 		layoutPhrase();
-		textPos-=GUI::Center;
+		textPos-=GUI::center;
 	}
 
 	void layoutPhrase() {
@@ -92,7 +92,7 @@ shared class GUILabelBox : GUI {
 
 	// # Phrase manager
 	string _text;
-	string text { get { return _text; } set { _text=value; invalidateLayout(); } }
+	string text { get { return _text; } set { _text=value; } }
 
 	// # Pre Layout
 	void internalPreLayout() {
@@ -135,7 +135,7 @@ shared class GUILabelBox : GUI {
 	}
 
 	// # Mid Layout
-	void internalDoneLayout() {
+	void internalDoLayout() {
 		layoutPhrases();
 	}
 	void layoutPhrases() {
