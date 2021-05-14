@@ -186,6 +186,7 @@ namespace GUI {
 	shared void clickedTextEntering(Vector2f mpos) {
 		if(validTextEntering() && !pointInSquare(mpos,textEntryFocus.paintPos,textEntryFocus.paintSize)) { stopTextEntering(); }
 	}
+	shared funcdef void TextEnteredFunc(string&in input);
 
 
 	// #### Cascade GUI Renderer & Updater.
@@ -260,13 +261,15 @@ shared class GUI {
 		hasParent=true;
 		onSetParent(@par,@ppar);
 	}
-	void removeChildren() { for(int i=_children.length()-1; i>=0; i--) { onChildRemoved(@_children[i]); _children.removeLast(); } }
-	void removeChild(GUI@&in child) { onChildRemoved(@child); _children.removeAt(_children.findByRef(@child)); hasChild=(_children.length()>0); }
+	void removeChildren() { for(int i=_children.length()-1; i>=0; i--) { onChildRemoved(@_children[i],i); _children.removeLast(); } }
+	void removeChild(GUI@&in child) { int at = _children.findByRef(@child); onChildRemoved(@_children[at],at); _children.removeAt(at); hasChild=(_children.length()>0); }
+	void removeChildAt(int at) { onChildRemoved(@_children[at],at); _children.removeAt(at); hasChild=(_children.length()>0); }
 	void addChild(GUI@&in child) { hasChild=true; _children.insertLast(@child); onChildAdded(@child); }
 	int findChild(GUI@&in child) { for(int i=0; i<_children.length(); i++) { if(@_children[i]==@child) { return i; } } return -1; }
 
 	// # overrides
 	void onSetParent(GUI@&in parent,GUI@&in prevParent) {}
+	void onChildRemoved(GUI@&in child, int&in at) {onChildRemoved(@child);}
 	void onChildRemoved(GUI@&in child) {}
 	void onChildAdded(GUI@&in child) {}
 

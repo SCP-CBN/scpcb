@@ -12,18 +12,22 @@ shared class GUICharacter : GUIClickable {
 	// But it works with little to no effort.
 	// Hard to argue with results.
 
+	Color fontColor=Color::White;
+	Color fontColorSelected=Color::Green;
+
 	bool textSelected;
 	string text { get { return label.text; } set { label.text=value; } }
 	GUILabel@ label;
 	GUICharacter(GUI@&in parent, string vcls="GUICharacter") { super(@parent,vcls);
 		align=Alignment::Left;
 		width=4;
-		height=4;
 
 		@label=GUILabel(@this);
 		label.align=Alignment::Fill;
-		label.margin={0.2,0.2,0.2,0.2};
+		label.alignVertical = Alignment::Center;
+		label.margin={0.1,0.1,0.1,0.1};
 		label.text="B";
+		label.fontScale=2;
 		@label.font=@tempFont;
 	}
 
@@ -42,9 +46,9 @@ shared class GUICharacter : GUIClickable {
 
 	void paint() {
 		if(textSelected) {
-			label.fontColor=Color::Green;
+			label.fontColor=fontColorSelected;
 		} else {
-			label.fontColor=Color::White;
+			label.fontColor=fontColor;
 		}
 	}
 
@@ -65,8 +69,16 @@ shared class GUITextEntry : GUIClickable {
 	array<GUICharacter@> selected;
 	int Carrot=-1;
 
-	void setText(string txt) { while(_children.length()>0) { _children.removeLast(); } keyboardDoTextInput(txt); }
+	GUI::TextEnteredFunc@ inputFunc;
+
+	string text { get { return getText(); } set { setText(value); } }
+	void setText(string txt) { while(_children.length()>0) { _children.removeLast(); } Carrot=-1; keyboardDoTextInput(txt); }
 	string getText() { return fetchText(); }
+
+	Color _fontColor=Color::White;
+	Color fontColor { get { return _fontColor; } set { setFontColor(value); } }
+	void setFontColor(Color&in col) { _fontColor=col; for(int i=0; i<_children.length(); i++) { cast<GUICharacter@>(_children[i]).fontColor=col; } }
+
 
 	GUITextEntry(string vcls="GUITextEntry") { super(vcls); Carrot=-1; }
 	GUITextEntry(GUI@&in parent, string vcls="GUITextEntry") { super(@parent,vcls);
@@ -81,9 +93,18 @@ shared class GUITextEntry : GUIClickable {
 	string fetchText() { string chr=""; for(int i=0; i<_children.length(); i++) { chr=chr+cast<GUICharacter@>(_children[i]).text; } return chr; }
 
 	void paint() {
-		// UI::setTextureless();
-		// UI::setColor(Color::White);
-		// tempFont.draw(_text, textPos-GUI::center, fontScale*GUI::aspectScale, textRotation, fontColor);
+		if(@GUI::textEntryFocus==@this) {
+			Vector2f carrotPos;
+			if(Carrot>=0) {
+				GUICharacter@ child = cast<GUICharacter@>(_children[Carrot]);
+				if(@child!=null) { carrotPos=child.label.paintPos+Vector2f(child.label.textSize.x-1,0)-GUI::center; }
+			} else {
+				carrotPos=paintPos-GUI::center;
+			}
+			UI::setTextureless();
+			UI::setColor(Color::White);
+			tempFont.draw("|", carrotPos, 0.3f, 0.f, Color::White);
+		}
 	}
 
 	void selectCharacters() {
@@ -105,20 +126,21 @@ shared class GUITextEntry : GUIClickable {
 			} else { child.textSelected=false; }
 		}
 	}
-	void doClick() { GUI::startTextEntering(@this); Debug::log("TextEntry clicked!"); }
+	void doClick() { GUI::startTextEntering(@this); }
 	void stopCharClick(GUICharacter@&in child) { selectCharacters(); }
-	void startCharClick(GUICharacter@&in child) { if(_children.length()==0) { return; } mselectStart=child.paintPos+(child.paintSize/2); Carrot=findChild(@child); }
+	void startCharClick(GUICharacter@&in child) { selected={}; if(_children.length()==0) { return; } mselectStart=child.paintPos+(child.paintSize/2); Carrot=findChild(@child); }
 
-	void addChild(GUI@&in child) { hasChild=true; Carrot++; _children.insertAt(Carrot,@child); invalidateLayout(); layoutChild(@child); child.drillLayout(); onChildAdded(@child); }
-	void removeChild(GUI@&in x) { Debug::log("Warning: TextEntry tried to remove child with GUI element"); }
+	void addChild(GUI@&in child) { hasChild=true; Carrot++; _children.insertAt(Carrot,@child); onChildAdded(@child); invalidateLayout(); }
+	void removeChild(GUI@&in x) { Debug::error("Warning: TextEntry tried to remove child with GUI element"); }
 	void removeChild() {
+		if(Carrot<0 || _children.length()==0) { return; }
 		GUI@ child=@_children[Carrot];
 		_children.removeAt(Carrot); Carrot--;
 		hasChild=(_children.length()>0); invalidateLayout(); onChildRemoved(@child);
 	}
 	bool shiftDown() { return Input::anyShiftDown(); }
 	bool shortcutDown() { return Input::anyShortcutDown(); }
-	void deleteSelected() { for(int i=_children.length()-1; i>-1; i--) { if(cast<GUICharacter@>(_children[i]).textSelected) { Carrot=i; removeChild(); } } }
+	void deleteSelected() { for(int i=_children.length()-1; i>-1; i--) { if(cast<GUICharacter@>(_children[i]).textSelected) { Carrot=i; removeChild(); } } selected={}; }
 	void deselectAll() { for(int i=0; i<_children.length(); i++) { cast<GUICharacter@>(_children[i]).textSelected=false; } }
 	void selectRight() { for(int i=Carrot; i<_children.length(); i++) { cast<GUICharacter@>(_children[i]).textSelected=true; } }
 	void selectLeft() { for(int i=Carrot; i>-1; i--) { cast<GUICharacter@>(_children[i]).textSelected=true; } }
@@ -155,11 +177,12 @@ shared class GUITextEntry : GUIClickable {
 			GUICharacter@ char=GUICharacter(@this);
 			char.align=Alignment::Left;
 			char.text=append[i];
+			char.fontColor=_fontColor;
 		}
 	}
+	void keyboardDoEnter() { if(@inputFunc!=null) { inputFunc(text); } text=""; }
 
 	void updateTextEntering() {
-		Debug::log("Text entering update");
 		if(Input::Escape::isHit()) { keyboardEscape(); return; }
 		if(pressed) { selectCharacters(); return; }
 		string append=Input::getTextInput();
@@ -174,7 +197,7 @@ shared class GUITextEntry : GUIClickable {
 		else if(Input::redoIsHit()) { keyboardDoRedo(); }
 		else if(Input::Mouse1::isHit()) { keyboardDoMouse1(Input::Mouse1::getClickCount()); }
 		//else if(Input::Mouse2::isHit()) { keyboardDoMouse2(); } //Input::Mouse2::getClickCount()
-
+		else if(Input::Enter::isHit()) { keyboardDoEnter(); }
 	}
 
 }

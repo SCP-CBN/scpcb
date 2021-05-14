@@ -1,8 +1,8 @@
 namespace Item {
 	array<Item::Template@> templates;
 	array<Item@> instances;
-	void Register(Item::Template@&in template) {
-		template.local_name = Local::getTxt("Items." + template.name + ".Name");
+	void register(Item::Template@&in template) {
+		template.localName = Local::getTxt("Items." + template.name + ".Name");
 		templates.insertLast(@template);
 	}
 
@@ -20,7 +20,7 @@ namespace Item {
 			return null;
 		}
 
-		Item@ instance=template.MakeInstance();
+		Item@ instance=template.create();
 		instance.position=position;
 		instance.rotation=rotation;
 		return instance;
@@ -32,13 +32,11 @@ namespace Item {
 abstract class Item::Template {
 	Template() { Item::templates.insertLast(@this); }
 	string name;
-	string local_name;
+	string localName;
 
 	string modelPath;
 	string modelSkin;
-
-	// Original model scales appear to be *10 less than what it should be. (0.008, etc)
-	float modelScale;
+	float modelScale; // Original model scales appear to be *10 less than what it should be. (0.008, etc)
 
 	// "SFX/Interact/PickItem" + pickSoundID + ".ogg";
 	int pickSoundID;
@@ -49,7 +47,8 @@ abstract class Item::Template {
 	float iconScale;
 	Vector3f iconRot;
 	Vector2f iconPos;
-	Item@ MakeInstance() { Debug::error("Tried to make an instance of a null template!"); return null; }
+	string iconSkin="";
+	Item@ create() { Debug::error("Tried to make an instance of a null template!"); return null; }
 }
 
 abstract class Item {
@@ -59,7 +58,6 @@ abstract class Item {
 
 	Item::Template@ template;
 	Util::Icon@ iconData;
-	Texture@ icon;
 
 	// Model/Picker, and alias model position/rotation/picker onto item.position/rotation/picker
 	Game::Model::Picker@ model;
@@ -67,10 +65,10 @@ abstract class Item {
 	Vector3f rotation { get { return model.rotation; } set { model.rotation = value; } }
 	bool picked { get { return model.picked; } }
 	bool pickable { set { model.pickable=value; } }
-	bool carried;
 
-	// Lifecycle
-	bool valid;
+	Item@ _inventoryBag;
+	Item@ inventoryBag;
+	int inventory;
 
 	// Save States
 	int state;
@@ -83,17 +81,15 @@ abstract class Item {
 		@template=@originTemplate;
 		Game::Model::Picker @mdl = Game::Model::Picker(template.modelPath);
 		@model=@mdl;
-		if(template.modelScale != 0) {
-			model.scale=Vector3f(template.modelScale);
-		}
+		if(template.modelScale != 0) { model.scale=Vector3f(template.modelScale); }
+		model.skin=template.modelSkin;
 
 		name=template.name;
 		Item::instances.insertLast(@this);
 
-		@iconData = Util::Icon::Model(template.modelPath, template.iconScale, template.iconRot, template.iconPos);
-		@icon=@iconData.texture;
+		if(template.useModelIcon) {  @iconData = Util::Icon::Model(template.modelPath, template.iconScale, template.iconRot, template.iconPos); }
+		else { @iconData=Util::Icon(); @iconData.texture=Texture::get(template.iconImage); }
 		inPVS=true;
-		valid=true;
 
 		Debug::log("Spawned an item in the world: " + name);
 	}
@@ -121,7 +117,7 @@ abstract class Item {
 	bool tryPick() {
 		if(!canPick()) { return false; }
 		if(false) { //InventoryMenu::instance.addItem(this)) {
-			carried=true;
+			inventory=1;
 			onPick();
 			pickable=false;
 			ExitPVS();

@@ -140,11 +140,12 @@ namespace Util { namespace Icon { shared class Model : Icon {
 	float scale;
 	Vector3f rotation;
 	Vector2f pos;
-	Model(string iPath, float iScale, Vector3f iRotation, Vector2f iPos) { super();
-		path=iPath; scale=iScale; pos=iPos; rotation=iRotation;
+	string skin;
+	Model(string&in iPath, float&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") { super();
+		path=iPath; scale=iScale; pos=iPos; rotation=iRotation; skin=iSkin;
 		generate();
 	}
-	void generate() { @texture = ModelImageGenerator::generate(path, scale, rotation, pos); }
+	void generate() { @texture = ModelImageGenerator::generate(path, scale, rotation, pos); } // , skin);
 } } }
 
 

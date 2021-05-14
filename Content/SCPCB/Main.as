@@ -118,6 +118,7 @@ external Vector2f GUI::center;
 external array<GUI@> GUI::baseInstances; // temporaryz
 
 namespace GUI {
+	external funcdef void TextEnteredFunc(string&in input);
 	external Texture@ Skin::menublack;
 	external Texture@ Skin::menuwhite;
 	external Texture@ Skin::menuMain;

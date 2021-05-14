@@ -1,5 +1,5 @@
 class ItemTemplate_Gasmask : Item::Template {
-	Item@ MakeInstance() {
+	Item@ create() {
 		Item @instance = Item_Gasmask(@this);
 		return @instance;
 	}
@@ -17,7 +17,7 @@ class ItemTemplate_Gasmask : Item::Template {
 		iconRot = Vector3f(2.3,2.7,0);
 		iconPos = Vector2f(0,0.2);
 
-		Item::Register(@this);
+		Item::register(@this);
 	}
 }
 ItemTemplate_Gasmask OriginItem_Gasmask;

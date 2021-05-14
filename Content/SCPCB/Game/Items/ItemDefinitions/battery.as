@@ -1,12 +1,8 @@
 // 9v Battery --------------------------------------
 
 class ItemTemplate_Battery : Item::Template {
-	Item@ MakeInstance() {
-		Item @instance = Item_Battery(@this);
-		return @instance;
-	}
+	Item@ create() { Item @instance = Item_Battery(@this); return @instance; }
 	ItemTemplate_Battery() { super();
-		
 		name = "Battery9v"; //"bat"
 		modelPath = "SCPCB/GFX/Items/Battery/battery.fbx";
 		modelSkin = "SCPCB/GFX/Items/Battery/battery.jpg";
@@ -20,7 +16,7 @@ class ItemTemplate_Battery : Item::Template {
 		iconRot = Vector3f(2.3,2.7,0);
 		iconPos = Vector2f(0,0.2);
 
-		Item::Register(@this);
+		Item::register(@this);
 	}
 }
 ItemTemplate_Battery OriginItem_Battery;
@@ -40,10 +36,7 @@ class Item_Battery : Item {
 // 18v Battery --------------------------------------
 
 class ItemTemplate_Battery18v : Item::Template {
-	Item@ MakeInstance() {
-		Item @instance = Item_Battery18v(@this);
-		return @instance;
-	}
+	Item@ create() { Item@ instance = Item_Battery18v(@this); return @instance; }
 	ItemTemplate_Battery18v() { super();
 		
 		name = "Battery18v"; // "18vbat"
@@ -59,7 +52,7 @@ class ItemTemplate_Battery18v : Item::Template {
 		iconRot = Vector3f(2.3,2.7,0);
 		iconPos = Vector2f(0,0.2);
 
-		Item::Register(@this);
+		Item::register(@this);
 	}
 }
 ItemTemplate_Battery18v OriginItem_Battery18v;
@@ -79,10 +72,7 @@ class Item_Battery18v : Item {
 // Strange Battery --------------------------------------
 
 class ItemTemplate_StrangeBattery : Item::Template {
-	Item@ MakeInstance() {
-		Item @instance = Item_StrangeBattery(@this);
-		return @instance;
-	}
+	Item@ create() { Item@ instance = Item_StrangeBattery(@this); return @instance; }
 	ItemTemplate_StrangeBattery() { super();
 		
 		name = "StrangeBattery"; //"killbat"
@@ -98,7 +88,7 @@ class ItemTemplate_StrangeBattery : Item::Template {
 		iconRot = Vector3f(2.3,2.7,0);
 		iconPos = Vector2f(0,0.2);
 
-		Item::Register(@this);
+		Item::register(@this);
 	}
 }
 ItemTemplate_StrangeBattery OriginItem_StrangeBattery;

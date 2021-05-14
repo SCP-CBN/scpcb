@@ -92,7 +92,6 @@ class menu_Main : GUI {
 	//@rngLerp;
 	}
 	void doLayout() {
-		Debug::log("Layed out Main Menu");
 		square=Rectanglef((paintPos)-GUI::center,(paintPos+paintSize)-GUI::center);
 	}
 	Rectanglef square;

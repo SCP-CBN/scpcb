@@ -26,7 +26,7 @@ shared class GUILabel : GUI {
 	float textRotation=0.f; // # Rotation will not be done unless there's a reason it is needed.
 
 	// # Layout
-	void internalPreLayout() {
+	void internalDoLayout() {
 		textPos=paintPos;
 		textSize=Vector2f(font.stringWidth(text,fontScale*GUI::aspectScale), font.getHeight(fontScale*GUI::aspectScale) );
 		layoutPhrase();
@@ -66,7 +66,7 @@ shared class GUILabel : GUI {
 
 	// # Draw()
 	void paint() {
-		if(@fontTexture==null) { UI::setTextureless(); } else { UI::setTextured(@fontTexture,fontTiledTexture); }
+		UI::setTextureless(); //if(@fontTexture==null) { UI::setTextureless(); } else { UI::setTextured(@fontTexture,fontTiledTexture); }
 		UI::setColor(fontColor);
 		font.draw(text, textPos, fontScale*GUI::aspectScale, textRotation, fontColor);
 	}
@@ -95,8 +95,8 @@ shared class GUILabelBox : GUI {
 	string text { get { return _text; } set { _text=value; } }
 
 	// # Pre Layout
-	void internalPreLayout() {
-		makePhrases();
+	void layoutParent(GUI@&in parent) {
+		makePhrases(@parent);
 	}
 	void addPhrase(string phrase, float fontHeight) {
 		GUILabel @child=GUILabel(@this);
@@ -111,7 +111,7 @@ shared class GUILabelBox : GUI {
 		child.text=phrase;
 		child.margin={0,0.1,0,0.1};
 	}
-	void makePhrases() {
+	void makePhrases(GUI@&in parent) {
 		removeChildren();
 
 		array<string> words=String::explode(_text," ");
@@ -125,13 +125,14 @@ shared class GUILabelBox : GUI {
 				phrase+=words[i];
 				if((i==words.length()-1) || font.stringWidth((phrase+" "+words[i]),fontSize) > paintSize.x ) {
 					addPhrase(phrase,fontHeight);
-					Debug::log("Added Phrase: " + phrase);
 					for(int u=0; u<=i; u++) { words.removeAt(0); }
 					phrase = "";
 					break;
 				}
 			}
 		}
+		float newSize=fontHeight*_children.length();
+		if(size.y!=newSize) { size.y=newSize; parent.invalidateLayout(); }
 	}
 
 	// # Mid Layout

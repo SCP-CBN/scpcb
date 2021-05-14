@@ -77,10 +77,10 @@ namespace Game {
 
 	void updateMenuState() {
 		if(Input::getHit() & Input::Inventory != 0) { Debug::log("hotkey Open Inventory"); }
-		else if(Input::getHit() & Input::ToggleConsole != 0) { Debug::log("hotkey Open Console"); ConsoleMenu.visible=true; }
+		else if(Input::getHit() & Input::ToggleConsole != 0) { Debug::log("hotkey Open Console"); ConsoleMenu.open(); }
 		else if(Input::getHit() & Input::Crouch != 0) { Debug::log("hotkey Crouch"); }
 		else if(Input::Escape::isHit()) {
-			Debug::log("Escape was pressed11"); // Apparently this code doesn't run without calling a Debug::log. isHit() is weird.
+			Debug::log("Escape was pressed11"); // Apparently this code doesn't run without calling a Debug.log. isHit() is weird.
 			bool menuIsOpen=false;
 			for(int i=0; i<GUI::baseInstances.length(); i++) {
 				if(GUI::baseInstances[i].visible==true) {
@@ -103,16 +103,19 @@ namespace Game {
 
 namespace Game { class Model {
 	::Model@ mesh;
-	Model(string&in cpath) {
+	Model(string&in cpath,string&in skin="") {
 		@mesh=::Model::create(cpath);
 		mesh.position=Vector3f(0,0,0);
 		mesh.rotation=Vector3f(0,0,0);
 		mesh.scale=Vector3f(1,1,1);
+		//mesh.skin=skin;
 	}
 	~Model() { ::Model::destroy(mesh); }
 	Vector3f position { get { return mesh.position; } set { mesh.position = value; } }
 	Vector3f rotation { get { return mesh.rotation; } set { mesh.rotation = value; } }
 	Vector3f scale { get { return mesh.scale; } set { mesh.scale = value; } }
+	string skin;
+	// string skin { get { return mesh.skin; } set { mesh.skin=value; } }
 	void render() { mesh.render(); }
 
 	bool physAlive;
@@ -125,7 +128,7 @@ namespace Game { class Model {
 
 namespace Game { namespace Model { class Picker : Game::Model {
 	Pickable@ _picker;
-	Picker(string&in cpath) { super(cpath);
+	Picker(string&in cpath,string&in skin="") { super(cpath,skin);
 		@_picker=Pickable();
 		_picker.position=position;
 		pickable=true;

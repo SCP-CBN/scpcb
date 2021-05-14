@@ -85,7 +85,6 @@ class GUILoadscreen : GUI {
 		stages[1]=txt2;
 		stages[2]=txt3;
 		stages[3]=txt4;
-		Debug::log("Made a loadscreen: " + ttl);
 	}
 	void updateGraphicPosition() {
 		if(bgtex) { graphic.pos=Vector2f(0,0); graphic.size=GUI::resolution; return; }

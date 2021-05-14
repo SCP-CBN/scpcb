@@ -1,7 +1,7 @@
 // First Aid --------------------------------------
 
 class ItemTemplate_FirstAid : Item::Template {
-	Item@ MakeInstance() { Item @instance = Item_FirstAid(@this); return @instance; }
+	Item@ create() { Item @instance = Item_FirstAid(@this); return @instance; }
 	ItemTemplate_FirstAid() { super();
 		name = "FirstAid"; //"firstaid"
 		modelPath = "SCPCB/GFX/Items/Firstaid/firstaid.fbx";
@@ -15,7 +15,7 @@ class ItemTemplate_FirstAid : Item::Template {
 		iconScale = 0.1;
 		iconRot = Vector3f(-2.3,-0.3,0.2);
 		iconPos = Vector2f(0,0.05);
-		Item::Register(@this);
+		Item::register(@this);
 	}
 }
 ItemTemplate_FirstAid OriginItem_FirstAid;
@@ -36,7 +36,7 @@ class Item_FirstAid : Item {
 // Small First Aid --------------------------------------
 
 class ItemTemplate_SmallFirstAid : Item::Template {
-	Item@ MakeInstance() { Item @instance = Item_SmallFirstAid(@this); return @instance; }
+	Item@ create() { Item @instance = Item_SmallFirstAid(@this); return @instance; }
 	ItemTemplate_SmallFirstAid() { super();
 
 		name = "SmallFirstAid"; //"finefirstaid"
@@ -51,7 +51,7 @@ class ItemTemplate_SmallFirstAid : Item::Template {
 		iconScale = 0.1;
 		iconRot = Vector3f(-2.3,-0.3,0.2);
 		iconPos = Vector2f(0,0.05);
-		Item::Register(@this);
+		Item::register(@this);
 	}
 }
 ItemTemplate_SmallFirstAid OriginItem_SmallFirstAid;
@@ -72,7 +72,7 @@ class Item_SmallFirstAid : Item {
 // Blue First Aid --------------------------------------
 
 class ItemTemplate_BlueFirstAid : Item::Template {
-	Item@ MakeInstance() { Item @instance = Item_BlueFirstAid(@this); return @instance; }
+	Item@ create() { Item @instance = Item_BlueFirstAid(@this); return @instance; }
 	ItemTemplate_BlueFirstAid() { super();
 
 		name = "BlueFirstAid"; //"firstaid2"
@@ -87,7 +87,7 @@ class ItemTemplate_BlueFirstAid : Item::Template {
 		iconScale = 0.1;
 		iconRot = Vector3f(-2.3,-0.3,0.2);
 		iconPos = Vector2f(0,0.05);
-		Item::Register(@this);
+		Item::register(@this);
 	}
 }
 ItemTemplate_BlueFirstAid OriginItem_BlueFirstAid;

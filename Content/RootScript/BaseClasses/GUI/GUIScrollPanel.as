@@ -109,13 +109,13 @@ shared class GUIScrollBar : GUI {
 	// # Constructor
 	GUIScrollBarArrow@ topArrow;
 	GUIScrollBarArrow@ btmArrow;
-	GUIScrollBarHandle@ bar;
+	GUIScrollBarHandle@ barHandle;
 	GUIScrollBar(GUI@&in parent,string vcls="GUI::ScrollBar") { super(@parent,vcls);
 		align=Alignment::Right;
 		width=GUI::Skin::ScrollBar::width;
 		@topArrow=GUIScrollBarTopArrow(@this);
 		@btmArrow=GUIScrollBarBtmArrow(@this);
-		@bar=GUIScrollBarHandle(@this);
+		@barHandle=GUIScrollBarHandle(@this);
 
 	}
 
@@ -139,6 +139,7 @@ shared class GUIScrollBar : GUI {
 		float capY=Math::maxFloat(Math::minFloat(chandle.pos.y,originMaxY),originPosY)-originPosY;
 		float Yrange=originMaxY-originPosY;
 		float pctY=capY/Yrange;
+		if(scroller.reverse) { pctY=1-pctY; }
 		chandle.paintPos.y=chandle.paintPos.y+capY-chandle.paintSize.y/2;
 		chandle.isInParent();
 		scroller.scroll=pctY;
@@ -158,12 +159,18 @@ shared class GUIScrollPanelCanvas : GUI {
 	void invalidateLayout() { _parent.invalidateLayout(); }
 	void internalDoLayout() {
 		GUIScrollPanel@ scroller=cast<GUIScrollPanel@>(_parent);
+		float layoutHeight = layout[1]+layout[3]+0.1;
+		float layoutOffset = (scroller.scroll*(layoutHeight-paintSize.y));
+		if(scrollReverse) { layoutOffset = -layoutOffset; }
 		for(int i=0; i<_children.length(); i++) {
 			GUI@ child=@_children[i];
-			child.paintPos.y=child.paintPos.y-(scroller.scroll*((layout[1]+0.1)-paintSize.y));
+			child.paintPos.y=child.paintPos.y-layoutOffset;
 			child.isInParent();
 		}
 	}
+
+	bool scrollReverse;
+	void addChild(GUI@&in child) { hasChild=true; if(!scrollReverse) { _children.insertLast(@child); } else { _children.insertAt(0,@child); } onChildAdded(@child); }
 }
 
 // # GUIScrollPanel --------
@@ -178,6 +185,8 @@ shared class GUIScrollPanel : GUI {
 		@canvas=GUIScrollPanelCanvas(@this);
 	}
 	// # Scroll parenting
+	bool _reverse;
+	bool reverse { get { return canvas.scrollReverse; } set { canvas.scrollReverse=value; } }
 	void onChildAdded(GUI@&in child) { if(@canvas != null) { child.setParent(@canvas); } }
 
 	// # Scroll scrolling
@@ -188,11 +197,14 @@ shared class GUIScrollPanel : GUI {
 	float scroll { get { return _scroll; } set { _scroll=value; } } 
 
 	void internalPostLayout() {
-		scrollEnabled=(canvas.paintSize.y<canvas.layout[1]);
+		float layoutHeight=canvas.layout[1]+canvas.layout[3]+0.1;
+		scrollEnabled=(canvas.paintSize.y<layoutHeight);
 		if(!scrollEnabled) { scrollbar.visible=false; } else {
 			scrollbar.visible=true;
-			scrollbar.barLength=canvas.paintSize.y/((canvas.layout[1]+0.1)-canvas.paintSize.y);
-			Debug::log(scroll);
+			scrollbar.barLength=canvas.paintSize.y/layoutHeight;
 		}
 	}
+
+	void scrollBottom() { scrollbar.barHandle.pos.y=GUI::resolution.y;  }
+	void scrollTop() { scrollbar.barHandle.pos.y=0; }
 }

@@ -139,6 +139,7 @@ class menu_Pause : GUI {
 	testEntry.align=Alignment::Fill;
 	testEntry.margin={1,1,1,0};
 	testEntry.height=4;
+	testEntry.setText("testy");
 
 
 	// Options Section ----
