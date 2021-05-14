@@ -63,15 +63,41 @@ namespace GUI { namespace Skin {
 		
 } }
 
+// # GUI Paint Helper functions --------
+// All the colors and textures and stuff.
+
+
+namespace GUI { namespace Paint { shared class Border {
+    private Rectanglef top;
+    private Rectanglef left;
+    private Rectanglef bottom;
+    private Rectanglef right;
+
+    Border(float x, float y, float width, float height, float thickness) {
+        top = Rectanglef(x, y, x + width, y + thickness);
+        left = Rectanglef(x, y + thickness, x + thickness, y + height - thickness);
+        bottom = Rectanglef(x, y + height - thickness, x + width, y + height);
+        right = Rectanglef(x + width - thickness, y + thickness, x + width, y + height - thickness);
+    }
+
+    void addToUI() {
+        UI::addRect(top);
+        UI::addRect(left);
+        UI::addRect(bottom);
+        UI::addRect(right);
+    }
+} } }
+
+
 // # GUI Namespace --------
 // Gui central.
 
 namespace GUI {
 	// #### Math & Generic ----
 	shared bool squareInSquare(Vector2f&in pos, Vector2f&in size, Vector2f&in sPos, Vector2f&in sSize) {
-		return (pos.x>=sPos.x && pos.y>=sPos.y && pos.x+size.x<=sPos.x+sSize.x && pos.y+size.y<=sPos.y+sSize.y);
+		return (pos.x>=sPos.x && pos.y>=sPos.y && (pos.x+size.x)<=(sPos.x+sSize.x) && (pos.y+size.y)<=(sPos.y+sSize.y));
 	}
-	shared bool pointInSquare(Vector2f&in point, Vector2f&in pos, Vector2f&in size) { return squareInSquare(point,Vector2f(),pos,size); }
+	shared bool pointInSquare(Vector2f&in point, Vector2f&in pos, Vector2f&in size) { return (point.x>=pos.x&&point.y>=pos.y&&point.x<=(pos.x+size.x)&&point.y<=(pos.y+size.y)); }
 
 	// #### GUI Base Instances ----
 	// basically, any gui element that does not have a parent is a baseinstance, i.e mainmenu, pausemenu etc.
@@ -153,13 +179,12 @@ namespace GUI {
 	// Handles textentry focus and the input capturer.
 	// Mostly used and managed by GUI::TextEntry instances.
 	shared GUITextEntry@ textEntryFocus;
-	shared bool validTextEntering() { if(@textEntryFocus!=null) { if(textEntryFocus.visible=false) { @textEntryFocus=null; return false; } return true; } return false; }
-
+	shared bool validTextEntering() { if(@textEntryFocus!=null) { if(!textEntryFocus.visible) { @textEntryFocus=null; return false; } return true; } return false; }
 	shared void startTextEntering(GUITextEntry@ gui) { @textEntryFocus=@gui; Input::startTextInputCapture(); }
 	shared void stopTextEntering() { @textEntryFocus=null; Input::stopTextInputCapture(); }
 	shared void updateTextEntering() { if(validTextEntering()) { textEntryFocus.updateTextEntering(); } }
 	shared void clickedTextEntering(Vector2f mpos) {
-		if(validTextEntering() && !GUI::pointInSquare(mpos,textEntryFocus.paintPos,textEntryFocus.paintSize)) { stopTextEntering(); }
+		if(validTextEntering() && !pointInSquare(mpos,textEntryFocus.paintPos,textEntryFocus.paintSize)) { stopTextEntering(); }
 	}
 
 
@@ -176,6 +201,7 @@ namespace GUI {
 
 	shared void startUpdate() {
 		updateMouse();
+		updateTextEntering();
 		int baseLen=baseInstances.length();
 		for(int i=0; i<baseLen; i++) { if(baseInstances[i].visible) { baseInstances[i].drillUpdate(); } }
 
@@ -228,10 +254,11 @@ shared class GUI {
 	void setParent() { if(hasParent) { _parent.removeChild(@this); @_parent=null; hasParent=false; } } // setparent to null, for whatever reason?
 	void setParent(GUI@&in parx) {
 		GUI@ par=@parx; // crash prevention
+		GUI@ ppar=@_parent;
 		if(not hasParent) { @_parent=@par; _parent.addChild(@this); }
 		else if(@_parent != @par) { _parent.removeChild(@this); @_parent=@par; _parent.addChild(@this); }
 		hasParent=true;
-		onSetParent(@par);
+		onSetParent(@par,@ppar);
 	}
 	void removeChildren() { for(int i=_children.length()-1; i>=0; i--) { onChildRemoved(@_children[i]); _children.removeLast(); } }
 	void removeChild(GUI@&in child) { onChildRemoved(@child); _children.removeAt(_children.findByRef(@child)); hasChild=(_children.length()>0); }
@@ -239,7 +266,7 @@ shared class GUI {
 	int findChild(GUI@&in child) { for(int i=0; i<_children.length(); i++) { if(@_children[i]==@child) { return i; } } return -1; }
 
 	// # overrides
-	void onSetParent(GUI@&in parent) {}
+	void onSetParent(GUI@&in parent,GUI@&in prevParent) {}
 	void onChildRemoved(GUI@&in child) {}
 	void onChildAdded(GUI@&in child) {}
 
@@ -247,7 +274,7 @@ shared class GUI {
 	// That can probably be done better, but this function is still useful.
 	bool inParent;
 	bool isInParent() { if(!hasParent) { inParent=true; } else { inParent=_parent.contains(@this); } return inParent; }
-	bool contains(GUI@&in panel) { return GUI::squareInSquare(panel.paintPos+1,panel.paintSize-1,paintPos,paintSize); }
+	bool contains(GUI@&in panel) { return GUI::squareInSquare(panel.paintPos+1,panel.paintSize-1,paintPos-1,paintSize+1); }
 
 	// #### Docking Layout Positioning and Alignment System ----
 	// Aligns menu elements to the parent element, or the screen in the case of no parent.
@@ -273,7 +300,7 @@ shared class GUI {
 	//	- Alignment::Top/Bottom = Aligns to an edge of the parent, and stretches to the width (remaining) of the parent.
 	//	- Alignment::None = Align to .pos and .size relative to GUI Origin, regardless of parent.
 	//	- Alignment::Center = Align to the center of the parent, relative to GUI Origin using .size.
-	//	- Alignment::Fill = Aligns to the center of the parent, and stretches to the width and height of the parent.
+	//	- Alignment::Fill = Aligns to the center of the parent, and stretches to the width AND height (remaining) of the parent. Does not add to layout[n].
 	//	- Alignment::Manual = Alignment is handled by a function.
 	//
 	// margin/layout[0] = left
@@ -316,12 +343,12 @@ shared class GUI {
 		preLayout();
 
 		// executeLayout();
-		if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible && !_children[i].alwaysLayout) { layoutChild(@_children[i]); } } }
+		if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible || _children[i].alwaysLayout) { layoutChild(@_children[i]); } } }
 		internalDoLayout();
 		doLayout();
 
 		// executePostLayout();
-		if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible && !_children[i].alwaysLayout) { _children[i].drillLayout(); } } }
+		if(hasChild) { for(int i=0; i<_children.length(); i++) { if(_children[i].visible || _children[i].alwaysLayout) { _children[i].drillLayout(); } } }
 		internalPostLayout();
 		postLayout();
 	}

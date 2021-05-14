@@ -85,12 +85,10 @@ shared class GUIScrollBarHandle : GUIButton {
 	Vector2f originClick;
 	void internalStartClick(Vector2f mpos) { originClick=mpos; }
 
-	void internalUpdateClickable() {
-		float my=GUI::mouse().y;
-		if(my!=pos.y) { pos.y=my; _parent._parent.invalidateLayout(); }
-	}
 	void updateClickable() {
 		if(pressed) {
+			float my=GUI::mouse().y;
+			if(my!=pos.y) { pos.y=my; _parent._parent.invalidateLayout(); }
 			background.color=GUI::Skin::ScrollBar::hoverColor;
 			foreground.color=GUI::Skin::ScrollBar::downColor;
 
@@ -162,7 +160,7 @@ shared class GUIScrollPanelCanvas : GUI {
 		GUIScrollPanel@ scroller=cast<GUIScrollPanel@>(_parent);
 		for(int i=0; i<_children.length(); i++) {
 			GUI@ child=@_children[i];
-			child.paintPos.y=child.paintPos.y-(scroller.scroll*(layout[1]-paintSize.y));
+			child.paintPos.y=child.paintPos.y-(scroller.scroll*((layout[1]+0.1)-paintSize.y));
 			child.isInParent();
 		}
 	}
@@ -187,13 +185,14 @@ shared class GUIScrollPanel : GUI {
 	// This is probably not needed for anything though.
 	bool scrollEnabled;
 	float _scroll;
-	float scroll { get { return _scroll; } set { _scroll=value; invalidateLayout(); } } 
+	float scroll { get { return _scroll; } set { _scroll=value; } } 
 
 	void internalPostLayout() {
 		scrollEnabled=(canvas.paintSize.y<canvas.layout[1]);
 		if(!scrollEnabled) { scrollbar.visible=false; } else {
 			scrollbar.visible=true;
-			scrollbar.barLength=canvas.paintSize.y/(canvas.layout[1]-canvas.paintSize.y);
+			scrollbar.barLength=canvas.paintSize.y/((canvas.layout[1]+0.1)-canvas.paintSize.y);
+			Debug::log(scroll);
 		}
 	}
 }

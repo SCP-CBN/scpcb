@@ -21,7 +21,7 @@ class ItemTemplate_FirstAid : Item::Template {
 ItemTemplate_FirstAid OriginItem_FirstAid;
 
 
-shared class Item_FirstAid : Item {
+class Item_FirstAid : Item {
 	Item_FirstAid(Item::Template@&in origin) { super(@origin);
 		// onConstructed();
 	}
@@ -57,7 +57,7 @@ class ItemTemplate_SmallFirstAid : Item::Template {
 ItemTemplate_SmallFirstAid OriginItem_SmallFirstAid;
 
 
-shared class Item_SmallFirstAid : Item {
+class Item_SmallFirstAid : Item {
 	Item_SmallFirstAid(Item::Template@&in origin) { super(@origin);
 		// onConstructed();
 	}
@@ -93,7 +93,7 @@ class ItemTemplate_BlueFirstAid : Item::Template {
 ItemTemplate_BlueFirstAid OriginItem_BlueFirstAid;
 
 
-shared class Item_BlueFirstAid : Item {
+class Item_BlueFirstAid : Item {
 	Item_BlueFirstAid(Item::Template@&in origin) { super(@origin);
 		// onConstructed();
 	}

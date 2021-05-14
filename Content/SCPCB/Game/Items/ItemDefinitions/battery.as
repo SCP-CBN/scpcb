@@ -26,7 +26,7 @@ class ItemTemplate_Battery : Item::Template {
 ItemTemplate_Battery OriginItem_Battery;
 
 
-shared class Item_Battery : Item {
+class Item_Battery : Item {
 	Item_Battery(Item::Template@&in origin) { super(@origin);
 		// onConstructed();
 	}
@@ -65,7 +65,7 @@ class ItemTemplate_Battery18v : Item::Template {
 ItemTemplate_Battery18v OriginItem_Battery18v;
 
 
-shared class Item_Battery18v : Item {
+class Item_Battery18v : Item {
 	Item_Battery18v(Item::Template@&in origin) { super(@origin);
 		// onConstructed();
 	}
@@ -104,7 +104,7 @@ class ItemTemplate_StrangeBattery : Item::Template {
 ItemTemplate_StrangeBattery OriginItem_StrangeBattery;
 
 
-shared class Item_StrangeBattery : Item {
+class Item_StrangeBattery : Item {
 	Item_StrangeBattery(Item::Template@&in origin) { super(@origin);
 		// onConstructed();
 	}

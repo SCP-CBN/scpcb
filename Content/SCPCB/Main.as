@@ -4,98 +4,92 @@
 //									//
 // -------------------------------------------------------------------- //
 // Script: SCPCB/Main.as						//
+// Source: https://github.com/juanjp600/scpcb/Content/			//
 // Purpose:								//
-//	- Base Game							//
 //	- Import externals						//
 //	- Prepare environment						//
+//	- Engine hooks							//
+//	- Game entrypoint						//
 //									//
 // -------------------------------------------------------------------- //
 // Authors:								//
+//	- Juan								//
+//	- Salvage							//
 //	- Pyro-Fire							//
 //									//
 //									//
+// -------------------------------------------------------------------- //
+// Links:								//
+//	- Website : https://www.scpcbgame.com				//
+//	- Discord : https://discord.gg/undertow				//
+//									//
+//									//
+//									//
+// -------------------------------------------------------------------- //
+// Licence:								\\
+// 
+// insert license here
+// 
 //									//
 // -------------------------------------------------------------------- \\
 // Documentation
 //
 //
-//	1. Importing
+//	1. Import
+//		# Util
 //		- AngelMath : General math functions and offsets/directions etc for Angelscript.
 //		- AngelString : General string functions for Angelscript.
-//		- Util : Generic utility space, currently used for Model/ModelPicker/ModelIcon utils.
+//		- AngelUI : General draw functions
+//		- IconHandler : Generic icon handler for polymorphism to modelIcons.
 //		- Hook : A function call replicator.
-//		- Timer : Used for delayed functions.
-//		- FloatInterpolator : Smooths numbers over time.
+//		# GUI
 //		- GUI : User Interface / Menu Engine.
-//		- Item : Item libraries and register.
+//		# Console
 //		- Console : C++ interface.
 //
-//	2. Game Platform
-//		- Player : The player controller.
-//		- Game : General purpose Game namespace.
-//		- Game::World : The gameworld and physics and stuff
-//		- Misc : Other general stuff not yet sorted to a better place.
-//
-//	3. Entrypoint
+//	2. Entrypoint
 //		- Engine Hooks : Tick/render/exit/etc.
 //		- main() : void main, the entry point to the SCPCB script.
 //
-//	4. Scrap code
+//	3. Scrap code
 //		- If you don't have a better place to put it...
 //
-//
-// -------------------------------------------------------------------- //
+//									//
+// -------------------------------------------------------------------- \\
 // Begin Script
 
 bool DEBUGGING = true;
 
-// --------------------------------
-// SECTION 1. Import
+// #### SECTION 1. Import ----
 
-// # import(RootScript/BaseClasses/Utility/AngelMath.as);
+// # import(RootScript/BaseClasses/Utility/Util.as); ----
+
+namespace Util { external funcdef void Function(); }
+
+// # util->AngelMath ----
 external enum Alignment;
+namespace Util { external class FloatInterpolator; } // Number smoothing
 
+// # util->AngelString ----
+external int String::findFirstChar(string&in str,string&in delim);
+external string String::substr(string&in str, int&in start, int&in end);
+external array<string> String::explode(string&in str, string&in delim);
+external string String::implode(array<string>&in words, string&in delim);
 
-//external class Vector2d; // Angel 2d vector lib
-//external class Vector3d; // Angel 3d vector lib
-//external class Vector4d; // Angel 4d vector lib
-//external class Square; // Angel square/rectangle lib
-//external class Angle; // angle lib
+// # util->AngelUI ----
+external void UI::drawSquare(Rectanglef&in square, Color&in col=Color::White, Texture@&in tex=null, bool tileTexture=false);
 
+// # util->IconHandler ----
+namespace Util { external class Icon; } // Generic abstract icon
+namespace Util { external class Icon::Model; } // Model icon
 
-// # import(RootScript/BaseClasses/Utility/AngelString.as);
-external array<string> String::explode(string str, string delim);
-external string String::implode(array<string> words, string delim);
-
-// # import(RootScript/BaseClasses/Utility/Util.as);
-external class Util::Model;
-external class Util::ModelPicker;
-external class Util::ModelIcon;
-external class Util::Icon;
-external int Util::tick;
-
+// # util->Hook
 external class Hook;
-external void Hook::Destroy(Hook@&in h);
-external Hook@ Hook::Create(string name);
-
-external class TickTimer;
-external class Timer;
-namespace Timer {
-	external funcdef void Function();
-	external funcdef void Repeater(Timer@&in tmr);
-}
-
-external void Timer::Start(int tock, Timer::Function@ func);
-external void Timer::On(int tock, Timer::Function@ func);
-external Timer@ Timer::Repeat(int tock, Timer::Repeater@ func);
-external void Timer::Stop(Timer@ tmr);
-external void Timer::Stop(TickTimer@ tmr);
-external void Timer::update();
-
-external class FloatInterpolator;
+external void Hook::destroy(Hook@&in h);
+external Hook@ Hook::fetch(string&in name);
 
 
-// # import(RootScript/BaseClasses/Utility/GUI.as);
+// # import(RootScript/BaseClasses/GUI.as); ----
 external class GUI; // Blank GUIComponent / container for other GUIComponents.
 external class GUILabel; // Generic text drawer
 external class GUILabelBox; // A word-wrapped GUILabel.
@@ -132,125 +126,46 @@ namespace GUI {
 	external Texture@ Skin::menuSCP173;
 }
 
-// # import(RootScript/BaseClasses/Entities/Item.as); ----------------
-external class Item;
+// # import(RootScript/BaseClasses/Entities/Item.as); ----
+//external class Item;
 
-external void Item::updateAll();
-external void Item::renderAll();
+//external void Item::updateAll();
+//external void Item::renderAll();
 
-external Item@ Item::spawn(const string&in name, const Vector3f&in position);
-external Item@ Item::spawn(const string&in name, const Vector3f&in position, const Vector3f&in rotation);
+//external Item@ Item::spawn(const string&in name, const Vector3f&in position);
+//external Item@ Item::spawn(const string&in name, const Vector3f&in position, const Vector3f&in rotation);
 
 
-// # import(RootScript/BaseClasses/Utility/GUI.as -> $C++/Console) ----------------
+// # import(RootScript/BaseClasses/Utility/GUI.as -> $C++/Console); ----
 //external class ConsoleMenu { ConsoleMenu@ instance; }
 //ConsoleMenu@ ConsoleMenu::instance;
 //external void Console::addMessage(const string&in msg, const Color&in color = Color::White);
 
-// --------------------------------
-// SECTION 2. Game Platform
-
-// # Player{} --------
-namespace Player {
-	PlayerController@ Controller;
-	float Height=15.f;
-	float Radius=Height*(5.f/15.f);
-
-	Vector3f pos { get { return Controller.position; }
-		set { Controller.position=value; }
-	}
-
-	void Initialize() {
-		@Controller=PlayerController(Radius,Height);
-		Controller.setCollisionCollection(@Game::World::Collision);
-		pos=Vector3f(0,Height+5,0);
-
-	}
-}	
-
-// # Game{} --------
-namespace Game {
-	int tick { get { return Util::tick; } set { Util::tick=value; } }
-	Hook@ tickHook=Hook("tick");
-
-	void Initialize() {
-		Game::World::Initialize();
-		Player::Initialize();
-
-		GUI::Initialize();
-		Loadscreen::Initialize();
-		@MainMenu=menu_Main();
-		@PauseMenu=menu_Pause();
-		@ConsoleMenu=menu_Console();
-	}
-
-	void update(float interp) {
-		updateMenuState(); // Escape doesn't always capture in renderMenu ??
-		tick=tick+1;
-		Timer::update();
-		GUI::startUpdate();
-		Game::World::update();
-		tickHook.call();
-		if(queuedNewGame) {
-			BuildNewGame();
-			queuedNewGame=false;
-		}
-		Item::updateAll();
-		if(DEBUGGING) { AngelDebug::update(interp); }
-	}
-	void render(float interp) {
-		Game::World::render();
-		if(DEBUGGING) { AngelDebug::render(interp); }
-	}
-	void renderMenu(float interp) {
-		GUI::startRender();
-		if(DEBUGGING) { AngelDebug::renderMenu(interp); }
-	}
-
-	void exit() {
-
-	}
+// #### SECTION 2. Entrypoint ----
 
 
+// # Engine Hooks --------
+void renderMenu(float interp) { Game::renderMenu(interp); if(DEBUGGING) { AngelDebug::renderMenu(interp); } }
+void render(float interp) { Game::render(interp); if(DEBUGGING) { AngelDebug::render(interp); } }
+void update(float interp) { Game::update(interp); if(DEBUGGING) { AngelDebug::update(interp); } }
+void exit() { Game::exit(); Debug::log("GAME OVER, YEAH!"); }
 
-	void updateMenuState() {
-		if(Input::getHit() & Input::Inventory != 0) { Debug::log("hotkey Open Inventory"); }
-		else if(Input::getHit() & Input::ToggleConsole != 0) { Debug::log("hotkey Open Console"); ConsoleMenu.visible=true; }
-		else if(Input::getHit() & Input::Crouch != 0) { Debug::log("hotkey Crouch"); }
-		else if(Input::Escape::isHit()) {
-			Debug::log("Escape was pressed11"); // Apparently this code doesn't run without calling a Debug::log. isHit() is weird.
-			bool menuIsOpen=false;
-			for(int i=0; i<GUI::baseInstances.length(); i++) {
-				if(GUI::baseInstances[i].visible==true) {
-					menuIsOpen=true;
-					GUI::baseInstances[i].visible=false;
-				}
-			}
-			if(menuIsOpen==true) {
-				World::paused=false;
-			} else {
-				World::paused=true;
-				PauseMenu.open();
-			}
-		}
-	}
+// # main() --------
+void main() {
+	Game::Initialize();
+
+	@lcz = LightContainmentZone();
+	@test_shared_global = @lcz;
+
+	if(DEBUGGING) { AngelDebug::Initialize(); }
+	PerTick::register(update);
+	PerFrameGame::register(render);
+	PerFrameMenu::register(renderMenu);
 }
 
 
-
-
-// # Game::World --------
-namespace Game { namespace World {
-	Collision::Collection@ Collision;
-	void Initialize() {
-		::World::paused = true;
-		@Collision=Collision::Collection();
-	}
-	void update() {
-	}
-	void render() {
-	}
-} }
+// --------------------------------
+// SECTION 4. Scrap Code
 
 // # Misc --------
 bool queuedNewGame=false;
@@ -268,36 +183,6 @@ void BuildNewGame() {
 	PauseMenu.visible=false;
 	LoadingMenu.visible=false;
 }
-
-// --------------------------------
-// SECTION 3. Entrypoint
-
-
-// # Engine Hooks --------
-void renderMenu(float interp) { Game::renderMenu(interp); if(DEBUGGING) { AngelDebug::renderMenu(interp); } }
-void render(float interp) { Game::render(interp); if(DEBUGGING) { AngelDebug::render(interp); } }
-void update(float interp) { Game::update(interp); if(DEBUGGING) { AngelDebug::update(interp); } }
-void exit() { Game::exit(); Debug::log("GAME OVER, YEAH!"); }
-
-// # main() --------
-void main() {
-	Game::Initialize();
-
-	@lcz = LightContainmentZone();
-	@test_shared_global = @lcz;
-
-	if(DEBUGGING) { AngelDebug::Initialize(); }
-
-	PerTick::register(update);
-	PerFrameGame::register(render);
-	PerFrameMenu::register(renderMenu);
-
-}
-
-
-// --------------------------------
-// SECTION 4. Scrap Code
-
 
 
 external class Room;

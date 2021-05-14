@@ -31,11 +31,43 @@ int tick = 0;
 //GUIText@ fpsCounter;
 float time = 0.f;
 float blinkTimer = 10.f;
-FloatInterpolator@ blinkInterpolator = FloatInterpolator();
+Util::FloatInterpolator@ blinkInterpolator = Util::FloatInterpolator();
 
+
+class vItem {
+	string namex;
+	vItem(string&in nm) {
+		Debug::log("Make Item : " + namex);
+		//vItemTemplates.insertLast(@this);
+	}
+//	const void vItem(string&in nm) {
+//		Debug::log("Make Const Item : " + namex);
+//	}
+}
+
+class vItemTemplate {
+	string name;
+	vItemTemplate(string nm) {
+		name=nm;
+		Debug::log("Make template : " + name);
+	}
+}
+
+array<vItemTemplate@> vItemTemplates;
+
+namespace vItem {
+	string name;
+	void vItem(string nm) {
+		name=nm;
+		Debug::log("Make namespace : " + name);
+	}
+}
 
 void Initialize() { // This is the first function that is called lol.
 	Debug::log("AngelDebug - Start Testing Area");
+
+	vItem@ testitem = vItem("bananas");
+	const vItem@ testRootItem = vItem("cheese");
 
 	@testController=@Player::Controller;
 	@testCollCollection=@Game::World::Collision;

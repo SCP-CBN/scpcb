@@ -1,145 +1,83 @@
-// Script: RootScript/BaseClasses/World.as
-// Purpose: Generic baseclasses such as World::Model with a model and coordinates.
+// -------------------------------------------------------------------- //
+//									//
+//			SCP : Containment Breach			//
+//									//
+// -------------------------------------------------------------------- //
+// Script: RootScript/Utility/Util.as					//
+// Source: https://github.com/juanjp600/scpcb/Content/			//
+// Script File Author(s): Pyro-Fire					//
+// Purpose:								//
+//	- Player Manager						//
+//									//
+//									//
+// -------------------------------------------------------------------- \\
+// Documentation
+//
+//	SECTION 1. AngelMath
+//		- Alignment : Alignment enumerator
+//		- Util::FloatInterpolator : Number smoother
+//
+//	SECTION 2. AngelString
+//		- Icon <class> : Abstractable Icon@ generator definition.
+//		- Icon::Model : Icon@ which generates a texture from a model.
+//
+//	SECTION 3. AngelUI
+//		- drawSquare : Draws a textured, colored Rectanglef.
+//
+//	SECTION 3. Icon Handler
+//		- Util::Icon <class> : Abstractable Icon@ generator definition.
+//		- Util::Icon::Model : Icon@ which generates a texture from a model.
+//
+//	SECTION 4. Hook
+//		- Hook <namespace> : Create and destroy hooks
+//		- Hook@ : call hooks, and add to hook.
+//		Usage:
+//			Hook::fetch(name).add(@Hook::Function);
+//
+//	SECTION 5. Timer
+//		- Timer <namespace> : Create and destroy timed functions
+//		- Timer@ : A repeating timer.
+//		- TickTimer@ : A one-use timer.
+//		Usage:
+//			Timer::start(n_ticks_from_now, Timer::Function)
+//			Timer::on(nth_tick, Timer::function)
+//			Timer::repeat(every_nth_tick, Timer::Repeater(Timer@ tmr))
+//			Timer@.stop();
+//
+//									//
+// -------------------------------------------------------------------- \\
+// Begin Script
+
+namespace Util { shared funcdef void Function(); }
 
 
-namespace Util {
-	shared int tick;
-	shared class Model {
-		::Model@ mesh;
-		Model(string&in cpath) {
-			@mesh=::Model::create(cpath);
-			mesh.position=Vector3f(0,0,0);
-			mesh.rotation=Vector3f(0,0,0);
-			mesh.scale=Vector3f(1,1,1);
-		}
-		~Model() { ::Model::destroy(mesh); }
-		Vector3f position { get { return mesh.position; } set { mesh.position = value; } }
-		Vector3f rotation { get { return mesh.rotation; } set { mesh.rotation = value; } }
-		Vector3f scale { get { return mesh.scale; } set { mesh.scale = value; } }
-		void render() { mesh.render(); }
+// #### SECTION 1. AngelMath ----
 
-		bool physAlive;
-		int physGravity = 0.5;
-	}
+// # AngelMath ----
+// Numeracy functions, definitions, libraries etc
 
+shared enum Alignment {
+    Center = 0x0,
 
-	shared abstract class Icon {
+    Left = 0x1,
+    Right = 0x2,
+    Top = 0x4,
+    Bottom = 0x8,
 
-		// Texture must be built during execution stage.
+    Forward = 0x10,
+    Backward = 0x20,
 
-		Texture@ texture;
+    Fill = 0x10,
+    Manual = 0x20,
 
-		Icon() {}
-
-	}
-
-	shared class ModelPicker : Model {
-		Pickable@ picker;
-		ModelPicker(string&in cpath) { super(cpath);
-			@picker=Pickable();
-			picker.position=Vector3f(0,0,0);
-			pickable(true);
-		}
-		~ModelPicker() { ::Model::destroy(mesh); pickable(false); }
-		Vector3f position { get { return mesh.position; } set { mesh.position = value; picker.position = value; } }
-		bool picked { get { return picker.getPicked(); } }
-		void pickable(bool pick) {
-			if(pick) {
-				Pickable::activatePickable(picker);
-			} else {
-				Pickable::deactivatePickable(picker);
-			}
-		}
-	}
-
-	shared class ModelIcon : Icon {
-		string iconPath;
-		float iconScale;
-		Vector3f iconRot;
-		Vector2f iconPos;
-		ModelIcon(string&in cpath, float&in cscale, Vector3f&in crot, Vector2f&in cpos) { super();
-			iconPath=cpath;
-			iconScale=cscale;
-			iconRot=crot;
-			iconPos=cpos;
-			@texture = ModelImageGenerator::generate(iconPath, iconScale, iconRot, iconPos);
-		}
-	}
-
-}
-
-
-namespace Hook {
-	shared funcdef void Function();
-	shared array<Hook@> hooks;
-	shared Hook@ Fetch(string name) {
-		for(int i=0; i<hooks.length(); i++) { if(hooks[i].name==name) { return @hooks[i]; } }
-		return null;
-	}
-	shared Hook@ Create(string name) { Hook@ h = Hook(name); return @h; }
-	shared void Destroy(Hook@&in h) { for(int i=0; i<hooks.length(); i++) { if(@hooks[i]==@h) { hooks.removeAt(i); return; } } }
-}
-
-shared class Hook {
-	Hook(string nm) { Hook::hooks.insertLast(@this); name=nm; }
-	~Hook() {}
-	string name;
-	array<Hook::Function@> funcs;
-	void add(Hook::Function@&in func) { funcs.insertLast(@func); }
-	void call() { for(int i=0; i<funcs.length(); i++) { funcs[i](); } }
-	void remove(Hook::Function@&in func) { for(int i=0; i<funcs.length(); i++) { if(@func==@funcs[i]) { funcs.removeAt(i); return; } } }
+    None = 0x40,
 }
 
 
 
-shared class TickTimer {
-	int tickTarget;
-	Timer::Function@ func;
-	TickTimer(int tick, Timer::Function@&in f) { tickTarget=tick; @func=@f; }
-	void Test() { if(Util::tick>=tickTarget) { func(); } }
-}
-shared class Timer {
-	int tickTarget;
-	int tickStart;
-	Timer::Repeater@ func;
-	Timer(int tick, Timer::Repeater@&in f) { tickStart=Util::tick+tick; tickTarget=tick; @func=@f; }
-	void Test() { if((Util::tick-tickStart)%tickTarget==0) { func(@this); } }
-}
-
-//external int Game::tick;
-namespace Timer {
-	funcdef void Function();
-	funcdef void Repeater(Timer@&in);
-	shared array<TickTimer@> tickTimers;
-	shared array<Timer@> tickRepeaters;
-	shared void Start(int tock, Function@ func) {
-		TickTimer@ ticker=TickTimer(Util::tick+tock,@func);
-		tickTimers.insertLast(@ticker);
-	}
-	shared void On(int tock, Function@ func) {
-		TickTimer@ ticker=TickTimer(tock,@func);
-		tickTimers.insertLast(@ticker);
-	}
-	shared Timer@ Repeat(int tock, Repeater@ func) {
-		Timer@ ticker=Timer(tock,@func);
-		tickRepeaters.insertLast(@ticker);
-		return @ticker;
-	}
-	shared void Stop(Timer@ tmr) {
-		for(int i=0; i<tickRepeaters.length(); i++) { if(@tickRepeaters[i]==@tmr) { tickRepeaters.removeAt(i); break; } }
-	}
-	shared void Stop(TickTimer@ tmr) {
-		for(int i=0; i<tickTimers.length(); i++) { if(@tickTimers[i]==@tmr) { tickTimers.removeAt(i); break; } }
-	}
-
-	shared void update() {
-		for(int i=0; i<tickTimers.length(); i++) { tickTimers[i].Test(); }
-		for(int i=0; i<tickRepeaters.length(); i++) { tickRepeaters[i].Test(); }
-	}
-}
-
-
-shared class FloatInterpolator {
+// # Util::FloatInterpolator@ ----
+// Number smoother
+namespace Util { shared class FloatInterpolator {
 	private float prevValue = 0.f;
 	private float currValue = 0.f;
 
@@ -148,5 +86,90 @@ shared class FloatInterpolator {
 
 	float lerp(float interpolation) {return prevValue + (currValue - prevValue) * interpolation;}
 
+} }
+
+
+// #### SECTION 2.AngelString ----
+
+// # AngelString ----
+// String manipulation functions
+namespace String {
+	shared int findFirstChar(string&in str,string&in delim) { for(int i=0; i<str.length(); i++) { if(str[i]==delim) { return i; } } return -1; }
+	shared string substr(string&in str, int&in start, int&in end) { string phrase=""; for(int i=start; i<=end; i++) { phrase+=str[i]; } return phrase; }
+	shared array<string> explode(string&in str,string&in delim) {
+		int f=findFirstChar(str,delim);
+		if(f<0) { return {str};}
+		array<string> words;
+		string phrase=str;
+		while(f>-1) {
+			string w=phrase.substr(0,f);
+			words.insertLast(w);
+			phrase=substr(phrase,f+1,phrase.length());
+			f=findFirstChar(phrase,delim);
+			if(f<0) { words.insertLast(phrase); break; }
+		}
+		return words;
+	}
+
+	shared string implode(array<string>&in words, string&in delim) {
+		return "todo";
+	}
+}
+
+
+// #### SECTION 3. Icon Handler ----
+
+namespace UI {
+	shared void drawSquare(Rectanglef&in square, Color&in col=Color::White, Texture@&in tex=null, bool tileTexture=false) {
+		if(@tex==null) { UI::setTextureless(); } else { UI::setTextured(tex,tileTexture); }
+		UI::setColor(col);
+		UI::addRect(square);
+	}
+}
+
+// #### SECTION 4. Icon Handler ----
+
+// # Util::Icon@ ----
+// Generic texture icon
+namespace Util { shared class Icon { Texture@ texture; Icon() {}; void generate() {}; } }
+
+// # Util::Icon::Model@ ----
+// IconModel
+namespace Util { namespace Icon { shared class Model : Icon {
+	string path;
+	float scale;
+	Vector3f rotation;
+	Vector2f pos;
+	Model(string iPath, float iScale, Vector3f iRotation, Vector2f iPos) { super();
+		path=iPath; scale=iScale; pos=iPos; rotation=iRotation;
+		generate();
+	}
+	void generate() { @texture = ModelImageGenerator::generate(path, scale, rotation, pos); }
+} } }
+
+
+
+// #### SECTION 5. Hook ----
+
+// # Hook:: ----
+// Function call replicator.
+namespace Hook {
+	shared array<Hook@> hooks;
+	shared Hook@ fetch(string&in name) {
+		for(int i=0; i<hooks.length(); i++) { if(hooks[i].name==name) { return @hooks[i]; } }
+		return null;
+	}
+	shared void destroy(Hook@&in h) { for(int i=0; i<hooks.length(); i++) { if(@hooks[i]==@h) { hooks.removeAt(i); return; } } }
+}
+
+// # Hook@ ----
+// Replicator class for .call();
+shared class Hook {
+	Hook(string&in nm) { Hook::hooks.insertLast(@this); name=nm; }
+	string name;
+	array<Util::Function@> funcs;
+	void add(Util::Function@&in func) { funcs.insertLast(@func); }
+	void call() { for(int i=0; i<funcs.length(); i++) { funcs[i](); } }
+	void remove(Util::Function@&in func) { for(int i=0; i<funcs.length(); i++) { if(@func==@funcs[i]) { funcs.removeAt(i); return; } } }
 }
 

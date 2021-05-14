@@ -159,6 +159,7 @@ shared class GUITextEntry : GUIClickable {
 	}
 
 	void updateTextEntering() {
+		Debug::log("Text entering update");
 		if(Input::Escape::isHit()) { keyboardEscape(); return; }
 		if(pressed) { selectCharacters(); return; }
 		string append=Input::getTextInput();

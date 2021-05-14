@@ -75,6 +75,7 @@ void ScriptManager::messageCallback(const asSMessageInfo* msg, void* param) {
     LogEntry newLogEntry;
     switch (msg->type) {
         case asEMsgType::asMSGTYPE_ERROR: {
+
             newLogEntry.type = LogEntry::Type::AngelScriptError;
         } break;
         case asEMsgType::asMSGTYPE_WARNING: {

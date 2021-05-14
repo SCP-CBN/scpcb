@@ -1,13 +1,13 @@
 namespace Item {
-	shared array<Item::Template@> templates;
-	shared array<Item@> instances;
-	shared void Register(Item::Template@&in template) {
+	array<Item::Template@> templates;
+	array<Item@> instances;
+	void Register(Item::Template@&in template) {
 		template.local_name = Local::getTxt("Items." + template.name + ".Name");
 		templates.insertLast(@template);
 	}
 
-	shared Item@ spawn(const string&in name, const Vector3f&in position) { return spawn(name,position,Vector3f(0,0,0)); }
-	shared Item@ spawn(const string&in name, const Vector3f&in position, const Vector3f&in rotation) {
+	Item@ spawn(const string&in name, const Vector3f&in position) { return spawn(name,position,Vector3f(0,0,0)); }
+	Item@ spawn(const string&in name, const Vector3f&in position, const Vector3f&in rotation) {
 		Item::Template @template;
 		for (int i = 0; i < templates.length(); i++) {
 			if(templates[i].name == name) {
@@ -25,11 +25,11 @@ namespace Item {
 		instance.rotation=rotation;
 		return instance;
 	}
-	shared void updateAll() { for (int i=0; i<instances.length(); i++) { instances[i].update(); } }
-	shared void renderAll() { for (int i=0; i<instances.length(); i++) { instances[i].render(); } }
+	void updateAll() { for (int i=0; i<instances.length(); i++) { instances[i].update(); } }
+	void renderAll() { for (int i=0; i<instances.length(); i++) { instances[i].render(); } }
 }
 
-shared abstract class Item::Template {
+abstract class Item::Template {
 	Template() { Item::templates.insertLast(@this); }
 	string name;
 	string local_name;
@@ -52,7 +52,7 @@ shared abstract class Item::Template {
 	Item@ MakeInstance() { Debug::error("Tried to make an instance of a null template!"); return null; }
 }
 
-shared abstract class Item {
+abstract class Item {
 
 	// Identity
 	string name;
@@ -62,11 +62,11 @@ shared abstract class Item {
 	Texture@ icon;
 
 	// Model/Picker, and alias model position/rotation/picker onto item.position/rotation/picker
-	Util::ModelPicker@ model;
+	Game::Model::Picker@ model;
 	Vector3f position { get { return model.position; } set { model.position = value; } }
 	Vector3f rotation { get { return model.rotation; } set { model.rotation = value; } }
 	bool picked { get { return model.picked; } }
-	bool pickable { set { model.pickable(value); } }
+	bool pickable { set { model.pickable=value; } }
 	bool carried;
 
 	// Lifecycle
@@ -81,7 +81,7 @@ shared abstract class Item {
 	Item(Item::Template@&in origin) {
 		Item::Template@ originTemplate = @origin; // This may seem like it does nothing, but it's actually stopping a crash.
 		@template=@originTemplate;
-		Util::ModelPicker @mdl = Util::ModelPicker(template.modelPath);
+		Game::Model::Picker @mdl = Game::Model::Picker(template.modelPath);
 		@model=@mdl;
 		if(template.modelScale != 0) {
 			model.scale=Vector3f(template.modelScale);
@@ -90,7 +90,7 @@ shared abstract class Item {
 		name=template.name;
 		Item::instances.insertLast(@this);
 
-		Util::Icon @iconData = Util::ModelIcon(template.modelPath, template.iconScale, template.iconRot, template.iconPos);
+		@iconData = Util::Icon::Model(template.modelPath, template.iconScale, template.iconRot, template.iconPos);
 		@icon=@iconData.texture;
 		inPVS=true;
 		valid=true;

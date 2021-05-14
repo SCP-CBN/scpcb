@@ -8,7 +8,7 @@ namespace MainMenu {
 
 
 menu_Main@ MainMenu;
-menu_Main_ButtonPanel@ MainMenu_ButtonPanel;
+	menu_Main_ButtonPanel@ MainMenu_ButtonPanel;
 
 menu_Main_ContinueButton@ MainMenu_ContinueBtn;
 menu_Main_NewGameButton@ MainMenu_NewGameBtn;
@@ -89,7 +89,7 @@ class menu_Main : GUI {
 	version.fontScale=1;
 
 	@rnjesus=Random();
-	rngLerp=FloatInterpolator();
+	//@rngLerp;
 	}
 	void doLayout() {
 		Debug::log("Layed out Main Menu");
@@ -101,7 +101,7 @@ class menu_Main : GUI {
 	float opacitysin;
 	float opacitycos;
 
-	FloatInterpolator rngLerp;
+	Util::FloatInterpolator rngLerp=Util::FloatInterpolator();
 
 	void prePaint() {
 		float rng=rnjesus.nextFloat(); // rnjesus.pray();

@@ -23,7 +23,7 @@ class ItemTemplate_Gasmask : Item::Template {
 ItemTemplate_Gasmask OriginItem_Gasmask;
 
 
-shared class Item_Gasmask : Item {
+class Item_Gasmask : Item {
 	Item_Gasmask(Item::Template@&in origin) { super(@origin);
 		// onConstructed();
 	}
