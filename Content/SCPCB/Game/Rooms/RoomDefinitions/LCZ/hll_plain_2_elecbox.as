@@ -3,7 +3,7 @@ namespace Room { namespace hll_plain_2_elecbox { Template@ thisTemplate=Template
 		Template() { super();
 			name		= "hll_plain_2_elecbox";
 			zone		= "LCZ";
-			@model		= Room::Model(rootDirCBR + zone + "/" + name + "/" + name + ".rm2");
+			@model		= Room::Model(rootDirCBR_LCZ + name + "/" + name + ".rm2");
 		}
 	}
 	class Instance : Room { Instance() {super(@thisTemplate);};

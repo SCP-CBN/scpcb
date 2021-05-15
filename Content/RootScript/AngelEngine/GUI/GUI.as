@@ -513,7 +513,7 @@ shared class GUI {
 		GUI@ child=@_children[i]; if( child.visible && GUI::pointInSquare(mpos,child.paintPos,child.paintSize)) { child.drillClick(mpos,clickables); }
 	} } }
 
-	void callClick(Vector2f mpos) { internalClick(mpos); doClick(mpos); hovering=false; wasHovered=false; if(@clickFunc!=null) { Debug::log("CallClick!"); clickFunc(); } }
+	void callClick(Vector2f mpos) { internalClick(mpos); doClick(mpos); hovering=false; wasHovered=false; if(@clickFunc!=null) { clickFunc(); } }
 	void internalClick(Vector2f mpos) {} // internal override
 	void doClick(Vector2f mpos) {doClick();} // Vector2f override
 	void doClick() {} // Override without Vector2f / alias.

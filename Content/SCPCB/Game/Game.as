@@ -144,24 +144,29 @@ namespace Game {
 			Item::startLoading();
 			break;
 		case 3:
-			if(Item::load()) {
-				loadNext("Game");
-			} else {
-				loadDone++;
-			}
+			if(Item::load()) { loadNext("Rooms"); }
+			else { loadDone++; }
 			break;
 		case 4:
+			loadNext("Rooms");
+			Room::startLoading();
+			break;
+		case 5:
+			if(Room::load()) { loadNext("Game"); }
+			else { loadDone++; }
+			break;
+		case 6:
 			loadNext("Zones...");
 		//	@lcz = LightContainmentZone();
 		//	@test_shared_global = @lcz;
 			loadMessage="done!";
 			break;
-		case 5:
+		case 7:
 			loadNext("AngelDebug");
 			if(DEBUGGING) { AngelDebug::load(); }
 			loadMessage="done!";
 			break;
-		case 6:
+		case 8:
 			loadNext("Starting up");
 			if(DEBUGGING) { AngelDebug::Initialize(); }
 			tickHook.add(@onTick);
@@ -169,7 +174,7 @@ namespace Game {
 			Menu::Pause::load();
 			@ConsoleMenu=menu_Console();
 			break;
-		case 7:
+		case 9:
 			loadNext("Finished!");
 			LoadingMenu.visible=false;
 			MainMenu.visible=true;
@@ -250,7 +255,17 @@ namespace Game { class Room {
 	}
 	~Room() { RM2::delete(@mesh); }
 
-	void render() { } //mesh.render(); }
+	Collision::Collection@ meshCollisions;
+
+	void render(Matrix4x4f&in matrix) { mesh.render(matrix); }
+	array<Collision::Instance> getCollision() { return array<Collision::Instance>(mesh.collisionMeshCount()); }
+	void appendCollisionsToWorld(Matrix4x4f&in matrix) {
+		auto meshes=array<Collision::Instance>(mesh.collisionMeshCount());
+		for(int i=0; i<mesh.collisionMeshCount(); i++) {
+			Collision::Instance collider = Game::World::Collision.addInstance(mesh.getCollisionMesh(i),matrix);
+			Game::World::Collision.updateInstance(collider,matrix);
+		}
+	}
 
 } }
 
@@ -263,13 +278,13 @@ namespace Game { namespace World {
 	}
 	void update() {
 		Item::updateAll();
+		Room::updateAll();
 	}
 	void render() {
 		Item::renderAll();
+		Room::renderAll();
 	}
 } }
-
-
 
 
 // #### SECTION 6. Timer ----

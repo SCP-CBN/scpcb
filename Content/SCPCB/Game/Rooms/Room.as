@@ -1,3 +1,11 @@
+// # Room::Type ----
+namespace Room { enum Type {
+    R1 = 1,
+    R2 = 2,
+    R2C = 3,
+    R3 = 4,
+    R4 = 5
+} }
 
 // # Room::Model@ ----
 namespace Room { class Model {
@@ -57,13 +65,28 @@ abstract class Room {
 	Room(Room::Template@&in temp) { 
 		Room::Template@ antiCrashWorkaround=@temp;
 		@template=@antiCrashWorkaround;
-		if(@template.model!=null) { @model=template.model.instantiate(); }
+		//if(@template.model!=null) { @model=template.model.instantiate(); }
 	}
 	Room::Template@ template;
 
-	Game::Room@ model;
-	void render() { model.render(); }
-	void update() {}
+	Vector3f _position;
+	Vector3f position { get { return _position; } set { _position=value; recalculateWorldMatrix(); } }
+	float _rotation;
+	float rotation { get { return _rotation; } set { _rotation=value; recalculateWorldMatrix(); } }
+	Vector3f _scale=Vector3f(0.1, 0.1, 0.1);
+	Vector3f scale { get { return _scale; } set { _scale=value; recalculateWorldMatrix(); } }
+
+	Matrix4x4f _worldMatrix;
+	Matrix4x4f worldMatrix { get { return _worldMatrix; } }
+
+	void recalculateWorldMatrix() { doCalculateMatrix(); }
+	void doCalculateMatrix() {
+		_worldMatrix = Matrix4x4f::constructWorldMat(position, scale, Vector3f(0.0, Math::degToRad(rotation), 0.0));
+	}
+
+	void render() { template.mesh.render(worldMatrix); }
+	void update() {
+	}
 
 }
 
@@ -92,16 +115,16 @@ namespace Room {
 		for(int i=0;i<templates.length();i++) { templates[i].construct(); }
 	}
 
-	Room@ spawn(const string&in name) { return spawn(name,Vector3f(),Vector3f()); }
-	Room@ spawn(const string&in name, const Vector3f&in position) { return spawn(name,position,Vector3f()); }
-	Room@ spawn(const string&in name, const Vector3f&in position, const Vector3f&in rotation) {
+	Room@ spawn(const string&in name, const Vector3f&in position=Vector3f(), const float&in rotation=0) {
 		Room::Template@ template;
 		for(int i=0; i<templates.length(); i++) { if(templates[i].name==name) { @template=@templates[i]; break; } }
 		if(@template==null) { Debug::error("Room Spawn failed - Room Template not found: " + name); return null; }
 		Room@ instance=template.instantiate();
-		//instance.position=position;
-		//instance.rotation=rotation;
+		instance.position=position;
+		instance.rotation=rotation;
 		instances.insertLast(@instance);
+		instance.recalculateWorldMatrix();
+		Debug::log("Spawned room : " + template.name);
 		return @instance;
 	}
 	void updateAll() { for (int i=0; i<instances.length(); i++) { instances[i].update(); } }

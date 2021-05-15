@@ -4,6 +4,8 @@
 namespace Menu { namespace Pause {
 	Window@ instance;
 
+	Font@ roomBtnFont=Font::inconsolata_small;
+
 	void load() {
 		@instance=Window();
 	}
@@ -48,6 +50,22 @@ namespace Menu { namespace Pause { class InfoPanel : GUI {
 		seednum.alignHorizontal=GUI::Align::Left;
 	}
 } } }
+
+// # Menu::Pause::SpawnRoomButton (GUI class) ----
+namespace Menu { namespace Pause { class SpawnRoomButton : GUIButtonLabel {
+	Room::Template@ room;
+	SpawnRoomButton(GUI@ parent, Room::Template@ rm) { super(@parent, "Menu::Pause::SpawnRoomButton");
+		@room=@rm;
+		text=room.name;
+		@label.font=@roomBtnFont;
+	}
+	void doClick() {
+		Debug::log("Wants to spawn Room : " + room.name);
+		Room::spawn(room.name, Player::Controller.position-Vector3f(0,20,0));
+		instance.unpause();
+	}
+} } }
+
 
 
 
@@ -110,7 +128,7 @@ namespace Menu { namespace Pause { class Window : GUI {
 	void openToGUITest() { switchPage(); canvasGUITest.visible=true; }
 	void openToQuit() { visible=false; MainMenu.visible=true; } // change to Menu::Main::instance.visible=true;
 	void tpToZero() { Player::Controller.position=Vector3f(0,Player::Height+5,0); unpause(); }
-	void toggleNoclip() { Debug::log("Try Noclip"); unpause(); bool nclip=Player::Controller.noclip; Player::Controller.noclip=!nclip; btnNoclip.text="Noclip ("+ (!nclip ? "ON" : "OFF") +")"; }
+	void toggleNoclip() { bool nclip=Player::Controller.noclip; Player::Controller.noclip=!nclip; btnNoclip.text="Noclip ("+ (!nclip ? "ON" : "OFF") +")"; unpause(); }
 
 	GUI@ canvasMain;
 	void constructMain() {
@@ -162,6 +180,30 @@ namespace Menu { namespace Pause { class Window : GUI {
 		@btnQuit.clickFunc=Util::Function(openToQuit);
 	}
 
+
+	GUI@ canvasRoomSpawner;
+	void constructRoomSpawner() {
+		@canvasRoomSpawner=GUI(@canvas);
+		canvasRoomSpawner.align=GUI::Align::Fill;
+
+		auto@ btnBack = GUIButtonLabel(@canvasRoomSpawner);
+		btnBack.align=GUI::Align::Bottom;
+		btnBack.margin={1,1,1,1};
+		btnBack.height=8;
+		btnBack.text="Back";
+		@btnBack.clickFunc=Util::Function(openToDebug);
+
+		auto@ panelOfButtons=GUIScrollPanel(@canvasRoomSpawner);
+		panelOfButtons.align=GUI::Align::Fill;
+
+		for(int i=0; i<Room::templates.length(); i++) {
+			auto@ btnRoom = SpawnRoomButton(@panelOfButtons, @Room::templates[i]);
+			btnRoom.align=GUI::Align::Top;
+			btnRoom.margin={1,1,1,0};
+			btnRoom.height=8;
+			//btnRoom.label.fontScale=1;
+		}
+	}
 
 
 	GUI@ canvasLoad;
@@ -215,7 +257,6 @@ namespace Menu { namespace Pause { class Window : GUI {
 		btnBack.height=8;
 		btnBack.text="Back";
 		@btnBack.clickFunc=Util::Function(openToDebug);
-
 
 
 		GUIButton@ testentryPanel=GUIButton(@canvasGUITest);
@@ -309,21 +350,6 @@ namespace Menu { namespace Pause { class Window : GUI {
 
 	}
 
-	GUI@ canvasRoomSpawner;
-	void constructRoomSpawner() {
-		@canvasRoomSpawner=GUI(@canvas);
-		canvasRoomSpawner.align=GUI::Align::Fill;
-
-		auto@ btnBack = GUIButtonLabel(@canvasRoomSpawner);
-		btnBack.align=GUI::Align::Bottom;
-		btnBack.margin={1,1,1,1};
-		btnBack.height=8;
-		btnBack.text="Back";
-		@btnBack.clickFunc=Util::Function(openToDebug);
-
-
-
-	}
 
 
 	GUI@ canvasCheats;

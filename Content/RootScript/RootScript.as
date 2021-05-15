@@ -51,10 +51,10 @@ shared string rootDirLoadscreens = rootDirGFX + "Loadingscreens/";
 shared string rootDirGFXItems	= rootDirGFX + "Items/";
 shared string rootDirGFXMenu	= rootDirGFX + "Menu/";
 
-shared string rootDirCBR	= rootDirAssets + "CBR/";
-shared string rootDirCBR_LCZ	= rootDirCBR + "LCZ/";
-shared string rootDirCBR_HCZ	= rootDirCBR + "HCZ/";
-shared string rootDirCBR_ETZ	= rootDirCBR + "ETZ/";
+shared string rootDirCBR	= rootDirAssets + "Map/";
+shared string rootDirCBR_LCZ	= rootDirCBR + "LightContainmentZone/";
+shared string rootDirCBR_HCZ	= rootDirCBR + "HeavyContainmentZone/";
+shared string rootDirCBR_ETZ	= rootDirCBR + "EntranceZone/";
 
 shared string rootDirSFX	= rootDirAssets + "SFX/";
 

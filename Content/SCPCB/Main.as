@@ -61,6 +61,9 @@ external string rootDirGFXMenu;
 
 external string rootDirSFX;
 external string rootDirCBR;
+external string rootDirCBR_LCZ;
+external string rootDirCBR_HCZ;
+external string rootDirCBR_ETZ;
 
 
 // #### SECTION 1. Import ----
