@@ -200,6 +200,9 @@
     <ClCompile Include="..\Src\Serialize\XMLProperty.cpp">
       <Filter>Serialize</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Scripting\NativeDefinitions\INIDefinitions.cpp">
+      <Filter>Scripting\NativeDefinitions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -394,6 +397,9 @@
     </ClInclude>
     <ClInclude Include="..\Src\Serialize\XMLProperty.h">
       <Filter>Serialize</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Scripting\NativeDefinitions\INIDefinitions.h">
+      <Filter>Scripting\NativeDefinitions</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

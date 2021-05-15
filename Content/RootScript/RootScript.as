@@ -44,7 +44,7 @@ string rootDirScript	= rootDir + "BaseClasses/";
 
 // Global Paths
 shared string rootDirAssets	= "SCPCB/";
-
+shared string rootDirData	= "Data/";
 
 shared string rootDirGFX	= rootDirAssets + "GFX/";
 shared string rootDirLoadscreens = rootDirGFX + "Loadingscreens/";

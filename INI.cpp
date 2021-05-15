@@ -4,6 +4,12 @@
 
 #include "INI.h"
 
+INIFile* INIFile::iniFileFactory(const PGE::FilePath& filename) {
+    INIFile* newINI = new INIFile(filename);
+    return newINI;
+}
+	
+
 INIFile::INIFile(const PGE::FilePath& filename) {
     name = filename;
 
@@ -48,6 +54,37 @@ INIFile::INIFile(const PGE::FilePath& filename) {
     file.close();
 }
 
+
+PlayerController* PlayerControllerDefinitions::playerControllerFactory(float radius, float height) {
+  
+  PlayerController* newController = new PlayerController(radius, height);
+    refCount.emplace(newController, 1);
+   
+ refCounterManager->linkPtrToCounter(newController, this);
+    return newController;
+}
+
+
+void PlayerControllerDefinitions::release(void* ptr) {
+    PlayerController* controller = (PlayerController*)ptr;
+ 
+   if (refCount.find(controller) == refCount.end()) { return; }
+    refCount[controller]--;
+
+    if (refCount[controller] <= 0) {
+     
+   refCount.erase(controller);
+        refCounterManager->unlinkPtr(controller);
+        if (PickableManager::cmc != nullptr) {
+      
+      refCounterManager->release(PickableManager::cmc);
+        }
+        delete controller;
+    }
+}
+
+
+
 INIFile::~INIFile() {
     save();
     for (int i = 0; i < (int)sections.size(); i++) {
@@ -55,14 +92,9 @@ INIFile::~INIFile() {
     }
 }
 
-void INIFile::close(void* ptr) {
+INIFile::release(void* ptr) {
     INIFile* iniF = (INIFile*)ptr;
     delete iniF;
-}
-
-INIFile* INIFile::iniFileFactory(const PGE::FilePath& filename) {
-    INIFile* newINI = new INIFile(filename);
-    return newINI;
 }
 
 PGE::String INIFile::getValue(const PGE::String& section, const PGE::String& key, const PGE::String& defaultValue) {
