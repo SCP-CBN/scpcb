@@ -46,6 +46,15 @@ World::World() {
 
     FT_Init_FreeType(&ftLibrary);
     largeFont = new Font(ftLibrary, gfxRes, config, PGE::FilePath::fromStr("SCPCB/GFX/Font/Inconsolata-Regular.ttf"), 20);
+    fontInconsolataLarge = new Font(ftLibrary, gfxRes, config, PGE::FilePath::fromStr("SCPCB/GFX/Font/Inconsolata-Regular.ttf"), 20);
+    fontInconsolataSmall = new Font(ftLibrary, gfxRes, config, PGE::FilePath::fromStr("SCPCB/GFX/Font/Inconsolata-Regular.ttf"), 11);
+    fontAppleLarge = new Font(ftLibrary, gfxRes, config, PGE::FilePath::fromStr("SCPCB/GFX/Font/HomemadeApple-Regular.ttf"), 20);
+    fontAppleSmall = new Font(ftLibrary, gfxRes, config, PGE::FilePath::fromStr("SCPCB/GFX/Font/HomemadeApple-Regular.ttf"), 11);
+    fontCrystalLarge = new Font(ftLibrary, gfxRes, config, PGE::FilePath::fromStr("SCPCB/GFX/Font/LiquidCrystal-Normal.otf"), 20);
+    fontCrystalSmall = new Font(ftLibrary, gfxRes, config, PGE::FilePath::fromStr("SCPCB/GFX/Font/LiquidCrystal-Normal.otf"), 11);
+    fontSubotypeLarge = new Font(ftLibrary, gfxRes, config, PGE::FilePath::fromStr("SCPCB/GFX/Font/Subotype.otf"), 20);
+    fontSubotypeSmall = new Font(ftLibrary, gfxRes, config, PGE::FilePath::fromStr("SCPCB/GFX/Font/Subotype.otf"), 11);
+
     uiMesh = new UIMesh(gfxRes);
     keyBinds = new KeyBinds(io);
     mouseData = new MouseData(io, config);
@@ -202,4 +211,35 @@ void World::quit() {
 
 Font* World::getFont() const {
     return largeFont;
+}
+
+Font* World::getFontAppleLarge() const {
+    return fontAppleLarge;
+}
+Font* World::getFontAppleSmall() const {
+    return fontAppleLarge;
+}
+Font* World::getFontInconsolataLarge() const {
+    return fontInconsolataLarge;
+}
+Font* World::getFontInconsolataSmall() const {
+    return fontInconsolataSmall;
+}
+Font* World::getFontCrystalLarge() const {
+    return fontCrystalLarge;
+}
+Font* World::getFontCrystalSmall() const {
+    return fontCrystalLarge;
+}
+Font* World::getFontSubotypeLarge() const {
+    return fontSubotypeLarge;
+}
+Font* World::getFontSubotypeSmall() const {
+    return fontSubotypeLarge;
+}
+Font* World::getFontBoldLarge() const {
+    return fontBoldLarge;
+}
+Font* World::getFontBoldSmall() const {
+    return fontBoldLarge;
 }

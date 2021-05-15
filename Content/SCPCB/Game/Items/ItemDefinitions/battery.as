@@ -4,8 +4,8 @@ namespace Item { namespace Battery9v { Template@ thisTemplate=Template();
 		Template() { super();
 			name		= "Battery9v"; // "bat"
 			@pickSound	= Item::Sound(); // 1
-			@model		= Item::Model("SCPCB/GFX/Items/Battery/battery.fbx",0.08,"SCPCB/GFX/Items/Battery/battery.jpg");
-			@icon		= Item::Icon("SCPCB/GFX/Items/Battery/inv_battery.jpg");
+			@model		= Item::Model(rootDirGFXItems + "Battery/battery.fbx",0.08,rootDirGFXItems + "Battery/battery.jpg");
+			@icon		= Item::Icon(rootDirGFXItems + "Battery/inv_battery.jpg");
 			@iconModel	= Item::Icon::Model(model.path,model.scale,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
 	}
@@ -27,8 +27,8 @@ namespace Item { namespace Battery18v { Template@ thisTemplate=Template();
 		Template() { super();
 			name		= "Battery18v"; // "18vbat"
 			@pickSound	= Item::Sound(); // 1
-			@model		= Item::Model("SCPCB/GFX/Items/Battery/battery.fbx",0.12,"SCPCB/GFX/Items/Battery/battery_18v.jpg");
-			@icon		= Item::Icon("SCPCB/GFX/Items/Battery/inv_battery_18v.jpg");
+			@model		= Item::Model(rootDirGFXItems + "Battery/battery.fbx",0.12,rootDirGFXItems + "Battery/battery_18v.jpg");
+			@icon		= Item::Icon(rootDirGFXItems + "Battery/inv_battery_18v.jpg");
 			@iconModel	= Item::Icon::Model(model.path,model.scale,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
 	}
@@ -51,8 +51,8 @@ namespace Item { namespace StrangeBattery { Template@ thisTemplate=Template();
 		Template() { super();
 			name		= "StrangeBattery"; // "killbat"
 			@pickSound	= Item::Sound(); // 1
-			@model		= Item::Model("SCPCB/GFX/Items/Battery/battery.fbx",0.12,"SCPCB/GFX/Items/Battery/battery_strange.jpg");
-			@icon		= Item::Icon("SCPCB/GFX/Items/Battery/inv_battery_strange.jpg");
+			@model		= Item::Model(rootDirGFXItems + "Battery/battery.fbx",0.12,rootDirGFXItems + "Battery/battery_strange.jpg");
+			@icon		= Item::Icon(rootDirGFXItems + "Battery/inv_battery_strange.jpg");
 			@iconModel	= Item::Icon::Model(model.path,model.scale,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
 	}

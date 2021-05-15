@@ -2,8 +2,7 @@
 menu_Loading@ LoadingMenu;
 namespace Loadscreen {
 
-	string LoadscreenPath = "SCPCB/Loadingscreens/";
-	Texture@ defaultLoadingTexture = Texture::get(LoadscreenPath+"loadingback");
+	Texture@ defaultLoadingTexture = Texture::get(rootDirLoadscreens+"loadingback");
 
 	array<GUILoadscreen@> screens;
 	GUI@ canvas;
@@ -13,7 +12,7 @@ namespace Loadscreen {
 	void Initialize() {
 		@LoadingMenu=menu_Loading();
 		@canvas=@LoadingMenu.screenCanvas;
-		GUILoadscreen@ scp173 = GUILoadscreen("SCP-173",Vector2f(372,500),Texture::get(LoadscreenPath+"173"),false,Alignment::Left,Alignment::Bottom,
+		GUILoadscreen@ scp173 = GUILoadscreen("SCP-173",Vector2f(372,500),Texture::get(rootDirLoadscreens+"173"),false,GUI::Align::Left,GUI::Align::Bottom,
 			"SCP-173 is constructed from concrete and rebar with traces of Krylon brand spray paint. It is animate and extremely hostile.",
 			"The object cannot move while within a direct line of sight. Line of sight must not be broken at any time with SCP-173. Personnel assigned to enter container are instructed to alert one another before blinking.",
 			"",
@@ -47,8 +46,8 @@ namespace Loadscreen {
 }
 class GUILoadscreen : GUI {
 	string title;
-	Alignment alignHorizontal;
-	Alignment alignVertical;
+	GUI::Align alignHorizontal;
+	GUI::Align alignVertical;
 
 	array<string> stages(4);
 	bool bgtex;
@@ -58,16 +57,16 @@ class GUILoadscreen : GUI {
 	GUILabel@ text;
 	GUILabel@ heading;
 
-	GUILoadscreen(string ttl, Vector2f size, Texture@ texture, bool bgtexture, Alignment alignX, Alignment alignY, string txt1="", string txt2="", string txt3="", string txt4="") {
+	GUILoadscreen(string ttl, Vector2f size, Texture@ texture, bool bgtexture, GUI::Align alignX, GUI::Align alignY, string txt1="", string txt2="", string txt3="", string txt4="") {
 		super(@Loadscreen::canvas,"GUILoadscreen");
 		Loadscreen::screens.insertLast(@this);
-		align=Alignment::Fill;
+		align=GUI::Align::Fill;
 
 		@background=GUIPanel(@this);
-		background.align=Alignment::Fill;
+		background.align=GUI::Align::Fill;
 
 		@graphic=GUIPanel(@this);
-		graphic.align=Alignment::None;
+		graphic.align=GUI::Align::None;
 		graphic.pos=Vector2f();
 		graphic.size=size*GUI::aspectScale;
 		if(bgtexture) {
@@ -90,9 +89,9 @@ class GUILoadscreen : GUI {
 		if(bgtex) { graphic.pos=Vector2f(0,0); graphic.size=GUI::resolution; return; }
 		Vector2f vpos=Vector2f(0,0);
 		switch(alignHorizontal) {
-			case Alignment::Left:
+			case GUI::Align::Left:
 				break;
-			case Alignment::Right:
+			case GUI::Align::Right:
 				vpos.x=GUI::resolution.x-graphic.size.x/2;
 				break;
 			default:
@@ -100,9 +99,9 @@ class GUILoadscreen : GUI {
 				break;
 		}
 		switch(alignVertical) {
-			case Alignment::Top:
+			case GUI::Align::Top:
 				break;
-			case Alignment::Bottom:
+			case GUI::Align::Bottom:
 				vpos.y=GUI::resolution.y-graphic.size.y; break;
 			default:
 				vpos.y=GUI::center.y-graphic.size.y/2; break;
@@ -125,48 +124,48 @@ class menu_Loading : GUI {
 	GUILabelBox@ loadText;
 
 	menu_Loading() { super("LoadingMenu");
-		align=Alignment::Fill;
+		align=GUI::Align::Fill;
 		visible=false;
 
 		@screenCanvas=GUI(@this);
-		screenCanvas.align=Alignment::Fill;
+		screenCanvas.align=GUI::Align::Fill;
 
 		@canvas=GUI(@this);
-		canvas.align=Alignment::Center;
+		canvas.align=GUI::Align::Center;
 		canvas.pos=GUI::center-GUI::resolution/4;
 		canvas.size=Vector2f(GUI::resolution.x/2,GUI::resolution.y/1.75);
 
 		@loadpct=GUILabel(@canvas);
-		loadpct.align=Alignment::Top;
-		loadpct.alignHorizontal=Alignment::Center;
-		loadpct.alignVertical=Alignment::Center;
+		loadpct.align=GUI::Align::Top;
+		loadpct.alignHorizontal=GUI::Align::Center;
+		loadpct.alignVertical=GUI::Align::Center;
 		loadpct.text="LOADING - 69 %";
 		loadpct.fontScale=1;
 		loadpct.height=5;
 		loadpct.margin={8,8,8,1};
 
 		@loadbar=GUILabel(@canvas);
-		loadbar.align=Alignment::Top;
-		loadbar.alignHorizontal=Alignment::Center;
-		loadbar.alignVertical=Alignment::Center;
+		loadbar.align=GUI::Align::Top;
+		loadbar.alignHorizontal=GUI::Align::Center;
+		loadbar.alignVertical=GUI::Align::Center;
 		loadbar.text="insert progress bar here";
 		loadbar.fontScale=1;
 		loadbar.height=5;
 		loadbar.margin={8,1,8,12};
 
 		@loadTitle=GUILabel(@canvas);
-		loadTitle.align=Alignment::Top;
-		loadTitle.alignHorizontal=Alignment::Center;
-		loadTitle.alignVertical=Alignment::Center;
+		loadTitle.align=GUI::Align::Top;
+		loadTitle.alignHorizontal=GUI::Align::Center;
+		loadTitle.alignVertical=GUI::Align::Center;
 		loadTitle.text="LoadTitle";
 		loadTitle.fontScale=4;
 		loadTitle.height=2.5;
 		loadTitle.margin={8,12,8,1};
 
 		@loadText=GUILabelBox(@canvas);
-		loadText.align=Alignment::Fill;
-		loadText.alignHorizontal=Alignment::Center;
-		loadText.alignVertical=Alignment::Top;
+		loadText.align=GUI::Align::Fill;
+		loadText.alignHorizontal=GUI::Align::Center;
+		loadText.alignVertical=GUI::Align::Top;
 		loadText.text="LoadText";
 		loadText.fontScale=1;
 		loadText.height=4;

@@ -14,7 +14,7 @@
 // Documentation
 //
 //	SECTION 1. AngelMath
-//		- Alignment : Alignment enumerator
+//		- GUI::Align : GUI::Align enumerator
 //		- Util::FloatInterpolator : Number smoother
 //
 //	SECTION 2. AngelString
@@ -55,24 +55,6 @@ namespace Util { shared funcdef void Function(); }
 
 // # AngelMath ----
 // Numeracy functions, definitions, libraries etc
-
-shared enum Alignment {
-    Center = 0x0,
-
-    Left = 0x1,
-    Right = 0x2,
-    Top = 0x4,
-    Bottom = 0x8,
-
-    Forward = 0x10,
-    Backward = 0x20,
-
-    Fill = 0x10,
-    Manual = 0x20,
-
-    None = 0x40,
-}
-
 
 
 // # Util::FloatInterpolator@ ----
@@ -153,7 +135,7 @@ namespace Util {
 			path=iPath; scale=iScale; pos=iPos; rotation=iRotation; skin=iSkin;
 			generate();
 		}
-		void generate() { @texture = ModelImageGenerator::generate(path, scale, rotation, pos); } // , skin);
+		void generate() { Debug::log("Generating icon: " + path); @texture = ModelImageGenerator::generate(path, scale, rotation, pos); } // , skin);
 	} }
 }
 

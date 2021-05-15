@@ -12,63 +12,63 @@ class menu_Pause : GUI {
 
 	menu_Pause() { super("PauseMenu");
 
-	align=Alignment::Center;
+	align=GUI::Align::Center;
 	size=Vector2f(70,70);
 	visible=false;
 
 	GUILabel@ header=GUILabel(@this);
 	header.text="PAUSED";
-	header.align=Alignment::Top;
+	header.align=GUI::Align::Top;
 	header.height=GUI::resolution.y*0.07;
 	header.fontScale=3;
 	header.margin={4,GUI::resolution.y*0.035,4,1};
 
 	@canvas=GUI(@this);
-	canvas.align=Alignment::Fill;
+	canvas.align=GUI::Align::Fill;
 	canvas.margin={GUI::resolution.x*0.07,GUI::resolution.y*0.01,2,0};
 
 
 	// Main section ----
 
 	@canvasMain=GUI(@canvas);
-	canvasMain.align=Alignment::Fill;
+	canvasMain.align=GUI::Align::Fill;
 
 	menu_Pause_TextPanel@ textPanel = menu_Pause_TextPanel(@canvasMain);
-	textPanel.align=Alignment::Top;
+	textPanel.align=GUI::Align::Top;
 	textPanel.height=8;
 	textPanel.margin={1,0,1,0.5};
 
 	@PauseMenu_ButtonPanel=menu_Pause_ButtonPanel(@canvasMain);
-	PauseMenu_ButtonPanel.align=Alignment::Fill;
+	PauseMenu_ButtonPanel.align=GUI::Align::Fill;
 	PauseMenu_ButtonPanel.margin={1,0.5,1,1};
 	//PauseMenu_ButtonPanel.width=GUI::resolution.x*0.375;
 
 	@PauseMenu_ContinueBtn=menu_Pause_ContinueButton(@PauseMenu_ButtonPanel);
-	PauseMenu_ContinueBtn.align=Alignment::Top;
+	PauseMenu_ContinueBtn.align=GUI::Align::Top;
 	PauseMenu_ContinueBtn.margin={1,1,1,0};
 	PauseMenu_ContinueBtn.height=8;
 	PauseMenu_ContinueBtn.text="Continue";
 
 	@PauseMenu_LoadBtn=menu_Pause_LoadButton(@PauseMenu_ButtonPanel);
-	PauseMenu_LoadBtn.align=Alignment::Top;
+	PauseMenu_LoadBtn.align=GUI::Align::Top;
 	PauseMenu_LoadBtn.margin={1,1,1,0};
 	PauseMenu_LoadBtn.height=8;
 	PauseMenu_LoadBtn.text="Load";
 
 	@PauseMenu_DebugBtn=menu_Pause_DebugButton(@PauseMenu_ButtonPanel);
-	PauseMenu_DebugBtn.align=Alignment::Top;
+	PauseMenu_DebugBtn.align=GUI::Align::Top;
 	PauseMenu_DebugBtn.margin={1,1,1,0};
 	PauseMenu_DebugBtn.height=8;
 	PauseMenu_DebugBtn.text="Debug Menu";
 
 	@PauseMenu_OptionsBtn=menu_Pause_OptionsButton(@PauseMenu_ButtonPanel);
-	PauseMenu_OptionsBtn.align=Alignment::Top;
+	PauseMenu_OptionsBtn.align=GUI::Align::Top;
 	PauseMenu_OptionsBtn.margin={1,1,1,0};
 	PauseMenu_OptionsBtn.height=8;
 	PauseMenu_OptionsBtn.text="Options";
 
 	@PauseMenu_QuitBtn=menu_Pause_QuitButton(@PauseMenu_ButtonPanel);
-	PauseMenu_QuitBtn.align=Alignment::Top;
+	PauseMenu_QuitBtn.align=GUI::Align::Top;
 	PauseMenu_QuitBtn.margin={1,1,1,0};
 	PauseMenu_QuitBtn.height=8;
 	PauseMenu_QuitBtn.text="Quit to Main";
@@ -77,29 +77,29 @@ class menu_Pause : GUI {
 	// Developer Section ----
 
 	@canvasDeveloper=GUI(@canvas);
-	canvasDeveloper.align=Alignment::Fill;
+	canvasDeveloper.align=GUI::Align::Fill;
 	canvasDeveloper.visible=false;
 
 	menu_Pause_BackButton@ devBackBtn = menu_Pause_BackButton(@canvasDeveloper);
-	devBackBtn.align=Alignment::Bottom;
+	devBackBtn.align=GUI::Align::Bottom;
 	devBackBtn.margin={1,1,1,1};
 	devBackBtn.height=8;
 	devBackBtn.text="Back";
 
 	GUIButtonLabel@ btnIconEditor=GUIButtonLabel(@canvasDeveloper);
-	btnIconEditor.align=Alignment::Top;
+	btnIconEditor.align=GUI::Align::Top;
 	btnIconEditor.margin={1,1,1,0};
 	btnIconEditor.height=8;
 	btnIconEditor.text="Icon Editor";
 
 	menu_Pause_Dev_CheatsButton@ devCheatsBtn = menu_Pause_Dev_CheatsButton(@canvasDeveloper);
-	devCheatsBtn.align=Alignment::Top;
+	devCheatsBtn.align=GUI::Align::Top;
 	devCheatsBtn.margin={1,1,1,0};
 	devCheatsBtn.height=8;
 	devCheatsBtn.text="Cheats Menu";
 
 	menu_Pause_Dev_tpToZeroButton@ devtpToZeroBtn = menu_Pause_Dev_tpToZeroButton(@canvasDeveloper);
-	devtpToZeroBtn.align=Alignment::Top;
+	devtpToZeroBtn.align=GUI::Align::Top;
 	devtpToZeroBtn.margin={1,1,1,0};
 	devtpToZeroBtn.height=8;
 	devtpToZeroBtn.text="Teleport to (0,0,0)";
@@ -108,35 +108,35 @@ class menu_Pause : GUI {
 	// Cheats Section ----
 
 	@canvasCheats=GUI(@canvas);
-	canvasCheats.align=Alignment::Fill;
+	canvasCheats.align=GUI::Align::Fill;
 	canvasCheats.visible=false;
 
 	menu_Pause_BackButton@ cheatBackBtn = menu_Pause_BackButton(@canvasCheats);
-	cheatBackBtn.align=Alignment::Bottom;
+	cheatBackBtn.align=GUI::Align::Bottom;
 	cheatBackBtn.margin={1,1,1,1};
 	cheatBackBtn.height=8;
 	cheatBackBtn.text="Back";
 
 	GUIButtonLabel@ cheatFirstBtn=GUIButtonLabel(@canvasCheats);
-	cheatFirstBtn.align=Alignment::Top;
+	cheatFirstBtn.align=GUI::Align::Top;
 	cheatFirstBtn.margin={1,1,1,0};
 	cheatFirstBtn.height=8;
 	cheatFirstBtn.text="Placeholder Cheats";
 
 	menu_Pause_Dev_tpToZeroButton@ cheatSecondBtn = menu_Pause_Dev_tpToZeroButton(@canvasCheats);
-	cheatSecondBtn.align=Alignment::Top;
+	cheatSecondBtn.align=GUI::Align::Top;
 	cheatSecondBtn.margin={1,1,1,0};
 	cheatSecondBtn.height=8;
 	cheatSecondBtn.text="Placeholder";
 
 
 	GUIButton@ testentryPanel=GUIButton(@canvasCheats);
-	testentryPanel.align=Alignment::Top;
+	testentryPanel.align=GUI::Align::Top;
 	testentryPanel.margin={1,1,1,0};
 	testentryPanel.height=8;
 
 	GUITextEntry@ testEntry=GUITextEntry(@testentryPanel);
-	testEntry.align=Alignment::Fill;
+	testEntry.align=GUI::Align::Fill;
 	testEntry.margin={1,1,1,0};
 	testEntry.height=4;
 	testEntry.setText("testy");
@@ -145,34 +145,34 @@ class menu_Pause : GUI {
 	// Options Section ----
 
 	@canvasOptions=GUI(@canvas);
-	canvasOptions.align=Alignment::Fill;
+	canvasOptions.align=GUI::Align::Fill;
 	canvasOptions.visible=false;
 
 	menu_Pause_BackButton@ optionsBackBtn = menu_Pause_BackButton(@canvasOptions);
-	optionsBackBtn.align=Alignment::Bottom;
+	optionsBackBtn.align=GUI::Align::Bottom;
 	optionsBackBtn.margin={1,1,1,1};
 	optionsBackBtn.height=8;
 	optionsBackBtn.text="Back";
 
 	GUIButtonLabel@ optionsFirstBtn=GUIButtonLabel(@canvasOptions);
-	optionsFirstBtn.align=Alignment::Top;
+	optionsFirstBtn.align=GUI::Align::Top;
 	optionsFirstBtn.margin={1,1,1,0};
 	optionsFirstBtn.height=8;
 	optionsFirstBtn.text="Placeholder Options";
 
 	menu_Pause_Dev_tpToZeroButton@ optionsSecondBtn = menu_Pause_Dev_tpToZeroButton(@canvasOptions);
-	optionsSecondBtn.align=Alignment::Top;
+	optionsSecondBtn.align=GUI::Align::Top;
 	optionsSecondBtn.margin={1,1,1,0};
 	optionsSecondBtn.height=8;
 	optionsSecondBtn.text="Placeholder";
 
 	@scrollTest=GUIScrollPanel(@canvasOptions);
-	scrollTest.align=Alignment::Fill;
+	scrollTest.align=GUI::Align::Fill;
 
 	for(int i=0; i<30; i++) {
 		GUIButtonLabel@ btn = GUIButtonLabel(@scrollTest);
 		btn.text="Test: " + (i+64);
-		btn.align=Alignment::Top;
+		btn.align=GUI::Align::Top;
 		btn.height=8;
 	}
 
@@ -211,28 +211,28 @@ class menu_Pause_ButtonPanel : GUI {
 class menu_Pause_TextPanel : GUI {
 	menu_Pause_TextPanel(GUI@&in parent) { super(@parent,"menu_Pause_ButtonPanel");
 		GUILabel@ difficulty=GUILabel(@this);
-		difficulty.align=Alignment::Top;
+		difficulty.align=GUI::Align::Top;
 		difficulty.height=2.5;
 		difficulty.margin={0,0.02,0,0.02};
 		difficulty.text="Difficulty: Keter";
 		difficulty.fontScale=1;
-		difficulty.alignHorizontal=Alignment::Left;
+		difficulty.alignHorizontal=GUI::Align::Left;
 
 		GUILabel@ savefile=GUILabel(@this);
-		savefile.align=Alignment::Top;
+		savefile.align=GUI::Align::Top;
 		savefile.height=2.5;
 		savefile.margin={0,0.02,0,0.02};
 		savefile.text="savefile: 100% Keter NMG speedrun";
 		savefile.fontScale=1;
-		savefile.alignHorizontal=Alignment::Left;
+		savefile.alignHorizontal=GUI::Align::Left;
 
 		GUILabel@ seednum=GUILabel(@this);
-		seednum.align=Alignment::Top;
+		seednum.align=GUI::Align::Top;
 		seednum.height=2.5;
 		seednum.margin={0,0.02,0,0.02};
 		seednum.text="Seed: 133769";
 		seednum.fontScale=1;
-		seednum.alignHorizontal=Alignment::Left;
+		seednum.alignHorizontal=GUI::Align::Left;
 	}
 }
 

@@ -37,11 +37,11 @@ shared class GUIButton : GUIClickable {
 	// # Constructor
 	GUIButton(GUI@&in parent,string vcls="GUI::Button") { super(@parent,vcls);
 		@background=GUIPanel(@this);
-		background.align=Alignment::Fill;
+		background.align=GUI::Align::Fill;
 		@background.texture=@GUI::Skin::Button::bgtexture;
 
 		@foreground=GUIPanel(@this);
-		foreground.align=Alignment::Fill;
+		foreground.align=GUI::Align::Fill;
 		foreground.margin=GUI::Skin::Button::fgMargin;
 		@foreground.texture=@GUI::Skin::Button::fgtexture;
 	}
@@ -77,7 +77,7 @@ shared class GUIButtonLabel : GUIButton {
 	// # Constructor
 	GUIButtonLabel(GUI@&in parent,string vcls="GUI::ButtonLabel") { super(@parent,vcls);
 		@label=GUILabel(@this);
-		label.align=Alignment::Fill;
+		label.align=GUI::Align::Fill;
 		label.margin=GUI::Skin::Button::labelMargin;
 		@label.font=@GUI::Skin::Button::font;
 		label.fontScale=GUI::Skin::Button::fontScale;

@@ -39,6 +39,27 @@
 // -------------------------------------------------------------------- \\
 // #### SECTION 1. Engine Hooks ----
 
+string rootDir		= "RootScript/";
+string rootDirScript	= rootDir + "BaseClasses/";
+
+// Global Paths
+shared string rootDirAssets	= "SCPCB/";
+
+
+shared string rootDirGFX	= rootDirAssets + "GFX/";
+shared string rootDirLoadscreens = rootDirGFX + "Loadscreens/";
+shared string rootDirGFXItems	= rootDirGFX + "Items/";
+shared string rootDirGFXMenu	= rootDirGFX + "Menu/";
+
+shared string rootDirCBR	= rootDirAssets + "CBR/";
+shared string rootDirCBR_LCZ	= rootDirCBR + "LCZ/";
+shared string rootDirCBR_HCZ	= rootDirCBR + "HCZ/";
+shared string rootDirCBR_ETZ	= rootDirCBR + "ETZ/";
+
+shared string rootDirSFX	= rootDirAssets + "SFX/";
+
+
+/*
 
 namespace RootScript {
 	void Initialize() {
@@ -53,4 +74,5 @@ namespace RootScript {
 	void exit() { }
 }
 void main() { RootScript::Initialize(); PerTick::register(RootScript::update); PerFrameGame::register(RootScript::render); PerFrameMenu::register(RootScript::renderMenu); }
-void exit() { RootScript::exit(); Debug::log("GAME OVER, [RootScript]"); }
+void exit() { RootScript::exit(); }
+*/

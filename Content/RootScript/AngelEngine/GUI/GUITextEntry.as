@@ -19,12 +19,12 @@ shared class GUICharacter : GUIClickable {
 	string text { get { return label.text; } set { label.text=value; } }
 	GUILabel@ label;
 	GUICharacter(GUI@&in parent, string vcls="GUICharacter") { super(@parent,vcls);
-		align=Alignment::Left;
+		align=GUI::Align::Left;
 		width=4;
 
 		@label=GUILabel(@this);
-		label.align=Alignment::Fill;
-		label.alignVertical = Alignment::Center;
+		label.align=GUI::Align::Fill;
+		label.alignVertical = GUI::Align::Center;
 		label.margin={0.1,0.1,0.1,0.1};
 		label.text="B";
 		label.fontScale=2;
@@ -175,7 +175,7 @@ shared class GUITextEntry : GUIClickable {
 		keyboardDoDelete(true);
 		for(int i=0; i<append.length(); i++) {
 			GUICharacter@ char=GUICharacter(@this);
-			char.align=Alignment::Left;
+			char.align=GUI::Align::Left;
 			char.text=append[i];
 			char.fontColor=_fontColor;
 		}

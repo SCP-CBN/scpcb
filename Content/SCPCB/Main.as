@@ -60,6 +60,22 @@
 
 bool DEBUGGING = true;
 
+// # import(RootScript/RootMain.as); ----
+string rootDir		= "SCPCB/";
+string rootDirScript	= rootDir + "Game/";
+
+external string rootDirAssets;
+
+external string rootDirLoadscreens;
+
+external string rootDirGFX;
+external string rootDirGFXItems;
+external string rootDirGFXMenu;
+
+external string rootDirSFX;
+external string rootDirCBR;
+
+
 // #### SECTION 1. Import ----
 
 // # import(RootScript/BaseClasses/Utility/Util.as); ----
@@ -67,7 +83,6 @@ bool DEBUGGING = true;
 namespace Util { external funcdef void Function(); }
 
 // # util->AngelMath ----
-external enum Alignment;
 namespace Util { external class FloatInterpolator; } // Number smoothing
 
 // # util->AngelString ----
@@ -90,6 +105,7 @@ external Hook@ Hook::fetch(string&in name);
 
 
 // # import(RootScript/BaseClasses/GUI.as); ----
+namespace GUI { external enum Align; }
 external class GUI; // Blank GUIComponent / container for other GUIComponents.
 external class GUILabel; // Generic text drawer
 external class GUILabelBox; // A word-wrapped GUILabel.

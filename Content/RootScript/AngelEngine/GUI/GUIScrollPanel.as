@@ -2,7 +2,7 @@
 // The upper arrow of the scrollbar.
 shared class GUIScrollBarTopArrow : GUIScrollBarArrow {
 	GUIScrollBarTopArrow(GUI@&in parent, string vcls="GUI::ScrollBarTopArrow") { super(@parent,vcls);
-		align=Alignment::Top;
+		align=GUI::Align::Top;
 		@graphic.texture=@GUI::Skin::ScrollBar::topArrowTexture;
 		isTopArrow=true;
 	}
@@ -12,7 +12,7 @@ shared class GUIScrollBarTopArrow : GUIScrollBarArrow {
 // The lower arrow of the scrollbar.
 shared class GUIScrollBarBtmArrow : GUIScrollBarArrow {
 	GUIScrollBarBtmArrow(GUI@&in parent, string vcls="GUI::ScrollBarBtmArrow") { super(@parent,vcls);
-		align=Alignment::Bottom;
+		align=GUI::Align::Bottom;
 		@graphic.texture=@GUI::Skin::ScrollBar::btmArrowTexture;
 		isTopArrow=false;
 	}
@@ -35,7 +35,7 @@ shared class GUIScrollBarArrow : GUIButton {
 
 		// Arrow graphic
 		@graphic=GUIPanel(@this);
-		graphic.align=Alignment::Fill;
+		graphic.align=GUI::Align::Fill;
 		graphic.margin=GUI::Skin::ScrollBar::arrowMargin;
 		graphic.color=GUI::Skin::ScrollBar::whiteColor;
 	}
@@ -73,7 +73,7 @@ shared class GUIScrollBarHandle : GUIButton {
 
 	// # Constructor
 	GUIScrollBarHandle(GUI@&in parent, string vcls="GUI::ScrollBarHandle") { super(@parent,vcls);
-		align=Alignment::Manual;
+		align=GUI::Align::Manual;
 		foreground.margin=GUI::Skin::ScrollBar::barfgMargin;
 		@background.texture=@GUI::Skin::ScrollBar::bgtexture;
 		@foreground.texture=@GUI::Skin::ScrollBar::barfgtexture;
@@ -111,7 +111,7 @@ shared class GUIScrollBar : GUI {
 	GUIScrollBarArrow@ btmArrow;
 	GUIScrollBarHandle@ barHandle;
 	GUIScrollBar(GUI@&in parent,string vcls="GUI::ScrollBar") { super(@parent,vcls);
-		align=Alignment::Right;
+		align=GUI::Align::Right;
 		width=GUI::Skin::ScrollBar::width;
 		@topArrow=GUIScrollBarTopArrow(@this);
 		@btmArrow=GUIScrollBarBtmArrow(@this);
@@ -153,7 +153,7 @@ shared class GUIScrollBar : GUI {
 shared class GUIScrollPanelCanvas : GUI {
 
 	// # Constructor
-	GUIScrollPanelCanvas(GUI@&in parent, string vcls="GUI::ScrollPanelCanvas") { super(@parent,vcls); align=Alignment::Fill; }
+	GUIScrollPanelCanvas(GUI@&in parent, string vcls="GUI::ScrollPanelCanvas") { super(@parent,vcls); align=GUI::Align::Fill; }
 
 	// # Scroll manager
 	void invalidateLayout() { _parent.invalidateLayout(); }

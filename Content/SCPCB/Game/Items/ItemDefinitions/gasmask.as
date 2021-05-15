@@ -5,8 +5,8 @@ namespace Item { namespace Gasmask { Template@ thisTemplate=Template();
 		Template() { super();
 			name		= "Gasmask"; // "gasmask"
 			@pickSound	= Item::Sound(); // 2
-			@model		= Item::Model("SCPCB/GFX/Items/Gasmask/Gasmask.fbx",0.2);
-			@icon		= Item::Icon("SCPCB/GFX/Items/Gasmask/inv_gasmask.jpg");
+			@model		= Item::Model(rootDirGFXItems + name + "/" + name + ".fbx", 0.2);
+			@icon		= Item::Icon(rootDirGFXItems + name + "/inv_" + name + ".jpg");
 			@iconModel	= Item::Icon::Model(model.path,0.08,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
 	}

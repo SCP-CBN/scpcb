@@ -13,9 +13,9 @@ shared class GUILabel : GUI {
 	Texture@ fontTexture;
 	bool fontTiledTexture;
 
-	// # Text Alignment
-	Alignment alignHorizontal=Alignment::Center;
-	Alignment alignVertical=Alignment::Center;
+	// # Text GUI::Align
+	GUI::Align alignHorizontal=GUI::Align::Center;
+	GUI::Align alignVertical=GUI::Align::Center;
 
 	// # Phrase manager
 	// Localization should happen in the local-script, not in the label element. Call: Local::getTxt(value)
@@ -35,30 +35,30 @@ shared class GUILabel : GUI {
 
 	void layoutPhrase() {
 		switch(alignVertical) {
-			case Alignment::Manual:
+			case GUI::Align::Manual:
 				textPos.y += pos.y;
 				break;
-			case Alignment::Center:
+			case GUI::Align::Center:
 				textPos.y += (paintSize.y/2)-(textSize.y/2);
 				break;
-			case Alignment::Top:
+			case GUI::Align::Top:
 				// do nothing.
 				break;
-			case Alignment::Bottom:
+			case GUI::Align::Bottom:
 				textPos.y += paintSize.y-textSize.y;
 				break;
 		}
 		switch(alignHorizontal) {
-			case Alignment::Manual:
+			case GUI::Align::Manual:
 				textPos.x += pos.x;
 				break;
-			case Alignment::Center:
+			case GUI::Align::Center:
 				textPos.x += (paintSize.x/2)-(textSize.x/2);
 				break;
-			case Alignment::Left:
+			case GUI::Align::Left:
 				// Do nothing
 				break;
-			case Alignment::Right:
+			case GUI::Align::Right:
 				textPos.x += paintSize.x-textSize.x;
 				break;
 		}
@@ -86,9 +86,9 @@ shared class GUILabelBox : GUI {
 	Color fontColor=GUI::Skin::Label::fontColor;
 	float fontScale=GUI::Skin::Label::fontScale*GUI::aspectScale;
 
-	// # Text Alignment
-	Alignment alignHorizontal=Alignment::Center; // Alignment of the textbox within the parent labelbox
-	Alignment alignVertical=Alignment::Center; // Alignment of the textbox within the parent labelbox
+	// # Text GUI::Align
+	GUI::Align alignHorizontal=GUI::Align::Center; // GUI::Align of the textbox within the parent labelbox
+	GUI::Align alignVertical=GUI::Align::Center; // GUI::Align of the textbox within the parent labelbox
 
 	// # Phrase manager
 	string _text;
@@ -100,8 +100,8 @@ shared class GUILabelBox : GUI {
 	}
 	void addPhrase(string phrase, float fontHeight) {
 		GUILabel @child=GUILabel(@this);
-		child.align=Alignment::Top;
-		child.alignVertical=Alignment::Top;
+		child.align=GUI::Align::Top;
+		child.alignVertical=GUI::Align::Top;
 		child.alignHorizontal=alignHorizontal;
 		child.height=fontHeight;
 		child.width=paintSize.x;
@@ -144,16 +144,16 @@ shared class GUILabelBox : GUI {
 		float textHeightOffset=0.f;
 
 		switch(alignVertical) {
-			case Alignment::Manual:
+			case GUI::Align::Manual:
 				textHeightOffset = pos.y;
 				break;
-			case Alignment::Center:
+			case GUI::Align::Center:
 				textHeightOffset = (paintSize.y/2)-(textHeight/2);
 				break;
-			case Alignment::Top:
+			case GUI::Align::Top:
 				// do nothing.
 				break;
-			case Alignment::Bottom:
+			case GUI::Align::Bottom:
 				textHeightOffset = paintSize.y-textHeight;
 				break;
 		}

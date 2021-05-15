@@ -5,36 +5,36 @@ class menu_Console : GUI {
 
 	menu_Console() { super("ConsoleMenu");
 
-		align=Alignment::Top;
+		align=GUI::Align::Top;
 		height=GUI::resolution.y*0.4;
 		visible=false;
 
 
 		GUIPanel@ textPanel=GUIPanel(@this);
-		textPanel.align=Alignment::Bottom;
+		textPanel.align=GUI::Align::Bottom;
 		textPanel.height=7;
 		textPanel.margin={1,0,1,0.25};
 		@textPanel.texture=@GUI::Skin::menuwhite;
 
 		GUIPanel@ textPanelFG=GUIPanel(@textPanel);
-		textPanelFG.align=Alignment::Left;
+		textPanelFG.align=GUI::Align::Left;
 		textPanelFG.width=20;
 		textPanelFG.margin={1,0.25,0.0625,0.125};
 		@textPanelFG.texture=@GUI::Skin::menublack;
 
 		GUILabel@ textEntryLabel=GUILabel(@textPanelFG);
-		textEntryLabel.align=Alignment::Fill;
+		textEntryLabel.align=GUI::Align::Fill;
 		textEntryLabel.text="Command:";
 		textEntryLabel.fontScale=1.25;
 		textEntryLabel.fontColor=Color::White;
 
 		GUIPanel@ textEntryFG=GUIPanel(@textPanel);
-		textEntryFG.align=Alignment::Fill;
+		textEntryFG.align=GUI::Align::Fill;
 		textEntryFG.margin={0.0625,0.25,0.25,0.25};
 		@textEntryFG.texture=@GUI::Skin::menublack;
 		
 		GUITextEntry@ textEntry=GUITextEntry(@textEntryFG);
-		textEntry.align=Alignment::Fill;
+		textEntry.align=GUI::Align::Fill;
 		textEntry.fontColor=Color::White;
 		textEntry.margin={1,1,4,1};
 		textEntry.setText("help");
@@ -43,31 +43,31 @@ class menu_Console : GUI {
 
 
 		GUIPanel@ outputPanelBG=GUIPanel(@this);
-		outputPanelBG.align=Alignment::Fill;
+		outputPanelBG.align=GUI::Align::Fill;
 		outputPanelBG.margin={1.1,1.1,1.1,0};
 		@outputPanelBG.texture=@GUI::Skin::menuwhite;
 
 		GUIPanel@ outputPanelFG=GUIPanel(@outputPanelBG);
-		outputPanelFG.align=Alignment::Fill;
+		outputPanelFG.align=GUI::Align::Fill;
 		@outputPanelFG.texture=@GUI::Skin::menublack;
 		outputPanelFG.margin={0.125,0.125,0.125,0};
 
 		GUIPanel@ headerPanel=GUIPanel(@outputPanelFG);
-		headerPanel.align=Alignment::Top;
+		headerPanel.align=GUI::Align::Top;
 		headerPanel.height=4;
 		headerPanel.margin={GUI::resolution.x*0.35,0.2,GUI::resolution.x*0.35,0.2};
 		@headerPanel.texture=@GUI::Skin::menuwhite;
 
 		GUILabel@ header=GUILabel(@headerPanel);
-		header.align=Alignment::Fill;
-		header.alignVertical=Alignment::Center;
+		header.align=GUI::Align::Fill;
+		header.alignVertical=GUI::Align::Center;
 		header.height=4;
 		header.fontScale=1;
 		header.fontColor=Color::Black;
 		header.text="CONSOLE MENU";
 
 		@canvas=GUIScrollPanel(@outputPanelFG);
-		canvas.align=Alignment::Fill;
+		canvas.align=GUI::Align::Fill;
 		canvas.margin={GUI::resolution.x*0.01,1,GUI::resolution.x*0.01,1};
 		canvas.reverse=true;
 		canvas.scrollBottom();
@@ -87,8 +87,8 @@ class menu_Console : GUI {
 	void onTextEntered(string&in input) {
 		Debug::log("Got text entry: " + input);
 		GUILabelBox@ lbl=GUILabelBox(@canvas);
-		lbl.align=Alignment::Bottom;
-		lbl.alignHorizontal=Alignment::Left;
+		lbl.align=GUI::Align::Bottom;
+		lbl.alignHorizontal=GUI::Align::Left;
 		lbl.fontScale=2;
 		lbl.height=4;
 		lbl.text=input;
@@ -115,28 +115,28 @@ class menu_Console_ButtonPanel : GUI {
 class menu_Console_TextPanel : GUI {
 	menu_Console_TextPanel(GUI@&in parent) { super(@parent,"menu_Console_ButtonPanel");
 		GUILabel@ difficulty=GUILabel(@this);
-		difficulty.align=Alignment::Top;
+		difficulty.align=GUI::Align::Top;
 		difficulty.height=2.5;
 		difficulty.margin={0,0.02,0,0.02};
 		difficulty.text="Difficulty: Keter";
 		difficulty.fontScale=1;
-		difficulty.alignHorizontal=Alignment::Left;
+		difficulty.alignHorizontal=GUI::Align::Left;
 
 		GUILabel@ savefile=GUILabel(@this);
-		savefile.align=Alignment::Top;
+		savefile.align=GUI::Align::Top;
 		savefile.height=2.5;
 		savefile.margin={0,0.02,0,0.02};
 		savefile.text="savefile: 100% Keter NMG speedrun";
 		savefile.fontScale=1;
-		savefile.alignHorizontal=Alignment::Left;
+		savefile.alignHorizontal=GUI::Align::Left;
 
 		GUILabel@ seednum=GUILabel(@this);
-		seednum.align=Alignment::Top;
+		seednum.align=GUI::Align::Top;
 		seednum.height=2.5;
 		seednum.margin={0,0.02,0,0.02};
 		seednum.text="Seed: 133769";
 		seednum.fontScale=1;
-		seednum.alignHorizontal=Alignment::Left;
+		seednum.alignHorizontal=GUI::Align::Left;
 	}
 }
 

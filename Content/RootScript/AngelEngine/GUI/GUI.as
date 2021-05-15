@@ -1,17 +1,39 @@
+// # GUI::Align ----
+
+namespace GUI { shared enum Align {
+    Center = 0x0,
+
+    Left = 0x1,
+    Right = 0x2,
+    Top = 0x4,
+    Bottom = 0x8,
+
+    Forward = 0x10,
+    Backward = 0x20,
+
+    Fill = 0x10,
+    Manual = 0x20,
+
+    None = 0x40,
+} }
+
+
+
+
 // # GUI Skin --------
 // All the colors and textures and stuff.
 
 namespace GUI { namespace Skin {
-	shared Texture@ menublack = Texture::get("SCPCB/GFX/Menu/menublack");
-	shared Texture@ menuwhite = Texture::get("SCPCB/GFX/Menu/menuwhite");
-	shared Texture@ menuMain = Texture::get("SCPCB/GFX/Menu/back");
-	shared Texture@ menuPause = Texture::get("SCPCB/GFX/Menu/pausemenu");
-	shared Texture@ menuSCPLabel = Texture::get("SCPCB/GFX/Menu/scptext");
-	shared Texture@ menuSCP173 = Texture::get("SCPCB/GFX/Menu/173back");
+	shared Texture@ menublack = Texture::get(rootDirGFXMenu + "menublack");
+	shared Texture@ menuwhite = Texture::get(rootDirGFXMenu + "menuwhite");
+	shared Texture@ menuMain = Texture::get(rootDirGFXMenu + "back");
+	shared Texture@ menuPause = Texture::get(rootDirGFXMenu + "pausemenu");
+	shared Texture@ menuSCPLabel = Texture::get(rootDirGFXMenu + "scptext");
+	shared Texture@ menuSCP173 = Texture::get(rootDirGFXMenu + "173back");
 
 	namespace Button {
-		shared Texture@ fgtexture = Texture::get("SCPCB/GFX/Menu/menublack");
-		shared Texture@ bgtexture = Texture::get("SCPCB/GFX/Menu/menuwhite");
+		shared Texture@ fgtexture = Texture::get(rootDirGFXMenu + "menublack");
+		shared Texture@ bgtexture = Texture::get(rootDirGFXMenu + "menuwhite");
 		shared const Color hoverColor = Color(70, 70, 150);
 		shared const Color downColor = Color(100, 100, 175);
 		shared const Color lockedColor = Color(100,100,100);
@@ -31,22 +53,22 @@ namespace GUI { namespace Skin {
 	}
 
 	namespace ScrollBar {
-		shared Texture@ btmArrowTexture = Texture::get("SCPCB/GFX/Menu/arrow");
-		shared Texture@ topArrowTexture = Texture::get("SCPCB/GFX/Menu/arrow");
+		shared Texture@ btmArrowTexture = Texture::get(rootDirGFXMenu + "arrow");
+		shared Texture@ topArrowTexture = Texture::get(rootDirGFXMenu + "arrow");
 		shared const float width=4;
 		shared const float arrowHeight=4;
 
-		shared Texture@ bgtexture = Texture::get("SCPCB/GFX/Menu/menublack");
+		shared Texture@ bgtexture = Texture::get(rootDirGFXMenu + "menublack");
 		shared const Color bgColor = Color::White;
-		shared Texture@ fgtexture = Texture::get("SCPCB/GFX/Menu/menuwhite");
+		shared Texture@ fgtexture = Texture::get(rootDirGFXMenu + "menuwhite");
 		shared const Color fgColor = Color::White;
 		shared const array<float> barfgMargin = {0.1,0.1,0.1,0.1};
 		shared const array<float> fgMargin = {0.1,0.1,0.1,0.1};
 		shared const array<float> arrowMargin = {0.1,0.1,0.1,0.1};
 
-		shared Texture@ barbgtexture = Texture::get("SCPCB/GFX/Menu/menublack");
+		shared Texture@ barbgtexture = Texture::get(rootDirGFXMenu + "menublack");
 		shared const Color barbgColor = Color::White;
-		shared Texture@ barfgtexture = Texture::get("SCPCB/GFX/Menu/menuwhite");
+		shared Texture@ barfgtexture = Texture::get(rootDirGFXMenu + "menuwhite");
 		shared const Color barfgColor = Color::White;
 
 		shared const Color hoverColor = Color(70, 70, 150);
@@ -222,7 +244,7 @@ namespace GUI {
 // All GUI elements are derived from this class with overrides and constructors to give behaviour and purpose.
 // Created with GUI@ gui_panel = GUI();
 // To create a panel parented to another, simply use GUI@ child_panel = GUI(@parent_panel);
-// Then configure the child, such as .align=Alignment::Fill.
+// Then configure the child, such as .align=GUI::Align::Fill.
 // To manage layouts, you must call invalidateLayout() manually as-needed (in the majority of cases), as this is rarely called automatically.
 // layout updates are costly, requiring repositioning and resizing of all children elements, but the elements do not change often so this is worthwhile.
 // And sometimes you must change layout data without triggering an update, so having no automatic updates helps with that.
@@ -279,13 +301,13 @@ shared class GUI {
 	bool isInParent() { if(!hasParent) { inParent=true; } else { inParent=_parent.contains(@this); } return inParent; }
 	bool contains(GUI@&in panel) { return GUI::squareInSquare(panel.paintPos+1,panel.paintSize-1,paintPos-1,paintSize+1); }
 
-	// #### Docking Layout Positioning and Alignment System ----
+	// #### Docking Layout Positioning and GUI::Align System ----
 	// Aligns menu elements to the parent element, or the screen in the case of no parent.
 	// Uses a delayed drill system to shift all elements of a gui parent/child tree at once so there are no weird visual artifacts.
 	// Efficient enough to be used in animated menus.
-	// Depending on the alignment, the menu will behave differently.
-	// In all cases except Alignment::Manual, the output position is relative to the GUI Origin (0+,0+).
-	// In the case of Alignment::Left/Right/Top/Bottom, the remaining height/width refers to how child element sizes are accumulated.
+	// Depending on the GUI::Align, the menu will behave differently.
+	// In all cases except GUI::Align::Manual, the output position is relative to the GUI Origin (0+,0+).
+	// In the case of GUI::Align::Left/Right/Top/Bottom, the remaining height/width refers to how child element sizes are accumulated.
 	// In essence, the layout array accumulates the sizes and margins of children to determine the offset of the next element.
 	// This works in all directions, such that if there is a panel on the left with width 10 is on the left, the next panel on the top will be less 10 width.
 	// While left/right inherits the height of the panel, the width of a left/right panel is deterimed by size.x, and vica-versa to size.y for top/bottom.
@@ -298,13 +320,13 @@ shared class GUI {
 	// When a layout is completed, the final position and size of the element is stored in .paintPos and .paintSize, and the total size of all aligned children stored in .layout.
 	// These variables can be written to directly to change where an element will be rendered, and stores the calculated size.
 	//
-	// A list alignment effects are as follows:
-	//	- Alignment::Left/Right = Aligns to the left/right edges of the parent, and stretches to the height (remaining) of the parent.
-	//	- Alignment::Top/Bottom = Aligns to an edge of the parent, and stretches to the width (remaining) of the parent.
-	//	- Alignment::None = Align to .pos and .size relative to GUI Origin, regardless of parent.
-	//	- Alignment::Center = Align to the center of the parent, relative to GUI Origin using .size.
-	//	- Alignment::Fill = Aligns to the center of the parent, and stretches to the width AND height (remaining) of the parent. Does not add to layout[n].
-	//	- Alignment::Manual = Alignment is handled by a function.
+	// A list GUI::Align effects are as follows:
+	//	- GUI::Align::Left/Right = Aligns to the left/right edges of the parent, and stretches to the height (remaining) of the parent.
+	//	- GUI::Align::Top/Bottom = Aligns to an edge of the parent, and stretches to the width (remaining) of the parent.
+	//	- GUI::Align::None = Align to .pos and .size relative to GUI Origin, regardless of parent.
+	//	- GUI::Align::Center = Align to the center of the parent, relative to GUI Origin using .size.
+	//	- GUI::Align::Fill = Aligns to the center of the parent, and stretches to the width AND height (remaining) of the parent. Does not add to layout[n].
+	//	- GUI::Align::Manual = GUI::Align is handled by a function.
 	//
 	// margin/layout[0] = left
 	// margin/layout[1] = top
@@ -322,7 +344,7 @@ shared class GUI {
 	float width { get { return size.x; } set { size.x=value; } }
 	float height { get { return size.y; } set { size.y=value; } }
 
-	Alignment align=Alignment::None;
+	GUI::Align align=GUI::Align::None;
 	array<float> padding;
 	array<float> margin;
 
@@ -370,31 +392,31 @@ shared class GUI {
 	// # Layout functions ----
 	void layoutThis() {
 		if(!hasParent) { switch(align) {
-			case Alignment::None:
+			case GUI::Align::None:
 				paintPos=pos-GUI::center;
 				paintSize=size;
 				break;
-			case Alignment::Center:
+			case GUI::Align::Center:
 				paintSize=size;
 				paintPos=GUI::center-(paintSize/2);
 				break;
-			case Alignment::Left:
+			case GUI::Align::Left:
 				paintSize=Vector2f(width-(margin[0]+margin[2]),GUI::resolution.y-(margin[1]+margin[3]));
 				paintPos=Vector2f(margin[0],margin[1]);
 				break;
-			case Alignment::Right:
+			case GUI::Align::Right:
 				paintSize=Vector2f(width-(margin[0]+margin[2]),GUI::resolution.y-(margin[1]+margin[3]));
 				paintPos=Vector2f(GUI::resolution.x-width-margin[2],margin[1]);
 				break;
-			case Alignment::Bottom:
+			case GUI::Align::Bottom:
 				paintSize=Vector2f(GUI::resolution.x-(margin[0]+margin[3]),height-(margin[1]+margin[3]));
 				paintPos=Vector2f(margin[0],GUI::resolution.y-height-margin[1]);
 				break;
-			case Alignment::Top:
+			case GUI::Align::Top:
 				paintSize=Vector2f(GUI::resolution.x-(margin[0]+margin[3]),height-(margin[1]+margin[3]));
 				paintPos=Vector2f(margin[0],margin[1]);
 				break;
-			case Alignment::Fill:
+			case GUI::Align::Fill:
 				paintPos=Vector2f(margin[0],margin[1]);
 				paintSize=GUI::resolution;
 				break;
@@ -403,21 +425,21 @@ shared class GUI {
 				break;
 		} }
 	}
-	void manualLayoutThis() {} // Alignment::Manual override.
+	void manualLayoutThis() {} // GUI::Align::Manual override.
 
 	void layoutChild(GUI@&in child) {
 		switch(child.align) {
-			case Alignment::None:
+			case GUI::Align::None:
 				child.paintPos=child.pos;
 				child.paintSize=child.size;
 				break;
-			case Alignment::Center:
+			case GUI::Align::Center:
 				child.paintSize=child.size;
 				child.paintPos=(paintPos+paintSize/2)-(child.paintSize/2);
 				child.paintSize -= Vector2f(child.margin[0]+child.margin[2]+padding[0]+padding[2],child.margin[1]+child.margin[3]+padding[1]+padding[3]);
 				child.paintPos += Vector2f(child.margin[0]+padding[0],child.margin[1]+padding[1]);
 				break;
-			case Alignment::Left:
+			case GUI::Align::Left:
 				child.paintSize=Vector2f(child.width,paintSize.y-layout[1]-layout[3]);
 				child.paintPos=Vector2f(paintPos.x,paintPos.y);
 				child.paintSize -= Vector2f(child.margin[0]+child.margin[2]+padding[0]+padding[2],child.margin[1]+child.margin[3]+padding[1]+padding[3]);
@@ -425,28 +447,28 @@ shared class GUI {
 				layout[0] = layout[0]+ child.width+child.margin[0]+child.margin[2]+padding[0]+padding[2];
 				// Can't do array[n] += ?????
 				break;
-			case Alignment::Right:
+			case GUI::Align::Right:
 				child.paintSize=Vector2f(child.width,paintSize.y-layout[1]-layout[3]);
 				child.paintPos=Vector2f((paintPos.x+paintSize.x)-child.width-layout[2],paintPos.y);
 				child.paintSize -= Vector2f(child.margin[0]+child.margin[2]+padding[0]+padding[2],child.margin[1]+child.margin[3]+padding[1]+padding[3]);
 				child.paintPos += Vector2f(child.margin[0]+padding[0],child.margin[1]+padding[1]+layout[1]);
 				layout[2] = layout[2]+ child.width+child.margin[0]+child.margin[2]+padding[0]+padding[2];
 				break;
-			case Alignment::Bottom:
+			case GUI::Align::Bottom:
 				child.paintSize=Vector2f(paintSize.x-layout[0]-layout[2],child.height);
 				child.paintPos=Vector2f(paintPos.x,(paintPos.y+paintSize.y)-child.height-child.margin[3]-padding[3]-layout[3]);
 				child.paintSize -= Vector2f(child.margin[0]+child.margin[2]+padding[0]+padding[2],child.margin[1]+child.margin[3]+padding[1]+padding[3]);
 				child.paintPos += Vector2f(child.margin[0]+padding[0]+layout[0],child.margin[1]+padding[1]);
 				layout[3] = layout[3]+ child.height+padding[1]+padding[3]+child.margin[1]+child.margin[3];
 				break;
-			case Alignment::Top:
+			case GUI::Align::Top:
 				child.paintSize=Vector2f(paintSize.x-layout[0]-layout[2],child.height);
 				child.paintPos=Vector2f(paintPos.x,paintPos.y);
 				child.paintSize -= Vector2f(child.margin[0]+child.margin[2]+padding[0]+padding[2],child.margin[1]+child.margin[3]+padding[1]+padding[3]);
 				child.paintPos += Vector2f(child.margin[0]+padding[0]+layout[0],child.margin[1]+layout[1]+padding[1]);
 				layout[1] = layout[1]+ child.height+padding[1]+padding[3]+child.margin[1]+child.margin[3];
 				break;
-			case Alignment::Fill:
+			case GUI::Align::Fill:
 				child.paintSize=Vector2f(paintSize.x-layout[0]-layout[2],paintSize.y-layout[1]-layout[3]);
 				child.paintPos=Vector2f(paintPos.x,paintPos.y);
 				child.paintSize -= Vector2f(child.margin[0]+child.margin[2]+padding[0]+padding[2],child.margin[1]+child.margin[3]+padding[1]+padding[3]);
@@ -459,7 +481,7 @@ shared class GUI {
 		child.layoutParent(@this);
 		postLayoutChild(@child);
 	}
-	void manualLayoutChild(GUI@&in child, array<float> &layout) {} // Alignment::Manual override (ONLY where @child has Alignment::Manual).
+	void manualLayoutChild(GUI@&in child, array<float> &layout) {} // GUI::Align::Manual override (ONLY where @child has GUI::Align::Manual).
 	void layoutParent(GUI@&in parent) {} //override, for a child to affect its parents layout.
 	void postLayoutChild(GUI@&in child) {} // override
 

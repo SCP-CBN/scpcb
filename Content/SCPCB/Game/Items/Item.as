@@ -76,6 +76,7 @@ abstract class Item {
 		
 	}
 	Item::Template@ template;
+	Item::Icon@ iconInventory; // Must be calculated per item, i.e empty clipboard. Does not need to be saved.
 
 	Game::Model@ model;
 	bool pickable { get { return model.pickable; } set { model.pickable=value; } }
@@ -117,16 +118,16 @@ namespace Item {
 /* SAMPLE ITEM
 
 // # Item::<myItemName>::Template@ and Item::<myItemName>::Instance@; and Item::<myItemName>::Spawner@ ----
-namespace Item { namespace gasmask { Template@ thisTemplate=Template();
+namespace Item { namespace Battery9v { Template@ thisTemplate=Template();
 
 	// # Item::<myItemName>::Template@ ----
 	class Template : Item::Template { Item@ instantiate() { return Instance(); }
 		Template() { super();
-			name		= "gasmask";
+			name		= "Battery9v";
 			@pickSound	= Item::Sound();
-			@model		= Item::Model("SCPCB/GFX/Items/Battery/battery.fbx",0.08,"SCPCB/GFX/Items/Battery/battery.jpg");
-			@icon		= Item::Icon("SCPCB/GFX/Items/Battery/inv_battery.jpg");
-			@iconModel	= Item::Icon::Model(model.path,model.scale,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
+			@model		= Item::Model( rootDirGFXItems + name + "/" + name + ".fbx", 0.08, rootDirGFXItems + "Battery/battery.jpg" );
+			@icon		= Item::Icon( rootDirGFXItems + name + "/inv_" + name + ".jpg" );
+			@iconModel	= Item::Icon::Model(model.path, model.scale, Vector3f(2.3,2.7,0), Vector2f(0,0.2));
 		}
 		string banana="cheese";
 	}
