@@ -507,11 +507,13 @@ shared class GUI {
 
 	// # Clicking
 	// Generally handled by GUI::Clickable, but the base class requires the click drill functions to propogate clicks to the clickables.
+	Util::Function@ clickFunc;
+
 	void drillClick(Vector2f mpos,array<GUI@> &clickables) { clickables.insertLast(@this); if(hasChild) { for(int i=0; i<_children.length(); i++) {
 		GUI@ child=@_children[i]; if( child.visible && GUI::pointInSquare(mpos,child.paintPos,child.paintSize)) { child.drillClick(mpos,clickables); }
 	} } }
 
-	void callClick(Vector2f mpos) { internalClick(mpos); doClick(mpos); hovering=false; wasHovered=false; }
+	void callClick(Vector2f mpos) { internalClick(mpos); doClick(mpos); hovering=false; wasHovered=false; if(@clickFunc!=null) { Debug::log("CallClick!"); clickFunc(); } }
 	void internalClick(Vector2f mpos) {} // internal override
 	void doClick(Vector2f mpos) {doClick();} // Vector2f override
 	void doClick() {} // Override without Vector2f / alias.

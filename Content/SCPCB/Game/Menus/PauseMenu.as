@@ -1,215 +1,28 @@
 
 
-class menu_Pause : GUI {
-	GUI@ canvas;
+// # Menu::Pause (namespace) ----
+namespace Menu { namespace Pause {
+	Window@ instance;
 
-	GUI@ canvasMain;
-	GUI@ canvasDeveloper;
-	GUI@ canvasCheats;
-	GUI@ canvasOptions;
-
-	GUIScrollPanel@ scrollTest;
-
-	menu_Pause() { super("PauseMenu");
-
-	align=GUI::Align::Center;
-	size=Vector2f(70,70);
-	visible=false;
-
-	GUILabel@ header=GUILabel(@this);
-	header.text="PAUSED";
-	header.align=GUI::Align::Top;
-	header.height=GUI::resolution.y*0.07;
-	header.fontScale=3;
-	header.margin={4,GUI::resolution.y*0.035,4,1};
-
-	@canvas=GUI(@this);
-	canvas.align=GUI::Align::Fill;
-	canvas.margin={GUI::resolution.x*0.07,GUI::resolution.y*0.01,2,0};
-
-
-	// Main section ----
-
-	@canvasMain=GUI(@canvas);
-	canvasMain.align=GUI::Align::Fill;
-
-	menu_Pause_TextPanel@ textPanel = menu_Pause_TextPanel(@canvasMain);
-	textPanel.align=GUI::Align::Top;
-	textPanel.height=8;
-	textPanel.margin={1,0,1,0.5};
-
-	@PauseMenu_ButtonPanel=menu_Pause_ButtonPanel(@canvasMain);
-	PauseMenu_ButtonPanel.align=GUI::Align::Fill;
-	PauseMenu_ButtonPanel.margin={1,0.5,1,1};
-	//PauseMenu_ButtonPanel.width=GUI::resolution.x*0.375;
-
-	@PauseMenu_ContinueBtn=menu_Pause_ContinueButton(@PauseMenu_ButtonPanel);
-	PauseMenu_ContinueBtn.align=GUI::Align::Top;
-	PauseMenu_ContinueBtn.margin={1,1,1,0};
-	PauseMenu_ContinueBtn.height=8;
-	PauseMenu_ContinueBtn.text="Continue";
-
-	@PauseMenu_LoadBtn=menu_Pause_LoadButton(@PauseMenu_ButtonPanel);
-	PauseMenu_LoadBtn.align=GUI::Align::Top;
-	PauseMenu_LoadBtn.margin={1,1,1,0};
-	PauseMenu_LoadBtn.height=8;
-	PauseMenu_LoadBtn.text="Load";
-
-	@PauseMenu_DebugBtn=menu_Pause_DebugButton(@PauseMenu_ButtonPanel);
-	PauseMenu_DebugBtn.align=GUI::Align::Top;
-	PauseMenu_DebugBtn.margin={1,1,1,0};
-	PauseMenu_DebugBtn.height=8;
-	PauseMenu_DebugBtn.text="Debug Menu";
-
-	@PauseMenu_OptionsBtn=menu_Pause_OptionsButton(@PauseMenu_ButtonPanel);
-	PauseMenu_OptionsBtn.align=GUI::Align::Top;
-	PauseMenu_OptionsBtn.margin={1,1,1,0};
-	PauseMenu_OptionsBtn.height=8;
-	PauseMenu_OptionsBtn.text="Options";
-
-	@PauseMenu_QuitBtn=menu_Pause_QuitButton(@PauseMenu_ButtonPanel);
-	PauseMenu_QuitBtn.align=GUI::Align::Top;
-	PauseMenu_QuitBtn.margin={1,1,1,0};
-	PauseMenu_QuitBtn.height=8;
-	PauseMenu_QuitBtn.text="Quit to Main";
-
-
-	// Developer Section ----
-
-	@canvasDeveloper=GUI(@canvas);
-	canvasDeveloper.align=GUI::Align::Fill;
-	canvasDeveloper.visible=false;
-
-	menu_Pause_BackButton@ devBackBtn = menu_Pause_BackButton(@canvasDeveloper);
-	devBackBtn.align=GUI::Align::Bottom;
-	devBackBtn.margin={1,1,1,1};
-	devBackBtn.height=8;
-	devBackBtn.text="Back";
-
-	GUIButtonLabel@ btnIconEditor=GUIButtonLabel(@canvasDeveloper);
-	btnIconEditor.align=GUI::Align::Top;
-	btnIconEditor.margin={1,1,1,0};
-	btnIconEditor.height=8;
-	btnIconEditor.text="Icon Editor";
-
-	menu_Pause_Dev_CheatsButton@ devCheatsBtn = menu_Pause_Dev_CheatsButton(@canvasDeveloper);
-	devCheatsBtn.align=GUI::Align::Top;
-	devCheatsBtn.margin={1,1,1,0};
-	devCheatsBtn.height=8;
-	devCheatsBtn.text="Cheats Menu";
-
-	menu_Pause_Dev_tpToZeroButton@ devtpToZeroBtn = menu_Pause_Dev_tpToZeroButton(@canvasDeveloper);
-	devtpToZeroBtn.align=GUI::Align::Top;
-	devtpToZeroBtn.margin={1,1,1,0};
-	devtpToZeroBtn.height=8;
-	devtpToZeroBtn.text="Teleport to (0,0,0)";
-
-
-	// Cheats Section ----
-
-	@canvasCheats=GUI(@canvas);
-	canvasCheats.align=GUI::Align::Fill;
-	canvasCheats.visible=false;
-
-	menu_Pause_BackButton@ cheatBackBtn = menu_Pause_BackButton(@canvasCheats);
-	cheatBackBtn.align=GUI::Align::Bottom;
-	cheatBackBtn.margin={1,1,1,1};
-	cheatBackBtn.height=8;
-	cheatBackBtn.text="Back";
-
-	GUIButtonLabel@ cheatFirstBtn=GUIButtonLabel(@canvasCheats);
-	cheatFirstBtn.align=GUI::Align::Top;
-	cheatFirstBtn.margin={1,1,1,0};
-	cheatFirstBtn.height=8;
-	cheatFirstBtn.text="Placeholder Cheats";
-
-	menu_Pause_Dev_tpToZeroButton@ cheatSecondBtn = menu_Pause_Dev_tpToZeroButton(@canvasCheats);
-	cheatSecondBtn.align=GUI::Align::Top;
-	cheatSecondBtn.margin={1,1,1,0};
-	cheatSecondBtn.height=8;
-	cheatSecondBtn.text="Placeholder";
-
-
-	GUIButton@ testentryPanel=GUIButton(@canvasCheats);
-	testentryPanel.align=GUI::Align::Top;
-	testentryPanel.margin={1,1,1,0};
-	testentryPanel.height=8;
-
-	GUITextEntry@ testEntry=GUITextEntry(@testentryPanel);
-	testEntry.align=GUI::Align::Fill;
-	testEntry.margin={1,1,1,0};
-	testEntry.height=4;
-	testEntry.setText("testy");
-
-
-	// Options Section ----
-
-	@canvasOptions=GUI(@canvas);
-	canvasOptions.align=GUI::Align::Fill;
-	canvasOptions.visible=false;
-
-	menu_Pause_BackButton@ optionsBackBtn = menu_Pause_BackButton(@canvasOptions);
-	optionsBackBtn.align=GUI::Align::Bottom;
-	optionsBackBtn.margin={1,1,1,1};
-	optionsBackBtn.height=8;
-	optionsBackBtn.text="Back";
-
-	GUIButtonLabel@ optionsFirstBtn=GUIButtonLabel(@canvasOptions);
-	optionsFirstBtn.align=GUI::Align::Top;
-	optionsFirstBtn.margin={1,1,1,0};
-	optionsFirstBtn.height=8;
-	optionsFirstBtn.text="Placeholder Options";
-
-	menu_Pause_Dev_tpToZeroButton@ optionsSecondBtn = menu_Pause_Dev_tpToZeroButton(@canvasOptions);
-	optionsSecondBtn.align=GUI::Align::Top;
-	optionsSecondBtn.margin={1,1,1,0};
-	optionsSecondBtn.height=8;
-	optionsSecondBtn.text="Placeholder";
-
-	@scrollTest=GUIScrollPanel(@canvasOptions);
-	scrollTest.align=GUI::Align::Fill;
-
-	for(int i=0; i<30; i++) {
-		GUIButtonLabel@ btn = GUIButtonLabel(@scrollTest);
-		btn.text="Test: " + (i+64);
-		btn.align=GUI::Align::Top;
-		btn.height=8;
+	void load() {
+		@instance=Window();
 	}
 
-}
+} }
 
-	void doLayout() {
-		square=Rectanglef((paintPos)-GUI::center,(paintPos+paintSize)-GUI::center);
-	}
-	Rectanglef square;
-	void paint() {
-		UI::setTextured(GUI::Skin::menuPause, false);
-		UI::setColor(Color(1.f,1.f,1.f,1.f));
-		UI::addRect(square);
-		UI::setTextureless();
-	}
+// # Menu::pause()
+namespace Menu { void pause() {
+	World::paused=true;
+	Pause::instance.open();
+} }
 
 
-	void open() {
-		visible=true;
-		canvasMain.visible=true;
-		canvasDeveloper.visible=false;
-		canvasCheats.visible=false;
-		canvasOptions.visible=false;
-	}
 
-	void unpause() {
-		visible=false;
-		World::paused=false;
-	}
-}
+// # Menu::Pause::InfoPanel (GUI class) ----
+namespace Menu { namespace Pause { class InfoPanel : GUI {
+	InfoPanel(GUI@&in parent) { super(@parent,"Menu::Pause::InfoPanel");
+		height=8;
 
-class menu_Pause_ButtonPanel : GUI {
-	menu_Pause_ButtonPanel(GUI@&in parent) { super(@parent,"menu_Pause_ButtonPanel"); }
-}
-
-class menu_Pause_TextPanel : GUI {
-	menu_Pause_TextPanel(GUI@&in parent) { super(@parent,"menu_Pause_ButtonPanel");
 		GUILabel@ difficulty=GUILabel(@this);
 		difficulty.align=GUI::Align::Top;
 		difficulty.height=2.5;
@@ -234,83 +47,330 @@ class menu_Pause_TextPanel : GUI {
 		seednum.fontScale=1;
 		seednum.alignHorizontal=GUI::Align::Left;
 	}
-}
+} } }
 
-class menu_Pause_BackButton : GUIButtonLabel {
-	menu_Pause_BackButton(GUI@&in parent) { super(@parent,"menu_Pause_Dev_BackBtn"); }
-	void doClick() {
-		PauseMenu.open();
-		PauseMenu.invalidateLayout();
+
+
+// # Menu::Pause::Window@ (main class) ----
+namespace Menu { namespace Pause { class Window : GUI {
+
+	GUI@ canvas;
+	GUIScrollPanel@ scrollTest;
+
+	Window() { super("Menu::Pause::Window");
+		align=GUI::Align::Center;
+		size=Vector2f(70,70);
+
+		GUILabel@ header=GUILabel(@this);
+		header.text="PAUSED";
+		header.align=GUI::Align::Top;
+		header.height=GUI::resolution.y*0.07;
+		header.fontScale=3;
+		header.margin={4,GUI::resolution.y*0.035,4,1};
+
+		@canvas=GUI(@this);
+		canvas.align=GUI::Align::Fill;
+		canvas.margin={GUI::resolution.x*0.07,GUI::resolution.y*0.01,2,0};
+
+		constructMain();
+		constructLoad();
+		constructDebug();
+		constructCheats();
+		constructOptions();
+		constructIconEditor();
+		constructItemSpawner();
+		constructRoomSpawner();
+		constructGUITest();
+
+
 	}
-}
-
-class menu_Pause_Dev_tpToZeroButton : GUIButtonLabel {
-	menu_Pause_Dev_tpToZeroButton(GUI@&in parent) { super(@parent,"menu_Pause_tpToZeroBtn"); }
-	void doClick() {
-		Player::Controller.position=Vector3f(0,Player::Height+5,0);
-		PauseMenu.unpause();
+	void open() {
+		visible=true;
+		openToMain();
+		invalidateLayout();
 	}
-}
-
-class menu_Pause_Dev_CheatsButton : GUIButtonLabel {
-	menu_Pause_Dev_CheatsButton(GUI@&in parent) { super(@parent,"menu_Pause_CheatsBtn"); }
-	void doClick() {
-		PauseMenu.canvasCheats.visible=true;
-		PauseMenu.canvasDeveloper.visible=false;
-		PauseMenu.invalidateLayout();
+	void close() {
+		visible=false;
 	}
-}
-
-
-class menu_Pause_ContinueButton : GUIButtonLabel {
-	menu_Pause_ContinueButton(GUI@&in parent) { super(@parent,"menu_Pause_ContinueButton"); }
-	void doClick() {
-		PauseMenu.unpause();
+	void unpause() {
+		World::paused=false;
+		visible=false;
 	}
-}
-class menu_Pause_NewGameButton : GUIButtonLabel {
-	menu_Pause_NewGameButton(GUI@&in parent) { super(@parent,"menu_Pause_NewGameButton"); }
-	void doClick() {
-	}
-}
-class menu_Pause_LoadButton : GUIButtonLabel {
-	menu_Pause_LoadButton(GUI@&in parent) { super(@parent,"menu_Pause_LoadButton"); }
-	void doClick() {
-	}
-}
-class menu_Pause_DebugButton : GUIButtonLabel {
-	menu_Pause_DebugButton(GUI@&in parent) { super(@parent,"menu_Pause_DebugButton"); }
-	void doClick() {
-		PauseMenu.canvasDeveloper.visible=true;
-		PauseMenu.canvasMain.visible=false;
-		PauseMenu.invalidateLayout();
-	}
-}
-
-class menu_Pause_OptionsButton : GUIButtonLabel {
-	menu_Pause_OptionsButton(GUI@&in parent) { super(@parent,"menu_Pause_OptionsButton"); }
-	void doClick() {
-		PauseMenu.canvasOptions.visible=true;
-		PauseMenu.canvasMain.visible=false;
-		PauseMenu.invalidateLayout();
-	}
-}
-
-class menu_Pause_QuitButton : GUIButtonLabel {
-	menu_Pause_QuitButton(GUI@&in parent) { super(@parent,"menu_Pause_QuitButton"); }
-	void doClick() {
-		PauseMenu.visible=false;
-		MainMenu.visible=true;
-	}
-}
 
 
-menu_Pause@ PauseMenu;
-menu_Pause_ButtonPanel@ PauseMenu_ButtonPanel;
-menu_Pause_ContinueButton@ PauseMenu_ContinueBtn;
-menu_Pause_NewGameButton@ PauseMenu_NewGameBtn;
-menu_Pause_LoadButton@ PauseMenu_LoadBtn;
-menu_Pause_DebugButton@ PauseMenu_DebugBtn;
-menu_Pause_OptionsButton@ PauseMenu_OptionsBtn;
-menu_Pause_QuitButton@ PauseMenu_QuitBtn;
+	void switchPage() { for(int i=0; i<canvas._children.length(); i++) { canvas._children[i].visible=false; } invalidateLayout(); }
+	void openToMain() { switchPage(); canvasMain.visible=true; }
+	void openToLoad() { switchPage(); canvasLoad.visible=true; }
+	void openToDebug() { switchPage(); canvasDebug.visible=true; }
+	void openToCheats() { switchPage(); canvasCheats.visible=true; }
+	void openToOptions() { switchPage(); canvasOptions.visible=true; }
+	void openToIconEditor() { switchPage(); canvasIconEditor.visible=true; }
+	void openToItemSpawner() { switchPage(); canvasItemSpawner.visible=true; }
+	void openToRoomSpawner() { switchPage(); canvasRoomSpawner.visible=true; }
+	void openToGUITest() { switchPage(); canvasGUITest.visible=true; }
+	void openToQuit() { visible=false; MainMenu.visible=true; } // change to Menu::Main::instance.visible=true;
+	void tpToZero() { Player::Controller.position=Vector3f(0,Player::Height+5,0); unpause(); }
+	void toggleNoclip() { Debug::log("Try Noclip"); unpause(); bool nclip=Player::Controller.noclip; Player::Controller.noclip=!nclip; btnNoclip.text="Noclip ("+ (!nclip ? "ON" : "OFF") +")"; }
 
+	GUI@ canvasMain;
+	void constructMain() {
+		@canvasMain=GUI(@canvas);
+		canvasMain.align=GUI::Align::Fill;
+
+		auto@ textPanel = Menu::Pause::InfoPanel(@canvasMain);
+		textPanel.align=GUI::Align::Top;
+		textPanel.margin={1,0,1,0.5};
+
+		GUI@ panelOfButtons=GUI(@canvasMain);
+		panelOfButtons.align=GUI::Align::Fill;
+		panelOfButtons.margin={1,0.5,1,1};
+		//panelOfButtons.width=GUI::resolution.x*0.375;
+
+		auto@ btnContinue=GUIButtonLabel(@panelOfButtons);
+		btnContinue.align=GUI::Align::Top;
+		btnContinue.margin={1,1,1,0};
+		btnContinue.height=8;
+		btnContinue.text="Continue";
+		@btnContinue.clickFunc=Util::Function(unpause);
+
+		auto@ btnLoad=GUIButtonLabel(@panelOfButtons);
+		btnLoad.align=GUI::Align::Top;
+		btnLoad.margin={1,1,1,0};
+		btnLoad.height=8;
+		btnLoad.text="Load";
+		@btnLoad.clickFunc=Util::Function(openToLoad);
+
+		auto@ btnDebug=GUIButtonLabel(@panelOfButtons);
+		btnDebug.align=GUI::Align::Top;
+		btnDebug.margin={1,1,1,0};
+		btnDebug.height=8;
+		btnDebug.text="Debug Menu";
+		@btnDebug.clickFunc=Util::Function(openToDebug);
+
+		auto@ btnOptions=GUIButtonLabel(@panelOfButtons);
+		btnOptions.align=GUI::Align::Top;
+		btnOptions.margin={1,1,1,0};
+		btnOptions.height=8;
+		btnOptions.text="Options";
+		@btnOptions.clickFunc=Util::Function(openToOptions);
+
+		auto@ btnQuit=GUIButtonLabel(@panelOfButtons);
+		btnQuit.align=GUI::Align::Top;
+		btnQuit.margin={1,1,1,0};
+		btnQuit.height=8;
+		btnQuit.text="Quit to Main";
+		@btnQuit.clickFunc=Util::Function(openToQuit);
+	}
+
+
+
+	GUI@ canvasLoad;
+	void constructLoad() {
+		@canvasLoad=GUI(@canvas);
+		canvasLoad.align=GUI::Align::Fill;
+
+		auto@ btnBack = GUIButtonLabel(@canvasLoad);
+		btnBack.align=GUI::Align::Bottom;
+		btnBack.margin={1,1,1,1};
+		btnBack.height=8;
+		btnBack.text="Back";
+		@btnBack.clickFunc=Util::Function(openToMain);
+	}
+
+	GUI@ canvasIconEditor;
+	void constructIconEditor() {
+		@canvasIconEditor=GUI(@canvas);
+		canvasIconEditor.align=GUI::Align::Fill;
+
+		auto@ btnBack = GUIButtonLabel(@canvasIconEditor);
+		btnBack.align=GUI::Align::Bottom;
+		btnBack.margin={1,1,1,1};
+		btnBack.height=8;
+		btnBack.text="Back";
+		@btnBack.clickFunc=Util::Function(openToDebug);
+	}
+
+	GUI@ canvasItemSpawner;
+	void constructItemSpawner() {
+		@canvasItemSpawner=GUI(@canvas);
+		canvasItemSpawner.align=GUI::Align::Fill;
+
+		auto@ btnBack = GUIButtonLabel(@canvasItemSpawner);
+		btnBack.align=GUI::Align::Bottom;
+		btnBack.margin={1,1,1,1};
+		btnBack.height=8;
+		btnBack.text="Back";
+		@btnBack.clickFunc=Util::Function(openToCheats);
+	}
+
+
+	GUI@ canvasGUITest;
+	void constructGUITest() {
+		@canvasGUITest=GUI(@canvas);
+		canvasGUITest.align=GUI::Align::Fill;
+
+		auto@ btnBack = GUIButtonLabel(@canvasGUITest);
+		btnBack.align=GUI::Align::Bottom;
+		btnBack.margin={1,1,1,1};
+		btnBack.height=8;
+		btnBack.text="Back";
+		@btnBack.clickFunc=Util::Function(openToDebug);
+
+
+
+		GUIButton@ testentryPanel=GUIButton(@canvasGUITest);
+		testentryPanel.align=GUI::Align::Top;
+		testentryPanel.margin={1,1,1,0};
+		testentryPanel.height=8;
+
+		GUITextEntry@ testEntry=GUITextEntry(@canvasGUITest);
+		testEntry.align=GUI::Align::Fill;
+		testEntry.margin={1,1,1,0};
+		testEntry.height=4;
+		testEntry.setText("testy");
+
+
+		auto@ scrollTest=GUIScrollPanel(@canvasGUITest);
+		scrollTest.align=GUI::Align::Fill;
+
+		for(int i=0; i<30; i++) {
+			GUIButtonLabel@ btn = GUIButtonLabel(@scrollTest);
+			btn.text="Test: " + (i+64);
+			btn.align=GUI::Align::Top;
+			btn.height=8;
+		}
+	}
+
+	GUIButtonLabel@ btnNoclip;
+	GUI@ canvasDebug;
+	void constructDebug() {
+		@canvasDebug=GUI(@canvas);
+		canvasDebug.align=GUI::Align::Fill;
+
+
+		auto@ btnBack = GUIButtonLabel(@canvasDebug);
+		btnBack.align=GUI::Align::Bottom;
+		btnBack.margin={1,1,1,1};
+		btnBack.height=8;
+		btnBack.text="Back";
+		@btnBack.clickFunc=Util::Function(openToMain);
+
+		auto@ canvasDebugScroll=GUIScrollPanel(@canvasDebug);
+		canvasDebugScroll.align=GUI::Align::Fill;
+
+		@btnNoclip = GUIButtonLabel(@canvasDebugScroll);
+		btnNoclip.align=GUI::Align::Top;
+		btnNoclip.margin={1,1,1,0};
+		btnNoclip.height=8;
+		btnNoclip.text="Noclip (OFF)";
+		@btnNoclip.clickFunc=Util::Function(toggleNoclip);
+
+		auto@ btnTpToZero = GUIButtonLabel(@canvasDebugScroll);
+		btnTpToZero.align=GUI::Align::Top;
+		btnTpToZero.margin={1,1,1,0};
+		btnTpToZero.height=8;
+		btnTpToZero.text="Tp to (0,0,0)";
+		@btnTpToZero.clickFunc=Util::Function(tpToZero);
+
+		auto@ btnItemSpawner = GUIButtonLabel(@canvasDebugScroll);
+		btnItemSpawner.align=GUI::Align::Top;
+		btnItemSpawner.margin={1,1,1,0};
+		btnItemSpawner.height=8;
+		btnItemSpawner.text="Item Spawn Menu";
+		@btnItemSpawner.clickFunc=Util::Function(openToItemSpawner);
+
+		auto@ btnRoomSpawner = GUIButtonLabel(@canvasDebugScroll);
+		btnRoomSpawner.align=GUI::Align::Top;
+		btnRoomSpawner.margin={1,1,1,0};
+		btnRoomSpawner.height=8;
+		btnRoomSpawner.text="RoomSpawner Menu";
+		@btnRoomSpawner.clickFunc=Util::Function(openToRoomSpawner);
+
+		auto@ btnIconEditor = GUIButtonLabel(@canvasDebugScroll);
+		btnIconEditor.align=GUI::Align::Top;
+		btnIconEditor.margin={1,1,1,0};
+		btnIconEditor.height=8;
+		btnIconEditor.text="Icon Editor";
+		@btnIconEditor.clickFunc=Util::Function(openToIconEditor);
+
+		auto@ btnGUITest = GUIButtonLabel(@canvasDebugScroll);
+		btnGUITest.align=GUI::Align::Top;
+		btnGUITest.margin={1,1,1,0};
+		btnGUITest.height=8;
+		btnGUITest.text="GUI Testing";
+		@btnGUITest.clickFunc=Util::Function(openToGUITest);
+
+		auto@ btnCheats = GUIButtonLabel(@canvasDebugScroll);
+		btnCheats.align=GUI::Align::Top;
+		btnCheats.margin={1,1,1,0};
+		btnCheats.height=8;
+		btnCheats.text="Cheats Menu";
+		@btnCheats.clickFunc=Util::Function(openToCheats);
+
+	}
+
+	GUI@ canvasRoomSpawner;
+	void constructRoomSpawner() {
+		@canvasRoomSpawner=GUI(@canvas);
+		canvasRoomSpawner.align=GUI::Align::Fill;
+
+		auto@ btnBack = GUIButtonLabel(@canvasRoomSpawner);
+		btnBack.align=GUI::Align::Bottom;
+		btnBack.margin={1,1,1,1};
+		btnBack.height=8;
+		btnBack.text="Back";
+		@btnBack.clickFunc=Util::Function(openToDebug);
+
+
+
+	}
+
+
+	GUI@ canvasCheats;
+	void constructCheats() {
+		@canvasCheats=GUI(@canvas);
+		canvasCheats.align=GUI::Align::Fill;
+
+		auto@ btnBack = GUIButtonLabel(@canvasCheats);
+		btnBack.align=GUI::Align::Bottom;
+		btnBack.margin={1,1,1,1};
+		btnBack.height=8;
+		btnBack.text="Back";
+		@btnBack.clickFunc=Util::Function(openToDebug);
+
+
+
+	}
+
+
+
+
+
+
+	GUI@ canvasOptions;
+	void constructOptions() {
+		@canvasOptions=GUI(@canvas);
+		canvasOptions.align=GUI::Align::Fill;
+
+		auto@ btnBack = GUIButtonLabel(@canvasOptions);
+		btnBack.align=GUI::Align::Bottom;
+		btnBack.margin={1,1,1,1};
+		btnBack.height=8;
+		btnBack.text="Back";
+		@btnBack.clickFunc=Util::Function(openToMain);
+	}
+
+
+	void doLayout() {
+		square=Rectanglef((paintPos)-GUI::center,(paintPos+paintSize)-GUI::center);
+	}
+	Rectanglef square;
+	void paint() {
+		UI::setTextured(GUI::Skin::menuPause, false);
+		UI::setColor(Color(1.f,1.f,1.f,1.f));
+		UI::addRect(square);
+	}
+
+
+
+} } }

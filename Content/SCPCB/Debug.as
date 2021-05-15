@@ -76,7 +76,7 @@ void Initialize() { // This is the first function that is called lol.
 void update(float deltaTime) {
 	if (!World::paused) {
 		__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(testController, Input::getDown(), deltaTime);
-		lcz.update(deltaTime);
+	//	lcz.update(deltaTime);
 		time += deltaTime;
 		if (time > 1.f) { // So you don't get a fucking seizure.
 			lol.visible = !lol.visible;
@@ -113,8 +113,8 @@ void render(float interpolation) {
 	//fpsCounter.render();
 
 
-	if (test_shared_global == null) { return; }
-	test_shared_global.render(interpolation);
+	//if (test_shared_global == null) { return; }
+	//test_shared_global.render(interpolation);
 
 	float interpolatedBlink = blinkInterpolator.lerp(interpolation);
 	if (interpolatedBlink < 0.f) {

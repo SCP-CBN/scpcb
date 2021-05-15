@@ -72,4 +72,5 @@ PlayerControllerDefinitions::PlayerControllerDefinitions(ScriptManager* mgr, Ref
     engine->RegisterGlobalFunction("void __UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(PlayerController@ controller, int input, float timeStep)", asMETHOD(PlayerControllerDefinitions, __UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE), asCALL_THISCALL_ASGLOBAL, this);
 
     engine->RegisterObjectProperty("PlayerController", "Vector3f position", asOFFSET(PlayerController, position));
+    engine->RegisterObjectProperty("PlayerController", "bool noclip", asOFFSET(PlayerController, vNoclip));
 }

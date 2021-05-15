@@ -77,18 +77,17 @@ namespace Game {
 		else if(Input::getHit() & Input::Crouch != 0) { Debug::log("hotkey Crouch"); }
 		else if(Input::Escape::isHit()) {
 			Debug::log("Escape was pressed11"); // Apparently this code doesn't run without calling a Debug.log. isHit() is weird.
-			bool menuIsOpen=false;
+			bool menuWasOpen=false;
 			for(int i=0; i<GUI::baseInstances.length(); i++) {
 				if(GUI::baseInstances[i].visible==true) {
-					menuIsOpen=true;
+					menuWasOpen=true;
 					GUI::baseInstances[i].visible=false;
 				}
 			}
-			if(menuIsOpen==true) {
+			if(menuWasOpen==true) {
 				World::paused=false;
 			} else {
-				World::paused=true;
-				PauseMenu.open();
+				Menu::pause();
 			}
 		}
 	}
@@ -153,8 +152,8 @@ namespace Game {
 			break;
 		case 4:
 			loadNext("Zones...");
-			@lcz = LightContainmentZone();
-			@test_shared_global = @lcz;
+		//	@lcz = LightContainmentZone();
+		//	@test_shared_global = @lcz;
 			loadMessage="done!";
 			break;
 		case 5:
@@ -167,17 +166,22 @@ namespace Game {
 			if(DEBUGGING) { AngelDebug::Initialize(); }
 			tickHook.add(@onTick);
 			@MainMenu=menu_Main();
-			@PauseMenu=menu_Pause();
+			Menu::Pause::load();
 			@ConsoleMenu=menu_Console();
+			break;
+		case 7:
+			loadNext("Finished!");
+			LoadingMenu.visible=false;
+			MainMenu.visible=true;
+			Menu::Pause::instance.visible=false;
+			break;
+		default:
 			loading=false;
 			tickHook.remove(@load);
-			MainMenu.visible=true;
-			LoadingMenu.visible=false;
 			break;
 	}
 	}
 }
-						
 
 // # Game::Model@ ----
 // A world-model mesh object.
@@ -190,8 +194,7 @@ namespace Game { class Model {
 	Model(string&in cPath, float&in cScale=1.f, string&in cSkin="") { create(cPath,cScale,cSkin); }
 	Model(Item::Model@&in iMdl) { create(iMdl.path,iMdl.scale,iMdl.skin); }
 	void create(string&in cPath, float&in cScale=1.f, string&in cSkin="") {
-		string pth=cPath;
-		@mesh=CModel::create(pth);
+		@mesh=CModel::create(cPath);
 		mesh.position=Vector3f(0,0,0);
 		mesh.rotation=Vector3f(0,0,0);
 		mesh.scale=Vector3f(cScale);
@@ -234,6 +237,22 @@ namespace Game { namespace Model { class Picker : Game::Model {
 	} }
 } } }
 
+
+// # Game::Room@ ----
+// A world matrix mesh
+
+namespace Game { class Room {
+	RM2@ mesh;
+	Room(string&in cPath) { create(cPath); }
+	Room(Room::Model@&in iMdl) { create(iMdl.path); }
+	void create(string&in cPath) {
+		@mesh=RM2::load(cPath);
+	}
+	~Room() { RM2::delete(@mesh); }
+
+	void render() { } //mesh.render(); }
+
+} }
 
 
 // # Game::World --------

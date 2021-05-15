@@ -74,7 +74,7 @@ void PlayerController::update(float yaw, float pitch, Input input, float timeSte
             }
         }
     }
-    if (!noclip) {
+    if (!noclip && !vNoclip) {
         position = collider->applyGravity(position, currWalkSpeed, timeStep);
     } else {
         collider->resetGravity();

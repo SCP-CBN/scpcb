@@ -187,7 +187,7 @@ shared class GUIScrollPanel : GUI {
 	// # Scroll parenting
 	bool _reverse;
 	bool reverse { get { return canvas.scrollReverse; } set { canvas.scrollReverse=value; } }
-	void onChildAdded(GUI@&in child) { if(@canvas != null) { child.setParent(@canvas); } }
+	void onChildAdded(GUI@&in child) { if(@canvas != null) { child.setParent(@canvas); removeChild(@child); } }
 
 	// # Scroll scrolling
 	// This requires reverse handling to translate a scroll percentage into a position where the mouse would be to achieve that percentage.

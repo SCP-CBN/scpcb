@@ -169,25 +169,27 @@ void QueueNewGame() {
 }
 void BuildNewGame() {
 	World::paused=true;
-	initRooms_OBSOLETE();
+	//initRooms_OBSOLETE();
 	Player::Controller.position=Vector3f(0,Player::Height+5,0);
 	World::paused=false;
 	MainMenu.visible=false;
-	PauseMenu.visible=false;
+	Menu::Pause::instance.close();
 	LoadingMenu.visible=false;
 }
 
 
-external class Room;
-serialize LightContainmentZone@ lcz;
-external Zone@ test_shared_global;
+//external class Room;
+//serialize LightContainmentZone@ lcz;
+//external Zone@ test_shared_global;
 
-external enum RoomType;
-external int testCounter;
+//external enum RoomType;
+//external int testCounter;
 
 void initRooms_OBSOLETE() {
 
 	// OBSOLETE REGISTRATION CODE AND ZONE TESTING --------
+
+/*
 	lcz.registerRoom("hll_plain_4_empty_a", Room4);
 	lcz.registerRoom("hll_plain_4_empty_b", Room4);
 	lcz.registerRoom("hll_plain_4_walkway", Room4);
@@ -216,6 +218,9 @@ void initRooms_OBSOLETE() {
 	lcz.registerRoom("hll_plain_1_empty_a", Room1);
 	lcz.registerRoom("hll_plain_1_empty_b", Room1);
 	lcz.generate();
+
+*/
+
 }
 
 
