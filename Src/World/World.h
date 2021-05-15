@@ -45,6 +45,17 @@ class World {
 
         FT_Library ftLibrary;
         Font* largeFont;
+        Font* fontAppleLarge;
+        Font* fontAppleSmall;
+        Font* fontInconsolataLarge;
+        Font* fontInconsolataSmall;
+        Font* fontCrystalLarge;
+        Font* fontCrystalSmall;
+        Font* fontSubotypeLarge;
+        Font* fontSubotypeSmall;
+        Font* fontBoldLarge;
+        Font* fontBoldSmall;
+
         UIMesh* uiMesh;
 
         GraphicsResources* gfxRes;
@@ -86,6 +97,16 @@ class World {
         void quit();
 
         Font* getFont() const;
+        Font* getFontAppleLarge() const;
+        Font* getFontAppleSmall() const;
+        Font* getFontInconsolataLarge() const;
+        Font* getFontInconsolataSmall() const;
+        Font* getFontCrystalLarge() const;
+        Font* getFontCrystalSmall() const;
+        Font* getFontSubotypeLarge() const;
+        Font* getFontSubotypeSmall() const;
+        Font* getFontBoldLarge() const;
+        Font* getFontBoldSmall() const;
 };
 
 #endif // WORLD_H_INCLUDED
