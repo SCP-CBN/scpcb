@@ -20,6 +20,7 @@ shared class GUILabel : GUI {
 	// # Phrase manager
 	// Localization should happen in the local-script, not in the label element. Call: Local::getTxt(value)
 	string text;
+	String::Glitch@ glitch=String::Glitch();
 
 	Vector2f textPos;
 	Vector2f textSize;
@@ -70,6 +71,14 @@ shared class GUILabel : GUI {
 		UI::setColor(fontColor);
 		font.draw(text, textPos, fontScale*GUI::aspectScale, textRotation, fontColor);
 	}
+
+	bool glitched;
+	void update() {
+		//if(text!="") { if(!glitched) { glitched=true; glitch.start(text); } }
+		//if(glitched) { glitch.update(text); internalDoLayout(); }
+	}
+
+
 }
 
 

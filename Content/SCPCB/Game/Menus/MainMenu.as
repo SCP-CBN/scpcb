@@ -144,6 +144,7 @@ class menu_Main_LoadButton : GUIButtonLabel {
 class menu_Main_OptionsButton : GUIButtonLabel {
 	menu_Main_OptionsButton(GUI@&in parent) { super(@parent,"menu_Main_OptionsButton"); }
 	void doClick() {
+		//label.glitch.start(label.text,150,1.5);
 	}
 }
 

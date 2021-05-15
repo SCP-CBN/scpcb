@@ -7,7 +7,7 @@
 // Source: https://github.com/juanjp600/scpcb/Content/			//
 // Script File Author(s): Pyro-Fire					//
 // Purpose:								//
-//	- Player Manager						//
+//	- General purpose utilities					//
 //									//
 //									//
 // -------------------------------------------------------------------- \\
@@ -86,6 +86,45 @@ namespace String {
 
 	shared string implode(array<string>&in words, string&in delim) {
 		return "todo";
+	}
+
+	shared class Glitch {
+		string orig;
+		string lastText;
+		array<bool> locks;
+		int lockCount;
+		int duration;
+		int tick;
+		float strength;
+		float speed;
+		int nextTick;
+		Random@ rnjesus;
+		Glitch() {}
+		Glitch(string&in gOrig,int gDuration=300,float gStrength=0.9, float gSpeed=0.5) { start(gOrig,gDuration,gStrength,gSpeed); }
+		void start(string&in gOrig="test",int gDuration=300,float gStrength=0.9, float gSpeed=0.5) {
+			orig=gOrig; duration=gDuration; strength=gStrength; speed=gSpeed; @rnjesus=Random(); tick=0; nextTick=1; lockCount=0;
+			locks={}; for(int i=0; i<orig.length(); i++) { locks.insertLast(false); }
+		}
+		bool update(string&out txt) { tick++;
+			if(tick>duration) { txt=orig; return true; }
+			float elapsed=float(tick)/float(duration);
+			float remaining=1-elapsed;
+			if(tick<nextTick) { txt=lastText; return false; }
+			nextTick=Math::floor(tick+(duration*(elapsed**4))**speed);
+			string newStr="";
+			bool shouldLock=(lockCount<( ((elapsed-0.25)*0.8)*orig.length() ));
+			for(int i=0; i<orig.length(); i++) {
+				float rng=rnjesus.nextFloat();
+				if(locks[i]) { if(rnjesus.nextFloat()>Math::maxFloat(remaining,0.75)) { locks[i]=false; } }
+				if(locks[i]) {  newStr+=orig[i]; }
+				else if(rng<=(remaining+0.1)) { newStr+=orig[i]+(rnjesus.nextBool() ? 1 : -1)*rnjesus.nextInt(Math::floor(24*remaining*strength)); }
+				else { newStr+=orig[i]; }
+				if(shouldLock && !locks[i] && rnjesus.nextFloat()<elapsed) { lockCount++; locks[i]=true; }
+			}
+			txt=newStr;
+			lastText=newStr;
+			return false;
+		}	
 	}
 }
 
