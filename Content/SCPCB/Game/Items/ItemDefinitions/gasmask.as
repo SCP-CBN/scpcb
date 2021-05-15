@@ -1,40 +1,28 @@
-class ItemTemplate_Gasmask : Item::Template {
-	Item@ create() {
-		Item @instance = Item_Gasmask(@this);
-		return @instance;
+// # gasmask ----
+
+namespace Item { namespace Gasmask { Template@ thisTemplate=Template();
+	class Template : Item::Template { Item@ instantiate() { return (Instance()); }
+		Template() { super();
+			name		= "Gasmask"; // "gasmask"
+			@pickSound	= Item::Sound(); // 2
+			@model		= Item::Model("SCPCB/GFX/Items/Gasmask/Gasmask.fbx",0.2);
+			@icon		= Item::Icon("SCPCB/GFX/Items/Gasmask/inv_gasmask.jpg");
+			@iconModel	= Item::Icon::Model(model.path,0.08,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
+		}
 	}
-	ItemTemplate_Gasmask() { super();
-		
-		name = "Gasmask";
-		modelPath = "SCPCB/GFX/Items/Gasmask/Gasmask.fbx";
-		modelScale = 0.2;
-
-		pickSoundID=2;
-
-		useModelIcon=true;
-		iconImage = "GFX\items\INVgasmask.jpg";
-		iconScale = 0.08;
-		iconRot = Vector3f(2.3,2.7,0);
-		iconPos = Vector2f(0,0.2);
-
-		Item::register(@this);
+	class Instance : Item { Instance() {super(@thisTemplate);};
+		void doTest() {
+			Debug::log("I'm a " + thisTemplate.name);
+		}
 	}
-}
-ItemTemplate_Gasmask OriginItem_Gasmask;
-
-
-class Item_Gasmask : Item {
-	Item_Gasmask(Item::Template@&in origin) { super(@origin);
-		// onConstructed();
+	class Spawner : Item::Spawner {
+		Spawner() {
+		}
 	}
-
-	void Test() {
-		Debug::log("Im a gasmask");
-	}
-}
+}};
 
 
-/*
+/* Originals --------------------------------------
 
 	it = CreateItemTemplate("Gas Mask", "gasmask", "GFX\items\gasmask.b3d", "GFX\items\INVgasmask.jpg", "", 0.02) : it\sound = 2
 	it = CreateItemTemplate("Gas Mask", "supergasmask", "GFX\items\gasmask.b3d", "GFX\items\INVgasmask.jpg", "", 0.021) : it\sound = 2
@@ -73,3 +61,4 @@ DrawGuiItem
 					;[End Block]
 
 */
+

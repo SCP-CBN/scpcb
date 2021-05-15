@@ -1,170 +1,149 @@
+
+// # Item::Model@ ----
+namespace Item { class Model {
+	string path;
+	string skin;
+	float scale;
+	bool pickable;
+	Model(string iPath, float&in iScale=1.f, string&in iSkin="") { path=iPath; scale=iScale; skin=iSkin; }
+	Game::Model@ instantiate() { return (pickable ? Game::Model(path,scale,skin) : Game::Model::Picker(path,scale,skin)); }
+} }
+
+// # Item::Sound@ ----
+namespace Item { class Sound {
+	string path;
+	Sound() {}
+	Sound(int i) {} // picksoundid
+	Sound(string&in iPath, float&in iScale, string&in iSkin="") { path=iPath; }
+} }
+
+// # Item::Icon@ and Item::Icon::Model@ ----
 namespace Item {
-	array<Item::Template@> templates;
-	array<Item@> instances;
-	void register(Item::Template@&in template) {
-		template.localName = Local::getTxt("Items." + template.name + ".Name");
-		templates.insertLast(@template);
+	// Item::Icon@ ----
+	class Icon : Util::Icon { Icon() {super();} Icon(string&in texStr) {super(texStr);} Icon(Texture@&in tex) {super(@tex);} }
+
+	// Item::Icon::Model@ ----
+	namespace Icon { class Model : Util::Icon::Model {
+		Model(string&in iPath, float&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") {super(iPath,iScale,iRotation,iPos,iSkin);}
+	} }
+}
+
+
+
+// # ??? : Item::Template@ ----
+namespace Item { interface TemplateInterface { Item@ instantiate(); } }
+namespace Item { abstract class Template : Item::TemplateInterface {
+	Item@ instantiate() {return null;}
+	Template() { Item::templates.insertLast(@this); }
+	void construct() {
+		if(@model!=null) { model.pickable=(@pickSound != null && (@icon != null || @iconModel != null)); }
+		localName = Local::getTxt("Items."+name+".Name");
+		if(@iconModel!=null) { iconModel.generate(); }
+		if(@icon==null && @iconModel!=null) { @icon=@iconModel; }
+		Debug::log("Template constructed!");
 	}
 
-	Item@ spawn(const string&in name, const Vector3f&in position) { return spawn(name,position,Vector3f(0,0,0)); }
-	Item@ spawn(const string&in name, const Vector3f&in position, const Vector3f&in rotation) {
-		Item::Template @template;
-		for (int i = 0; i < templates.length(); i++) {
-			if(templates[i].name == name) {
-				@template=@templates[i];
-				break;
-			}
-		}
-		if(template == null) {
-			Debug::error("Failed to create item " + name + " - Template not found! - #Templates: " + templates.length() + ".");
-			return null;
-		}
+	string name = "SCP-000";
+	string localName = "000";
 
-		Item@ instance=template.create();
+	string description = "513475634257986431";
+	Item::Model@ model;
+	bool pickable;
+
+	Item::Sound@ pickSound;
+	Util::Icon@ icon;
+	Util::Icon::Model@ iconModel;
+
+} }
+
+// # ??? : Item::Spawner@ ----
+namespace Item { interface SpawnerInterface { } }
+namespace Item { abstract class Spawner : Item::SpawnerInterface {
+	Spawner() { }
+
+	string name = "SCP-000";
+} }
+
+
+
+// # ??? : Item; (Item Instance) ----
+abstract class Item {
+	Item() {};
+	Item(Item::Template@&in temp) { 
+		Item::Template@ antiCrashWorkaround=@temp;
+		@template=@antiCrashWorkaround;
+		if(@template.model!=null) { Debug::log("making model!"); @model=template.model.instantiate(); Debug::log("made model!"); }
+		
+	}
+	Item::Template@ template;
+
+	Game::Model@ model;
+	bool pickable { get { return model.pickable; } set { model.pickable=value; } }
+	Vector3f position { get { return model.position; } set { model.position=value; } }
+	Vector3f rotation { get { return model.rotation; } set { model.rotation=value; } }
+	Vector3f scale { get { return model.scale; } set { model.scale=value; } }
+	string skin { get { return model.skin; } set { model.skin=value; } }
+	void render() { model.render(); }
+	void update() {}
+
+}
+
+// # Item:: (Namespace) ----
+namespace Item {
+	array<Item@> instances;
+	array<Item::Template@> templates;
+
+	void Initialize() {
+		for(int i=0;i<templates.length();i++) { templates[i].construct(); }
+	}
+
+	Item@ spawn(const string&in name) { return spawn(name,Vector3f(),Vector3f()); }
+	Item@ spawn(const string&in name, const Vector3f&in position) { return spawn(name,position,Vector3f()); }
+	Item@ spawn(const string&in name, const Vector3f&in position, const Vector3f&in rotation) {
+		Item::Template@ template;
+		for(int i=0; i<templates.length(); i++) { if(templates[i].name==name) { @template=@templates[i]; break; } }
+		if(@template==null) { Debug::error("Item Spawn failed - Item Template not found: " + name); return null; }
+		Debug::log("Ready to spawn item!");
+		Item@ instance=template.instantiate();
 		instance.position=position;
 		instance.rotation=rotation;
-		return instance;
+		instances.insertLast(@instance);
+		return @instance;
 	}
 	void updateAll() { for (int i=0; i<instances.length(); i++) { instances[i].update(); } }
 	void renderAll() { for (int i=0; i<instances.length(); i++) { instances[i].render(); } }
 }
 
-abstract class Item::Template {
-	Template() { Item::templates.insertLast(@this); }
-	string name;
-	string localName;
+/* SAMPLE ITEM
 
-	string modelPath;
-	string modelSkin;
-	float modelScale; // Original model scales appear to be *10 less than what it should be. (0.008, etc)
+// # Item::<myItemName>::Template@ and Item::<myItemName>::Instance@; and Item::<myItemName>::Spawner@ ----
+namespace Item { namespace gasmask { Template@ thisTemplate=Template();
 
-	// "SFX/Interact/PickItem" + pickSoundID + ".ogg";
-	int pickSoundID;
-
-	bool useModelIcon=true;
-	string iconImage;
-
-	float iconScale;
-	Vector3f iconRot;
-	Vector2f iconPos;
-	string iconSkin="";
-	Item@ create() { Debug::error("Tried to make an instance of a null template!"); return null; }
-}
-
-abstract class Item {
-
-	// Identity
-	string name;
-
-	Item::Template@ template;
-	Util::Icon@ iconData;
-
-	// Model/Picker, and alias model position/rotation/picker onto item.position/rotation/picker
-	Game::Model::Picker@ model;
-	Vector3f position { get { return model.position; } set { model.position = value; } }
-	Vector3f rotation { get { return model.rotation; } set { model.rotation = value; } }
-	bool picked { get { return model.picked; } }
-	bool pickable { set { model.pickable=value; } }
-
-	Item@ _inventoryBag;
-	Item@ inventoryBag;
-	int inventory;
-
-	// Save States
-	int state;
-	int power;
-	int equipped;
-
-	// Construction
-	Item(Item::Template@&in origin) {
-		Item::Template@ originTemplate = @origin; // This may seem like it does nothing, but it's actually stopping a crash.
-		@template=@originTemplate;
-		Game::Model::Picker @mdl = Game::Model::Picker(template.modelPath);
-		@model=@mdl;
-		if(template.modelScale != 0) { model.scale=Vector3f(template.modelScale); }
-		model.skin=template.modelSkin;
-
-		name=template.name;
-		Item::instances.insertLast(@this);
-
-		if(template.useModelIcon) {  @iconData = Util::Icon::Model(template.modelPath, template.iconScale, template.iconRot, template.iconPos); }
-		else { @iconData=Util::Icon(); @iconData.texture=Texture::get(template.iconImage); }
-		inPVS=true;
-
-		Debug::log("Spawned an item in the world: " + name);
-	}
-
-
-	// Potentially Visible Set (PVS) and Tick/Render/Update functions.
-	bool inPVS;
-	void EnterPVS() { inPVS=true; onEnterPVS(); }
-	void ExitPVS() { inPVS=false; onExitPVS(); }
-
-	void render() {
-		if(inPVS) { renderPVS(); }
-		renderGlobal();
-	}
-	void update() {
-		if(inPVS) {
-			updatePickable();
-			onUpdatePVS();
+	// # Item::<myItemName>::Template@ ----
+	class Template : Item::Template { Item@ instantiate() { return Instance(); }
+		Template() { super();
+			name		= "gasmask";
+			@pickSound	= Item::Sound();
+			@model		= Item::Model("SCPCB/GFX/Items/Battery/battery.fbx",0.08,"SCPCB/GFX/Items/Battery/battery.jpg");
+			@icon		= Item::Icon("SCPCB/GFX/Items/Battery/inv_battery.jpg");
+			@iconModel	= Item::Icon::Model(model.path,model.scale,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
-		onUpdateGlobal();
+		string banana="cheese";
 	}
 
-
-	void updatePickable() { if(model.picked) { tryPick(); } }
-	bool tryPick() {
-		if(!canPick()) { return false; }
-		if(false) { //InventoryMenu::instance.addItem(this)) {
-			inventory=1;
-			onPick();
-			pickable=false;
-			ExitPVS();
-			return true;
-		} else {
-			//Msg::set("Inventory full!");
+	// # Item::<myItemName>::Instance@ ----
+	class Instance : Item { Instance() {super(@thisTemplate);};
+		void doTest() {
+			print "I'm a " + thisTemplate.banana;
 		}
-		return false;
 	}
 
-
-
-	// // // Override functions // // //
-
-
-	// Lifecycle
-	void onSpawned() {}
-	void onDestroy() {}
-
-	// PVS
-	void onExitPVS() {}
-	void onEnterPVS() {}
-
-	// Tick/update functions
-	void onUpdatePVS() {}
-	void onUpdateGlobal() {}
-
-	// Inventory actions
-	bool canUse() { return false; }
-	bool onUse() { return false; }
-	void onDrop() {}
-
-	// Pickables
-	bool canPick() { return true; }
-	void onPick() {}
-
-	// Renderables
-	void renderPVS() { model.render(); }
-	void renderGlobal() {}
-
-
-	void Test() {
-		Debug::log("Im a banana");
+	// # Item::<myItemName>::Spawner@ ----
+	class Spawner : Item::Spawner {
+		Spawner() {
+		}
 	}
 
-}
+}}; // Close item
 
-
-
-
+*/ 

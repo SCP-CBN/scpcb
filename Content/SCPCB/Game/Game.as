@@ -59,7 +59,6 @@ namespace Game {
 			BuildNewGame();
 			queuedNewGame=false;
 		}
-		Item::updateAll();
 		if(DEBUGGING) { AngelDebug::update(interp); }
 	}
 	void render(float interp) {
@@ -100,17 +99,22 @@ namespace Game {
 
 // # Game::Model@ ----
 // A world-model mesh object.
+::Model@ createMesh(string&in pth) { return ::Model::create(pth); }
 
 namespace Game { class Model {
 	::Model@ mesh;
-	Model(string&in cpath,string&in skin="") {
-		@mesh=::Model::create(cpath);
+	Model(string&in cPath, float&in cScale=1.f, string&in cSkin="") { create(cPath,cScale,cSkin); }
+	Model(Item::Model@&in iMdl) { create(iMdl.path,iMdl.scale,iMdl.skin); }
+	void create(string&in cPath, float&in cScale=1.f, string&in cSkin="") {
+		string pth=cPath;
+		@mesh=createMesh(pth);
 		mesh.position=Vector3f(0,0,0);
 		mesh.rotation=Vector3f(0,0,0);
-		mesh.scale=Vector3f(1,1,1);
-		//mesh.skin=skin;
+		mesh.scale=Vector3f(cScale);
+		skin=cSkin; //mesh.skin=cSkin;
 	}
 	~Model() { ::Model::destroy(mesh); }
+	bool pickable;
 	Vector3f position { get { return mesh.position; } set { mesh.position = value; } }
 	Vector3f rotation { get { return mesh.rotation; } set { mesh.rotation = value; } }
 	Vector3f scale { get { return mesh.scale; } set { mesh.scale = value; } }
@@ -128,11 +132,14 @@ namespace Game { class Model {
 
 namespace Game { namespace Model { class Picker : Game::Model {
 	Pickable@ _picker;
-	Picker(string&in cpath,string&in skin="") { super(cpath,skin);
+	Picker(string cPath,float&in cScale=1.f, string&in cSkin="") { super(cPath,cScale,cSkin); createPicker(); }
+	Picker(Item::Model@&in iMdl) { super(iMdl); createPicker(); }
+	void createPicker() {
 		@_picker=Pickable();
 		_picker.position=position;
 		pickable=true;
 	}
+
 	~Picker() { ::Model::destroy(mesh); pickable=false; }
 	Vector3f position { get { return mesh.position; } set { mesh.position = value; _picker.position = value; } }
 	bool picked { get { return _picker.getPicked(); } }
@@ -153,8 +160,10 @@ namespace Game { namespace World {
 		@Collision=Collision::Collection();
 	}
 	void update() {
+		Item::updateAll();
 	}
 	void render() {
+		Item::renderAll();
 	}
 } }
 

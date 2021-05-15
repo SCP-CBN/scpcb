@@ -34,7 +34,6 @@ float blinkTimer = 10.f;
 Util::FloatInterpolator@ blinkInterpolator = Util::FloatInterpolator();
 
 
-
 void Initialize() { // This is the first function that is called lol.
 	Debug::log("AngelDebug - Start Testing Area");
 
@@ -61,7 +60,10 @@ void Initialize() { // This is the first function that is called lol.
 	//scp173.position = Vector3f(-4, 0, 1);
 	//scp173.rotation = Vector3f(0, 0, 0);
 
+	Debug::log("Spawning item");
+
 	Item::spawn("Gasmask", Vector3f(-15.0, 5.0, 20.0));
+	Debug::log("Spawned gasmask");
 
 	Item::spawn("FirstAid", Vector3f(0.0, 20.0, 20.0));
 	Item::spawn("SmallFirstAid", Vector3f(10.0, 20.0, 20.0));
@@ -107,7 +109,7 @@ void render(float interpolation) {
 	mask2.render();
 	//scp173.render();
 	Billboard::renderAll();
-	Item::renderAll();
+
 	//fpsCounter.render();
 
 

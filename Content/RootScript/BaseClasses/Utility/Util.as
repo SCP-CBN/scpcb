@@ -129,24 +129,33 @@ namespace UI {
 
 // #### SECTION 4. Icon Handler ----
 
-// # Util::Icon@ ----
-// Generic texture icon
-namespace Util { shared class Icon { Texture@ texture; Icon() {}; void generate() {}; } }
+// # Utility Icons ----
+namespace Util {
 
-// # Util::Icon::Model@ ----
-// IconModel
-namespace Util { namespace Icon { shared class Model : Icon {
-	string path;
-	float scale;
-	Vector3f rotation;
-	Vector2f pos;
-	string skin;
-	Model(string&in iPath, float&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") { super();
-		path=iPath; scale=iScale; pos=iPos; rotation=iRotation; skin=iSkin;
-		generate();
+	// # Util::Icon@ ----
+	// Generic texture icon
+	shared class Icon { Texture@ texture;
+		Icon() {};
+		Icon(string&in texPath) { @texture=Texture::get(texPath); };
+		Icon(Texture@&in tex) { @texture=@tex; }
+		void generate() {};
 	}
-	void generate() { @texture = ModelImageGenerator::generate(path, scale, rotation, pos); } // , skin);
-} } }
+
+	// # Util::Icon::Model@ ----
+	// IconModel
+	namespace Icon { shared class Model : Icon {
+		string path;
+		float scale;
+		Vector3f rotation;
+		Vector2f pos;
+		string skin;
+		Model(string&in iPath, float&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") { super();
+			path=iPath; scale=iScale; pos=iPos; rotation=iRotation; skin=iSkin;
+			generate();
+		}
+		void generate() { @texture = ModelImageGenerator::generate(path, scale, rotation, pos); } // , skin);
+	} }
+}
 
 
 

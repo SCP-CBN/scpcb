@@ -1,111 +1,70 @@
-// First Aid --------------------------------------
-
-class ItemTemplate_FirstAid : Item::Template {
-	Item@ create() { Item @instance = Item_FirstAid(@this); return @instance; }
-	ItemTemplate_FirstAid() { super();
-		name = "FirstAid"; //"firstaid"
-		modelPath = "SCPCB/GFX/Items/Firstaid/firstaid.fbx";
-		modelSkin = "SCPCB/GFX/Items/Firstaid/firstaid.jpg";
-		modelScale = 0.5;
-
-		pickSoundID=1;
-
-		useModelIcon=true;
-		iconImage = "SCPCB/GFX/Items/Firstaid/inv_firstaid.jpg";
-		iconScale = 0.1;
-		iconRot = Vector3f(-2.3,-0.3,0.2);
-		iconPos = Vector2f(0,0.05);
-		Item::register(@this);
+// # First Aid ----
+namespace Item { namespace FirstAid { Template@ thisTemplate=Template();
+	class Template : Item::Template { Item@ instantiate() { return (Instance()); }
+		Template() { super();
+			name		= "FirstAid"; // "bat"
+			@pickSound	= Item::Sound(); // 1
+			@model		= Item::Model("SCPCB/GFX/Items/Firstaid/firstaid.fbx",0.5,"SCPCB/GFX/Items/Firstaid/firstaid.jpg");
+			@icon		= Item::Icon("SCPCB/GFX/Items/Firstaid/inv_firstaid.jpg");
+			@iconModel	= Item::Icon::Model(model.path,0.1,Vector3f(-2.3,-0.3,0.2),Vector2f(0,0.05));
+		}
 	}
-}
-ItemTemplate_FirstAid OriginItem_FirstAid;
-
-
-class Item_FirstAid : Item {
-	Item_FirstAid(Item::Template@&in origin) { super(@origin);
-		// onConstructed();
+	class Instance : Item { Instance() {super(@thisTemplate);};
+		void doTest() {
+			Debug::log("I'm a " + thisTemplate.name);
+		}
 	}
-
-	void Test() {
-		Debug::log("Im a FirstAid");
+	class Spawner : Item::Spawner {
+		Spawner() {
+		}
 	}
-	void Localize(Item@&in instance) {
+}};
+
+// # Small First Aid ----
+namespace Item { namespace SmallFirstAid { Template@ thisTemplate=Template();
+	class Template : Item::Template { Item@ instantiate() { return (Instance()); }
+		Template() { super();
+			name		= "SmallFirstAid"; // "firstaid"
+			@pickSound	= Item::Sound(); // 1
+			@model		= Item::Model("SCPCB/GFX/Items/Firstaid/firstaid.fbx",0.3,"SCPCB/GFX/Items/Firstaid/firstaid.jpg");
+			@icon		= Item::Icon("SCPCB/GFX/Items/Firstaid/inv_firstaid.jpg");
+			@iconModel	= Item::Icon::Model(model.path,0.07,Vector3f(-2.3,-0.3,0.2),Vector2f(0,0.05));
+		}
 	}
-}
-
-// Small First Aid --------------------------------------
-
-class ItemTemplate_SmallFirstAid : Item::Template {
-	Item@ create() { Item @instance = Item_SmallFirstAid(@this); return @instance; }
-	ItemTemplate_SmallFirstAid() { super();
-
-		name = "SmallFirstAid"; //"finefirstaid"
-		modelPath = "SCPCB/GFX/Items/Firstaid/firstaid.fbx";
-		modelSkin = "SCPCB/GFX/Items/Firstaid/firstaid.jpg";
-		modelScale = 0.3;
-
-		pickSoundID=1;
-
-		useModelIcon=true;
-		iconImage = "SCPCB/GFX/Items/Firstaid/inv_firstaid_blue.jpg";
-		iconScale = 0.1;
-		iconRot = Vector3f(-2.3,-0.3,0.2);
-		iconPos = Vector2f(0,0.05);
-		Item::register(@this);
+	class Instance : Item { Instance() {super(@thisTemplate);};
+		void doTest() {
+			Debug::log("I'm a " + thisTemplate.name);
+		}
 	}
-}
-ItemTemplate_SmallFirstAid OriginItem_SmallFirstAid;
-
-
-class Item_SmallFirstAid : Item {
-	Item_SmallFirstAid(Item::Template@&in origin) { super(@origin);
-		// onConstructed();
+	class Spawner : Item::Spawner {
+		Spawner() {
+		}
 	}
+}};
 
-	void Test() {
-		Debug::log("Im a SmallFirstAid");
+
+
+// # Blue First Aid ----
+namespace Item { namespace BlueFirstAid { Template@ thisTemplate=Template();
+	class Template : Item::Template { Item@ instantiate() { return (Instance()); }
+		Template() { super();
+			name		= "BlueFirstAid"; // "bluefirstaid"
+			@pickSound	= Item::Sound(); // 1
+			@model		= Item::Model("SCPCB/GFX/Items/Firstaid/firstaid.fbx",0.5,"SCPCB/GFX/Items/Firstaid/firstaid_blue.jpg");
+			@icon		= Item::Icon("SCPCB/GFX/Items/Firstaid/inv_firstaid_blue.jpg");
+			@iconModel	= Item::Icon::Model(model.path,0.1,Vector3f(-2.3,-0.3,0.2),Vector2f(0,0.05));
+		}
 	}
-	void Localize(Item@&in instance) {
+	class Instance : Item { Instance() {super(@thisTemplate);};
+		void doTest() {
+			Debug::log("I'm a " + thisTemplate.name);
+		}
 	}
-}
-
-// Blue First Aid --------------------------------------
-
-class ItemTemplate_BlueFirstAid : Item::Template {
-	Item@ create() { Item @instance = Item_BlueFirstAid(@this); return @instance; }
-	ItemTemplate_BlueFirstAid() { super();
-
-		name = "BlueFirstAid"; //"firstaid2"
-		modelPath = "SCPCB/GFX/Items/Firstaid/firstaid.fbx";
-		modelSkin = "SCPCB/GFX/Items/Firstaid/firstaid_blue.jpg";
-		modelScale = 0.3;
-
-		pickSoundID=1;
-
-		useModelIcon=true;
-		iconImage = "SCPCB/GFX/Items/Firstaid/inv_firstaid_blue.jpg";
-		iconScale = 0.1;
-		iconRot = Vector3f(-2.3,-0.3,0.2);
-		iconPos = Vector2f(0,0.05);
-		Item::register(@this);
+	class Spawner : Item::Spawner {
+		Spawner() {
+		}
 	}
-}
-ItemTemplate_BlueFirstAid OriginItem_BlueFirstAid;
-
-
-class Item_BlueFirstAid : Item {
-	Item_BlueFirstAid(Item::Template@&in origin) { super(@origin);
-		// onConstructed();
-	}
-
-	void Test() {
-		Debug::log("Im a BlueFirstAid");
-	}
-	void Localize(Item@&in instance) {
-	}
-}
-
-
+}};
 
 
 /* Originals --------------------------------------
