@@ -40,7 +40,6 @@ namespace Item { abstract class Template : Item::TemplateInterface {
 		localName = Local::getTxt("Items."+name+".Name");
 		if(@iconModel!=null) { iconModel.generate(); }
 		if(@icon==null && @iconModel!=null) { @icon=@iconModel; }
-		Debug::log("Template constructed!");
 	}
 
 	string name = "SCP-000";
@@ -72,7 +71,7 @@ abstract class Item {
 	Item(Item::Template@&in temp) { 
 		Item::Template@ antiCrashWorkaround=@temp;
 		@template=@antiCrashWorkaround;
-		if(@template.model!=null) { Debug::log("making model!"); @model=template.model.instantiate(); Debug::log("made model!"); }
+		if(@template.model!=null) { @model=template.model.instantiate(); }
 		
 	}
 	Item::Template@ template;
@@ -94,6 +93,22 @@ namespace Item {
 	array<Item@> instances;
 	array<Item::Template@> templates;
 
+	void startLoading() {
+		Game::loadMax=templates.length();
+		ModelImageGenerator::initialize(256);
+	}
+	void finishLoading() {
+		ModelImageGenerator::deinitialize();
+	}
+	bool load() {
+		if(Game::loadDone>=templates.length()-1) { finishLoading(); return true; }
+		Item::Template @template=templates[Game::loadDone];
+		template.construct();
+		Game::loadDone++;
+		Game::loadMessage=template.name;
+		return false;
+	}
+
 	void Initialize() {
 		for(int i=0;i<templates.length();i++) { templates[i].construct(); }
 	}
@@ -104,7 +119,6 @@ namespace Item {
 		Item::Template@ template;
 		for(int i=0; i<templates.length(); i++) { if(templates[i].name==name) { @template=@templates[i]; break; } }
 		if(@template==null) { Debug::error("Item Spawn failed - Item Template not found: " + name); return null; }
-		Debug::log("Ready to spawn item!");
 		Item@ instance=template.instantiate();
 		instance.position=position;
 		instance.rotation=rotation;

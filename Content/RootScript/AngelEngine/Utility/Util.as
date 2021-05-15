@@ -24,25 +24,16 @@
 //	SECTION 3. AngelUI
 //		- drawSquare : Draws a textured, colored Rectanglef.
 //
-//	SECTION 3. Icon Handler
+//	SECTION 4. Icon Handler
 //		- Util::Icon <class> : Abstractable Icon@ generator definition.
 //		- Util::Icon::Model : Icon@ which generates a texture from a model.
 //
-//	SECTION 4. Hook
+//	SECTION 5. Hook
 //		- Hook <namespace> : Create and destroy hooks
 //		- Hook@ : call hooks, and add to hook.
 //		Usage:
 //			Hook::fetch(name).add(@Hook::Function);
 //
-//	SECTION 5. Timer
-//		- Timer <namespace> : Create and destroy timed functions
-//		- Timer@ : A repeating timer.
-//		- TickTimer@ : A one-use timer.
-//		Usage:
-//			Timer::start(n_ticks_from_now, Timer::Function)
-//			Timer::on(nth_tick, Timer::function)
-//			Timer::repeat(every_nth_tick, Timer::Repeater(Timer@ tmr))
-//			Timer@.stop();
 //
 //									//
 // -------------------------------------------------------------------- \\
@@ -133,9 +124,9 @@ namespace Util {
 		string skin;
 		Model(string&in iPath, float&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") { super();
 			path=iPath; scale=iScale; pos=iPos; rotation=iRotation; skin=iSkin;
-			generate();
+			//generate();
 		}
-		void generate() { Debug::log("Generating icon: " + path); @texture = ModelImageGenerator::generate(path, scale, rotation, pos); } // , skin);
+		void generate() { @texture = ModelImageGenerator::generate(path, scale, rotation, pos); } // , skin);
 	} }
 }
 

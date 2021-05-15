@@ -33,13 +33,14 @@ float time = 0.f;
 float blinkTimer = 10.f;
 Util::FloatInterpolator@ blinkInterpolator = Util::FloatInterpolator();
 
+void load() {
+	@testController=@Player::Controller;
+	@testCollCollection=@Game::World::Collision;
+}
 
 void Initialize() { // This is the first function that is called lol.
 	Debug::log("AngelDebug - Start Testing Area");
 
-
-	@testController=@Player::Controller;
-	@testCollCollection=@Game::World::Collision;
 
 	Vector2f test = Vector2f(10.0, 10.0);
 	Vector2f test2 = Vector2f(15.0, 10.0);
@@ -60,10 +61,9 @@ void Initialize() { // This is the first function that is called lol.
 	//scp173.position = Vector3f(-4, 0, 1);
 	//scp173.rotation = Vector3f(0, 0, 0);
 
-	Debug::log("Spawning item");
 
 	Item::spawn("Gasmask", Vector3f(-15.0, 5.0, 20.0));
-	Debug::log("Spawned gasmask");
+
 
 	Item::spawn("FirstAid", Vector3f(0.0, 20.0, 20.0));
 	Item::spawn("SmallFirstAid", Vector3f(10.0, 20.0, 20.0));

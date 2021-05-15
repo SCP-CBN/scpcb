@@ -9,7 +9,7 @@ namespace Loadscreen {
 	GUILoadscreen@ activeScreen;
 	float progress;
 	
-	void Initialize() {
+	void initialize() {
 		@LoadingMenu=menu_Loading();
 		@canvas=@LoadingMenu.screenCanvas;
 		GUILoadscreen@ scp173 = GUILoadscreen("SCP-173",Vector2f(372,500),Texture::get(rootDirLoadscreens+"173"),false,GUI::Align::Left,GUI::Align::Bottom,
@@ -28,7 +28,7 @@ namespace Loadscreen {
 		}
 		return null;
 	}
-	void Activate(string key) {
+	void activate(string key) {
 		for(int i=0; i<screens.length(); i++) { screens[i].visible=false; }
 		GUILoadscreen@ scn = Fetch(key);
 		scn.visible=true;

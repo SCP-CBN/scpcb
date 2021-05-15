@@ -47,7 +47,7 @@ shared string rootDirAssets	= "SCPCB/";
 
 
 shared string rootDirGFX	= rootDirAssets + "GFX/";
-shared string rootDirLoadscreens = rootDirGFX + "Loadscreens/";
+shared string rootDirLoadscreens = rootDirGFX + "Loadingscreens/";
 shared string rootDirGFXItems	= rootDirGFX + "Items/";
 shared string rootDirGFXMenu	= rootDirGFX + "Menu/";
 

@@ -162,23 +162,12 @@ namespace GUI {
 
 
 // # Engine Hooks --------
-void renderMenu(float interp) { Game::renderMenu(interp); if(DEBUGGING) { AngelDebug::renderMenu(interp); } }
-void render(float interp) { Game::render(interp); if(DEBUGGING) { AngelDebug::render(interp); } }
-void update(float interp) { Game::update(interp); if(DEBUGGING) { AngelDebug::update(interp); } }
+void renderMenu(float interp) { Game::renderMenu(interp); }
+void render(float interp) { Game::render(interp); }
+void update(float interp) { Game::update(interp); }
+void mainEngine() { PerTick::register(update); PerFrameGame::register(render); PerFrameMenu::register(renderMenu); }
 void exit() { Game::exit(); Debug::log("GAME OVER, YEAH!"); }
-
-// # main() --------
-void main() {
-	Game::Initialize();
-
-	@lcz = LightContainmentZone();
-	@test_shared_global = @lcz;
-
-	if(DEBUGGING) { AngelDebug::Initialize(); }
-	PerTick::register(update);
-	PerFrameGame::register(render);
-	PerFrameMenu::register(renderMenu);
-}
+void main() { mainEngine(); Game::initialize(); }
 
 
 // --------------------------------
@@ -188,7 +177,7 @@ void main() {
 bool queuedNewGame=false;
 void QueueNewGame() {
 	World::paused=false;
-	Loadscreen::Activate("SCP-173");
+	Loadscreen::activate("SCP-173");
 	queuedNewGame=true;
 }
 void BuildNewGame() {

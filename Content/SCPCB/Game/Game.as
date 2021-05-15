@@ -31,21 +31,15 @@ namespace Game {
 	int tick;
 	shared Hook@ tickHook=Hook("tick");
 
-	void Initialize() {
-		GUI::Initialize();
-		Game::World::Initialize();
-		Player::Initialize();
+	bool loading;
 
-		Util::Function @tf = @onTick;
-		Hook::fetch("tick").add(@tf);
-
-		Loadscreen::Initialize();
-		@MainMenu=menu_Main();
-		@PauseMenu=menu_Pause();
-		@ConsoleMenu=menu_Console();
+	void initialize() {
+		loadInitStart();
 	}
 
 	void onTick() { // Immediately after tick is incremented and timers are called
+	
+					
 	}
 
 	void update(float interp) {
@@ -53,6 +47,8 @@ namespace Game {
 		Timer::update();
 		tickHook.call();
 		updateMenuState(); // Escape doesn't always capture in renderMenu ??
+
+		if(loading) { return; }
 		GUI::startUpdate();
 		Game::World::update();
 		if(queuedNewGame) {
@@ -62,8 +58,9 @@ namespace Game {
 		if(DEBUGGING) { AngelDebug::update(interp); }
 	}
 	void render(float interp) {
-		Game::World::render();
+		if(loading) { return; }
 		if(DEBUGGING) { AngelDebug::render(interp); }
+		Game::World::render();
 	}
 	void renderMenu(float interp) {
 		GUI::startRender();
@@ -97,9 +94,96 @@ namespace Game {
 	}
 }
 
+
+// # Game::load; Used by a repeating timer.
+namespace Game {
+	int loadState;
+	float loadMax;
+	float loadDone;
+	string loadMessage;
+	string loadPart;
+
+	void loadInitStart() {
+		Debug::log("Initialize Game");
+		::World::paused = true;
+		GUI::Initialize();
+		Loadscreen::initialize();
+		//Introscreen::initialize(); // Ahh!!
+
+		Loadscreen::activate("SCP-173");
+
+		loading=true;
+		loadState=0;
+		loadPart="Initializing...";
+		loadMessage="";
+
+		tickHook.add(@load);
+	}
+	void loadNext(string&in nextPart) {
+		Debug::log("Loading Next Part: " + nextPart);
+		loadPart=nextPart + "...";
+		loadMessage="";
+		loadState++;
+		loadDone=0;
+	}
+
+	void load() {
+	Debug::log("Loading... " + loadPart + " " + loadMessage);
+	switch(loadState) {
+		case 0:
+			loadNext("World");
+			World::Initialize();
+			loadMessage="done!";
+			break;
+		case 1:
+			loadNext("Player");
+			Player::Initialize();
+			loadMessage="done!";
+			break;
+		case 2:
+			loadNext("Items");
+			Item::startLoading();
+			break;
+		case 3:
+			if(Item::load()) {
+				loadNext("Game");
+			} else {
+				loadDone++;
+			}
+			break;
+		case 4:
+			loadNext("Zones...");
+			@lcz = LightContainmentZone();
+			@test_shared_global = @lcz;
+			loadMessage="done!";
+			break;
+		case 5:
+			loadNext("AngelDebug");
+			if(DEBUGGING) { AngelDebug::load(); }
+			loadMessage="done!";
+			break;
+		case 6:
+			loadNext("Starting up");
+			if(DEBUGGING) { AngelDebug::Initialize(); }
+			tickHook.add(@onTick);
+			@MainMenu=menu_Main();
+			@PauseMenu=menu_Pause();
+			@ConsoleMenu=menu_Console();
+			loading=false;
+			tickHook.remove(@load);
+			MainMenu.visible=true;
+			LoadingMenu.visible=false;
+			break;
+	}
+	}
+}
+						
+
 // # Game::Model@ ----
 // A world-model mesh object.
-::Model@ createMesh(string&in pth) { return ::Model::create(pth); }
+namespace CModel {
+	Model@ create(string&in pth) { return ::Model::create(pth); }
+}
 
 namespace Game { class Model {
 	::Model@ mesh;
@@ -107,7 +191,7 @@ namespace Game { class Model {
 	Model(Item::Model@&in iMdl) { create(iMdl.path,iMdl.scale,iMdl.skin); }
 	void create(string&in cPath, float&in cScale=1.f, string&in cSkin="") {
 		string pth=cPath;
-		@mesh=createMesh(pth);
+		@mesh=CModel::create(pth);
 		mesh.position=Vector3f(0,0,0);
 		mesh.rotation=Vector3f(0,0,0);
 		mesh.scale=Vector3f(cScale);
@@ -156,7 +240,6 @@ namespace Game { namespace Model { class Picker : Game::Model {
 namespace Game { namespace World {
 	Collision::Collection@ Collision;
 	void Initialize() {
-		::World::paused = true;
 		@Collision=Collision::Collection();
 	}
 	void update() {
