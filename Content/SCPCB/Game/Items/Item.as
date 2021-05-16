@@ -35,12 +35,14 @@ namespace Item { interface TemplateInterface { Item@ instantiate(); } }
 namespace Item { abstract class Template : Item::TemplateInterface {
 	Item@ instantiate() {return null;}
 	Template() { Item::templates.insertLast(@this); }
-	void construct() {
+	void internalConstruct() {
 		if(@model!=null) { model.pickable=(@pickSound != null && (@icon != null || @iconModel != null)); }
 		localName = Local::getTxt("Items."+name+".Name");
 		if(@iconModel!=null) { iconModel.generate(); }
 		if(@icon==null && @iconModel!=null) { @icon=@iconModel; }
+		construct();
 	}
+	void construct() {} // override
 
 	string name = "SCP-000";
 	string localName = "000";
@@ -103,7 +105,7 @@ namespace Item {
 	bool load() {
 		if(Game::loadDone>=templates.length()-1) { finishLoading(); return true; }
 		Item::Template @template=templates[Game::loadDone];
-		template.construct();
+		template.internalConstruct();
 		Game::loadDone++;
 		Game::loadMessage=template.name;
 		return false;

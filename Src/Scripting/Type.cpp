@@ -4,6 +4,7 @@
 
 #include "Type.h"
 
+Type Type::boolPrivate = Type("bool", 1);
 Type Type::int32Private = Type("int32", 4);
 Type Type::uint32Private = Type("uint32", 4);
 Type Type::floatPrivate = Type("float", 4);
@@ -15,6 +16,7 @@ Type Type::colorPrivate = Type("Color", sizeof(PGE::Color));
 Type Type::voidPrivate = Type("void");
 Type Type::unsupportedPrivate = Type("!!unsupported!!");
 
+Type* const Type::Bool = &Type::boolPrivate;
 Type* const Type::Int32 = &Type::int32Private;
 Type* const Type::UInt32 = &Type::uint32Private;
 Type* const Type::Float = &Type::floatPrivate;

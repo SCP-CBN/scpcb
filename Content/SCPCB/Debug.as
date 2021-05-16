@@ -74,7 +74,7 @@ void Initialize() { // This is the first function that is called lol.
 	Item::spawn("StrangeBattery", Vector3f(-4.0, 5.0, 20.0));
 }
 void update(float deltaTime) {
-	if (!World::paused) {
+	if (!Environment::paused) {
 		__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(testController, Input::getDown(), deltaTime);
 	//	lcz.update(deltaTime);
 		time += deltaTime;

@@ -33,8 +33,11 @@
 #include "../Scripting/NativeDefinitions/EventDefinition.h"
 #include "../Scripting/NativeDefinitions/ReflectionDefinitions.h"
 
-ScriptWorld::ScriptWorld(World* world, GraphicsResources* gfxRes, Camera* camera, KeyBinds* keyBinds, MouseData* mouseData, PGE::IO* io, LocalizationManager* lm, PickableManager* pm, UIMesh* um, Config* config, float timestep, BillboardManager* bm, ModelImageGenerator* mig) {
+// Generally, world->scripting;
+
+ScriptWorld::ScriptWorld(World* world, GraphicsResources* gfxRes, Camera* camera, KeyBinds* keyBinds, MouseData* mouseData, PGE::IO* io, LocalizationManager* lm, PickableManager* pm, UIMesh* um, Config* config, BillboardManager* bm, ModelImageGenerator* mig) {
     manager = new ScriptManager();
+    gameWorld = world;
 
     refCounterManager = new RefCounterManager();
 
@@ -61,15 +64,19 @@ ScriptWorld::ScriptWorld(World* world, GraphicsResources* gfxRes, Camera* camera
 
     keyBinds->setConsoleDefinitions(conDef);
 
-    perTickEventDefinition = new EventDefinition(manager, "PerTick",
-        std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::Float, "deltaTime") });
-    perTickEventDefinition->setArgument("deltaTime", timestep); // TODO: Make timestep const global.
 
-    perFrameGameEventDefinition = new EventDefinition(manager, "PerFrameGame",
+    perTickEventDefinition = new EventDefinition(manager, "PerTick", // Tick++;
+        std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::UInt32, "tick"), ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
+
+    perEveryTickEventDefinition = new EventDefinition(manager, "PerEveryTick", // Some things need to always tick
+        std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::UInt32, "tick"), ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
+
+    perFrameGameEventDefinition = new EventDefinition(manager, "PerFrame",
         std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
 
-    perFrameMenuEventDefinition = new EventDefinition(manager, "PerFrameMenu",
+    perFrameMenuEventDefinition = new EventDefinition(manager, "PerEveryFrame",
         std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
+    // perTickEventDefinition->setArgument("tick", tick); // maintained for reference
 
     const std::vector<PGE::String>& enabledMods = config->enabledMods->value;
 
@@ -153,17 +160,24 @@ ScriptWorld::~ScriptWorld() {
     delete manager;
 }
 
-void ScriptWorld::update(float timeStep) {
-    perTickEventDefinition->setArgument("deltaTime", timeStep);
+void ScriptWorld::updateTick(uint32_t tick, float interp) {
+    perTickEventDefinition->setArgument("tick", tick);
+    perTickEventDefinition->setArgument("interpolation", interp);
     perTickEventDefinition->execute();
 }
 
-void ScriptWorld::drawGame(float interpolation) {
+void ScriptWorld::updateEveryTick(uint32_t tick, float interp) {
+    perEveryTickEventDefinition->setArgument("tick", tick);
+    perEveryTickEventDefinition->setArgument("interpolation", interp);
+    perEveryTickEventDefinition->execute();
+}
+
+void ScriptWorld::updateFrame(float interpolation) {
     perFrameGameEventDefinition->setArgument("interpolation", interpolation);
     perFrameGameEventDefinition->execute();
 }
 
-void ScriptWorld::drawMenu(float interpolation) {
+void ScriptWorld::updateEveryFrame(float interpolation) {
     perFrameMenuEventDefinition->setArgument("interpolation", interpolation);
     perFrameMenuEventDefinition->execute();
 }

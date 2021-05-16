@@ -70,7 +70,14 @@ external string rootDirCBR_ETZ;
 
 // # import(RootScript/BaseClasses/Utility/Util.as); ----
 
-namespace Util { external funcdef void Function(); }
+namespace Util {
+	external funcdef void Function();
+	external funcdef void TickFunction(uint32 tick, float interp);
+	external funcdef void RenderFunction(float interp);
+	external void noop();
+	external void noopTick(uint32 tick, float interp);
+	external void noopRender(float interp);
+}
 
 // # util->AngelMath ----
 namespace Util { external class FloatInterpolator; } // Number smoothing
@@ -154,8 +161,9 @@ namespace GUI {
 // # Engine Hooks --------
 void renderMenu(float interp) { Game::renderMenu(interp); }
 void render(float interp) { Game::render(interp); }
-void update(float interp) { Game::update(interp); }
-void mainEngine() { PerTick::register(update); PerFrameGame::register(render); PerFrameMenu::register(renderMenu); }
+void update(uint32 tick, float interp) { Game::update(tick, interp); }
+void updateAlways(uint32 tick, float interp) { Game::updateAlways(tick, interp); }
+void mainEngine() { PerTick::register(update); PerEveryTick::register(updateAlways); PerFrame::register(render); PerEveryFrame::register(renderMenu); }
 void exit() { Game::exit(); Debug::log("GAME OVER, YEAH!"); }
 void main() { mainEngine(); Game::initialize(); }
 
@@ -166,15 +174,15 @@ void main() { mainEngine(); Game::initialize(); }
 // # Misc --------
 bool queuedNewGame=false;
 void QueueNewGame() {
-	World::paused=false;
+	Environment::paused=false;
 	Loadscreen::activate("SCP-173");
 	queuedNewGame=true;
 }
 void BuildNewGame() {
-	World::paused=true;
+	Environment::paused=true;
 	//initRooms_OBSOLETE();
-	Player::Controller.position=Vector3f(0,Player::Height+5,0);
-	World::paused=false;
+	Player::Controller.position=Vector3f(0,Player::height+5,0);
+	Environment::paused=false;
 	MainMenu.visible=false;
 	Menu::Pause::instance.close();
 	LoadingMenu.visible=false;

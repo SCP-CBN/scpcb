@@ -25,6 +25,7 @@ class PlayerControllerDefinitions : public RefCounter {
 
     public:
         PlayerControllerDefinitions(ScriptManager* mgr, RefCounterManager* rcMgr, Camera* cam);
+        float height;
 };
 
 #endif // PLAYERCONTROLLERDEFINITIONS_H_INCLUDED

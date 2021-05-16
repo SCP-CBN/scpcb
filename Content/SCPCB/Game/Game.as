@@ -28,28 +28,52 @@ namespace Game {
 
 
 namespace Game {
-	int tick;
-	shared Hook@ tickHook=Hook("tick");
 
-	bool loading;
+	// # Tick updates
+	int tick { get { return Environment::tick; } set { Environment::tick=value; } }
+	Hook@ tickHook=Hook("tick");
+
+	Util::TickFunction@ updateFunc=@Util::noopTick;
 
 	void initialize() {
-		loadInitStart();
+		Environment::paused = true;
+		initLoad();
+	}
+	void exit() {
+
 	}
 
-	void onTick() { // Immediately after tick is incremented and timers are called
-	
-					
-	}
-
-	void update(float interp) {
-		tick++;
-		Timer::update();
+	// Inputs are updated before each tick update
+	// Is not called while Environment::paused==true.
+	void update(uint32 tick, float interp) {
+		Timer::update(tick);
 		tickHook.call();
-		updateMenuState(); // Escape doesn't always capture in renderMenu ??
+	}
 
+	float avgTickrate=0.1f;
+	void updateAlways(uint32 tick, float interp) {
+		avgTickrate=(avgTickrate+interp)/2;
+		Debug::log("Tick: " + toString(tick) + "," + toString(interp) + ", Real " + toString(Environment::tickRate) + ", Est " + toString(1/avgTickrate));
+
+		if(!loading) { updateMenuState(tick,interp); }
+		updateFunc(tick,interp);
+	}
+	void render(float interp) {
 		if(loading) { return; }
-		GUI::startUpdate();
+		if(DEBUGGING) { AngelDebug::render(interp); }
+		Game::World::render();
+	}
+	float avgFramerate=0.1f;
+	void renderMenu(float interp) {
+		avgFramerate=(avgFramerate+interp)/2;
+		Debug::log("Render: " + toString(interp) + ", Real " + toString(Environment::frameRate) + ", Est " + toString(1/avgFramerate));
+		if(DEBUGGING) { AngelDebug::renderMenu(interp); }
+	}
+
+
+	// After loading, this becomes the updateFunc
+	void updateMain(uint32 tick, float interp) {
+		if(loading) { return; }
 		Game::World::update();
 		if(queuedNewGame) {
 			BuildNewGame();
@@ -57,21 +81,10 @@ namespace Game {
 		}
 		if(DEBUGGING) { AngelDebug::update(interp); }
 	}
-	void render(float interp) {
-		if(loading) { return; }
-		if(DEBUGGING) { AngelDebug::render(interp); }
-		Game::World::render();
-	}
-	void renderMenu(float interp) {
-		GUI::startRender();
-		if(DEBUGGING) { AngelDebug::renderMenu(interp); }
-	}
 
-	void exit() {
 
-	}
 
-	void updateMenuState() {
+	void updateMenuState(uint32 tick,float interp) {
 		if(Input::getHit() & Input::Inventory != 0) { Debug::log("hotkey Open Inventory"); }
 		else if(Input::getHit() & Input::ToggleConsole != 0) { Debug::log("hotkey Open Console"); ConsoleMenu.open(); }
 		else if(Input::getHit() & Input::Crouch != 0) { Debug::log("hotkey Crouch"); }
@@ -85,7 +98,7 @@ namespace Game {
 				}
 			}
 			if(menuWasOpen==true) {
-				World::paused=false;
+				Environment::paused=false;
 			} else {
 				Menu::pause();
 			}
@@ -96,27 +109,28 @@ namespace Game {
 
 // # Game::load; Used by a repeating timer.
 namespace Game {
+	bool loading;
+
 	int loadState;
 	float loadMax;
 	float loadDone;
 	string loadMessage;
 	string loadPart;
 
-	void loadInitStart() {
+	void initLoad() {
 		Debug::log("Initialize Game");
-		::World::paused = true;
-		GUI::Initialize();
-		Loadscreen::initialize();
-		//Introscreen::initialize(); // Ahh!!
+		@updateFunc=@updateLoad;
 
+		//Introscreen::initialize(); // Ahh!!
+		// PlayIntroMovie();
+
+		Loadscreen::initialize();
 		Loadscreen::activate("SCP-173");
 
 		loading=true;
 		loadState=0;
 		loadPart="Initializing...";
 		loadMessage="";
-
-		tickHook.add(@load);
 	}
 	void loadNext(string&in nextPart) {
 		Debug::log("Loading Next Part: " + nextPart);
@@ -126,9 +140,9 @@ namespace Game {
 		loadDone=0;
 	}
 
-	void load() {
-	Debug::log("Loading... " + loadPart + " " + loadMessage);
-	switch(loadState) {
+	void updateLoad(uint32 tick, float interp) {
+		Debug::log("Loading... " + loadPart + " " + loadMessage);
+		switch(loadState) {
 		case 0:
 			loadNext("World");
 			World::Initialize();
@@ -169,7 +183,6 @@ namespace Game {
 		case 8:
 			loadNext("Starting up");
 			if(DEBUGGING) { AngelDebug::Initialize(); }
-			tickHook.add(@onTick);
 			@MainMenu=menu_Main();
 			Menu::Pause::load();
 			@ConsoleMenu=menu_Console();
@@ -182,9 +195,9 @@ namespace Game {
 			break;
 		default:
 			loading=false;
-			tickHook.remove(@load);
+			@updateFunc=@updateMain;
 			break;
-	}
+		}
 	}
 }
 
@@ -298,7 +311,7 @@ namespace Game { namespace World {
 //external Timer@ Timer::repeat(int tock, Timer::Repeater@ func);
 //external void Timer::Stop(Timer@ tmr);
 //external void Timer::Stop(TickTimer@ tmr);
-//external void Timer::update();
+//external void Timer::update(uint32 tick);
 
 // # TickTimer@ ----
 // A one-time timer.
@@ -306,7 +319,7 @@ class TickTimer {
 	int tickTarget;
 	Util::Function@ func;
 	TickTimer(int tick, Util::Function@&in f) { tickTarget=tick; @func=@f; }
-	void tryTimer() { if(Game::tick>=tickTarget) { func(); } }
+	void tryTimer(uint32 tick) { if(tick>=tickTarget) { func(); } }
 	void stop() { Timer::Stop(@this); }
 }
 
@@ -317,7 +330,7 @@ class Timer {
 	int tickStart;
 	Timer::Repeater@ func;
 	Timer(int tick, Timer::Repeater@&in f) { tickStart=Game::tick+tick; tickTarget=tick; @func=@f; }
-	void tryTimer() { if((Game::tick-tickStart)%tickTarget==0) { func(@this); } }
+	void tryTimer(uint32 tick) { if((tick-tickStart)%tickTarget==0) { func(@this); } }
 	void stop() { Timer::Stop(@this); }
 }
 
@@ -348,9 +361,9 @@ namespace Timer {
 		for(int i=0; i<tickTimers.length(); i++) { if(@tickTimers[i]==@tmr) { tickTimers.removeAt(i); break; } }
 	}
 
-	void update() {
-		for(int i=0; i<tickTimers.length(); i++) { tickTimers[i].tryTimer(); }
-		for(int i=0; i<tickRepeaters.length(); i++) { tickRepeaters[i].tryTimer(); }
+	void update(uint32 tick) {
+		for(int i=0; i<tickTimers.length(); i++) { tickTimers[i].tryTimer(tick); }
+		for(int i=0; i<tickRepeaters.length(); i++) { tickRepeaters[i].tryTimer(tick); }
 	}
 }
 

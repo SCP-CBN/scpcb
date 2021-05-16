@@ -35,9 +35,11 @@ namespace Room { interface TemplateInterface { Room@ instantiate(); } }
 namespace Room { abstract class Template : Room::TemplateInterface {
 	Room@ instantiate() {return null;}
 	Template() { Room::templates.insertLast(@this); }
-	void construct() {
+	void internalConstruct() {
 		@mesh=model.instantiate();
+		construct();
 	}
+	void construct() {} // override
 
 	string name = "SCP-000";
 	string zone = "000";
@@ -105,7 +107,7 @@ namespace Room {
 	bool load() {
 		if(Game::loadDone>=templates.length()-1) { finishLoading(); return true; }
 		Room::Template @template=templates[Game::loadDone];
-		template.construct();
+		template.internalConstruct();
 		Game::loadDone++;
 		Game::loadMessage=template.zone + ":" + template.name;
 		return false;
@@ -124,6 +126,7 @@ namespace Room {
 		instance.rotation=rotation;
 		instances.insertLast(@instance);
 		instance.recalculateWorldMatrix();
+		template.mesh.appendCollisionsToWorld(instance.worldMatrix);
 		Debug::log("Spawned room : " + template.name);
 		return @instance;
 	}

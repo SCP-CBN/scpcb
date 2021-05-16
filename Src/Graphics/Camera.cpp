@@ -98,3 +98,7 @@ float Camera::getYawAngle() const {
 float Camera::getPitchAngle() const {
     return pitchAngle;
 }
+
+float Camera::getTiltAngle() const {
+    return tilt;
+}

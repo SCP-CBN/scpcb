@@ -29,6 +29,8 @@ class PlayerController {
         float currWalkSpeed;
         float stamina;
 
+        float eyeHeight;
+
         float getClampedStamina() const;
 
         void stand(float timeStep);

@@ -6,17 +6,21 @@
 #include "../World/Pickable.h"
 #include "../Utils/MathUtil.h"
 
+// All of this should be handled by angelscript
 static constexpr float WALK_SPEED_MAX = 18.0f;
 static constexpr float SPRINT_SPEED_MAX = 42.0f;
 static constexpr float WALK_SPEED_SMOOTHING_FACTOR = 0.9f;
 static constexpr float STAMINA_RECOVERY_RATE = 0.2f;
 
-PlayerController::PlayerController(float r, float camHeight) {
-    collider = new Collider(r, camHeight);
-
+PlayerController::PlayerController(float r, float chestHeight) {
+    collider = new Collider(r, chestHeight);
+    eyeHeight = chestHeight;
     position = PGE::Vector3f::ZERO;
+
     camAnimState = 0.f;
     currWalkSpeed = 0.f;
+
+    
     stamina = 1.f;
     
     noclip = false;
@@ -98,5 +102,8 @@ void PlayerController::stand(float timeStep) {
 }
 
 void PlayerController::walk(PGE::Vector2f dir, float timeStep) {
-    position = collider->tryMove(position, position.add(PGE::Vector3f(dir.x * currWalkSpeed, 0.f, dir.y * currWalkSpeed) * timeStep));
+    if (vNoclip) { position += PGE::Vector3f(dir.x * currWalkSpeed, 0.f, dir.y * currWalkSpeed) * timeStep; }
+    else {
+        position = collider->tryMove(position, position.add(PGE::Vector3f(dir.x * currWalkSpeed, 0.f, dir.y * currWalkSpeed) * timeStep));
+    }
 }

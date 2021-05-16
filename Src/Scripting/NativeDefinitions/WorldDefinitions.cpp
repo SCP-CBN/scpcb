@@ -15,8 +15,16 @@ WorldDefinitions::WorldDefinitions(ScriptManager* mgr, World* w) :
     {
     engine = mgr->getAngelScriptEngine();
 
-    engine->SetDefaultNamespace("World");
+    engine->SetDefaultNamespace("Environment");
     engine->RegisterGlobalProperty("bool paused", &w->paused);
+    engine->RegisterGlobalProperty("uint32 tick", &w->tick);
+    
+    engine->RegisterGlobalFunction("int get_tickRate() property", asMETHOD(World, getTickRate), asCALL_THISCALL_ASGLOBAL, w);
+    engine->RegisterGlobalFunction("void set_tickRate(int rate) property", asMETHOD(World, setTickRate), asCALL_THISCALL_ASGLOBAL, w);
+
+    engine->RegisterGlobalFunction("int get_frameRate() property", asMETHOD(World, getFrameRate), asCALL_THISCALL_ASGLOBAL, w);
+    engine->RegisterGlobalFunction("void set_frameRate(int rate) property", asMETHOD(World, setFrameRate), asCALL_THISCALL_ASGLOBAL, w);
+
     engine->RegisterGlobalFunction("void quit()", asMETHOD(World, quit), asCALL_THISCALL_ASGLOBAL, w);
 
     engine->RegisterEnum("Platform");
@@ -24,6 +32,6 @@ WorldDefinitions::WorldDefinitions(ScriptManager* mgr, World* w) :
     engine->RegisterEnumValue("Platform", "Apple", 1);
     engine->RegisterEnumValue("Platform", "Linux", 2);
 
-    engine->SetDefaultNamespace("World::Platform");
+    engine->SetDefaultNamespace("Environment::Platform");
     engine->RegisterGlobalProperty("const Platform active", (void*)&platform);
 }

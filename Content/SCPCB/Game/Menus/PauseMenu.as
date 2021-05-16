@@ -14,7 +14,7 @@ namespace Menu { namespace Pause {
 
 // # Menu::pause()
 namespace Menu { void pause() {
-	World::paused=true;
+	Environment::paused=true;
 	Pause::instance.open();
 } }
 
@@ -61,7 +61,7 @@ namespace Menu { namespace Pause { class SpawnRoomButton : GUIButtonLabel {
 	}
 	void doClick() {
 		Debug::log("Wants to spawn Room : " + room.name);
-		Room::spawn(room.name, Player::Controller.position-Vector3f(0,20,0));
+		Room::spawn(room.name, Player::Controller.position-Vector3f(0,20-Player::height,0));
 		instance.unpause();
 	}
 } } }
@@ -111,7 +111,7 @@ namespace Menu { namespace Pause { class Window : GUI {
 		visible=false;
 	}
 	void unpause() {
-		World::paused=false;
+		Environment::paused=false;
 		visible=false;
 	}
 
@@ -127,7 +127,7 @@ namespace Menu { namespace Pause { class Window : GUI {
 	void openToRoomSpawner() { switchPage(); canvasRoomSpawner.visible=true; }
 	void openToGUITest() { switchPage(); canvasGUITest.visible=true; }
 	void openToQuit() { visible=false; MainMenu.visible=true; } // change to Menu::Main::instance.visible=true;
-	void tpToZero() { Player::Controller.position=Vector3f(0,Player::Height+5,0); unpause(); }
+	void tpToZero() { Player::Controller.position=Vector3f(0,Player::height+5,0); unpause(); }
 	void toggleNoclip() { bool nclip=Player::Controller.noclip; Player::Controller.noclip=!nclip; btnNoclip.text="Noclip ("+ (!nclip ? "ON" : "OFF") +")"; unpause(); }
 
 	GUI@ canvasMain;

@@ -82,7 +82,7 @@ shared class GUITextEntry : GUIClickable {
 
 	GUITextEntry(string vcls="GUITextEntry") { super(vcls); Carrot=-1; }
 	GUITextEntry(GUI@&in parent, string vcls="GUITextEntry") { super(@parent,vcls);
-		appleSelectionInsanityMode = (World::Platform::active == World::Platform::Apple);
+		appleSelectionInsanityMode = (Environment::Platform::active == Environment::Platform::Apple);
 	}
 	~GUITextEntry() {
 	}

@@ -401,6 +401,9 @@
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\INIDefinitions.h">
       <Filter>Scripting\NativeDefinitions</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Scripting\NativeDefinitions\ReflectionDefinitions.h">
+      <Filter>Scripting\NativeDefinitions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SCPCB.rc" />

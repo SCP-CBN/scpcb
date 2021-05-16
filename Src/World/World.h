@@ -25,24 +25,18 @@ class UIMesh;
 
 class World {
     private:
-        bool oldPaused;
 
-        enum class RenderType {
-            All,
-            NoUI,
-            UIOnly
-        };
-
+        // Private System interface
         PGE::Graphics* graphics;
         PGE::IO* io;
-
         Camera* camera;
-
         KeyBinds* keyBinds;
         MouseData* mouseData;
         Config* config;
         Timing* timing;
+        UIMesh* uiMesh;
 
+        // Private Fonts - There aren't many fonts, this can stay for the time being.
         FT_Library ftLibrary;
         Font* largeFont;
         Font* fontAppleLarge;
@@ -56,46 +50,58 @@ class World {
         Font* fontBoldLarge;
         Font* fontBoldSmall;
 
-        UIMesh* uiMesh;
-
+        // Private ScriptWorld resources
         GraphicsResources* gfxRes;
         ModelImageGenerator* miGen;
-
         LocalizationManager* locMng;
         PickableManager* pickMng;
         BillboardManager* billMng;
 
+        // Private ScriptWorld
         ScriptWorld* scripting;
-
         bool shutdownRequested;
 
         void applyConfig(const Config* config);
 
-        //-- Update/Draw code.
 
-        // Goes through the update phase of a single tick.
-        void runTick(float timeStep);
+        // Ticking
 
-        // Update code for GameState::Playing game state.
-        void updatePlaying(float timeStep);
-        // Draw code for GameState::Playing game state.
-        void drawPlaying(float interpolation);
+        void startFrame(float sinceLast);
+        void runEveryFrame(float sinceLast);
+        void runFrame(float sinceLast);
 
-        // Goes through the draw phase.
-        void draw(float interpolation, RenderType r);
+        void startTick(float sinceLast);
+        void runEveryTick(uint32_t tick, float sinceLast);
+        void runTick(uint32_t tick, float sinceLast);
+
+
+        PGE::Vector2f gameMousePos;
+        PGE::Vector2f menuMousePos;
+        void applyCameraMouseMovement(PGE::Vector2f mousePos);
+
 
     public:
+        // ScriptWorld :: Environment global properties
         bool paused;
+        uint32_t tick;
 
         World();
         ~World();
 
-        // Goes through the update/draw phrase of a single frame.
+        // Main infinite loop
         bool run();
 
-        // Prompts the world object to kill itself.
+        // Queue exit program to desktop
         void quit();
 
+        // Tick timing and frame timing environment
+        int getTickRate() const;
+        int getFrameRate() const;
+        void setTickRate(int rate);
+        void setFrameRate(int rate);
+
+
+        // Fonts
         Font* getFont() const;
         Font* getFontAppleLarge() const;
         Font* getFontAppleSmall() const;
