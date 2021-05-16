@@ -230,7 +230,7 @@ namespace GUI {
 
 	}
 
-	shared void Initialize() {
+	shared void initialize() {
 		updateResolution();
 	}	
 }

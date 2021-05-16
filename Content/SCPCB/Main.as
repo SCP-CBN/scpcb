@@ -159,11 +159,20 @@ namespace GUI {
 
 
 // # Engine Hooks --------
-void renderMenu(float interp) { Game::renderMenu(interp); }
 void render(float interp) { Game::render(interp); }
+void renderMenu(float interp) { Game::renderMenu(interp); }
+void renderAlways(float interp) { Game::renderAlways(interp); }
 void update(uint32 tick, float interp) { Game::update(tick, interp); }
 void updateAlways(uint32 tick, float interp) { Game::updateAlways(tick, interp); }
-void mainEngine() { PerTick::register(update); PerEveryTick::register(updateAlways); PerFrame::register(render); PerEveryFrame::register(renderMenu); }
+void resolutionChanged(int newWidth, int newHeight) { Game::resolutionChanged(newWidth, newHeight); }
+void mainEngine() {
+	PerFrame::register(render);
+	PerMenuFrame::register(renderMenu);
+	PerEveryFrame::register(renderAlways);
+	PerTick::register(update);
+	PerEveryTick::register(updateAlways);
+	ResolutionChanged::register(resolutionChanged);
+}
 void exit() { Game::exit(); Debug::log("GAME OVER, YEAH!"); }
 void main() { mainEngine(); Game::initialize(); }
 

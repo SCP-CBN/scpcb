@@ -67,16 +67,19 @@ ScriptWorld::ScriptWorld(World* world, GraphicsResources* gfxRes, Camera* camera
 
     perTickEventDefinition = new EventDefinition(manager, "PerTick", // Tick++;
         std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::UInt32, "tick"), ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
-
     perEveryTickEventDefinition = new EventDefinition(manager, "PerEveryTick", // Some things need to always tick
         std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::UInt32, "tick"), ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
-
-    perFrameGameEventDefinition = new EventDefinition(manager, "PerFrame",
+    perFrameGameEventDefinition = new EventDefinition(manager, "PerFrame", // Frame++
         std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
-
-    perFrameMenuEventDefinition = new EventDefinition(manager, "PerEveryFrame",
+    perFrameMenuEventDefinition = new EventDefinition(manager, "PerMenuFrame", // Render every menu.
+        std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
+    perEveryFrameEventDefinition = new EventDefinition(manager, "PerEveryFrame", // Render every frame.
         std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
     // perTickEventDefinition->setArgument("tick", tick); // maintained for reference
+
+    resolutionChangedEventDefinition = new EventDefinition(manager, "ResolutionChanged", // Render every frame.
+        std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::Int32, "newWidth"),
+            ScriptFunction::Signature::Argument(Type::Int32, "newHeight") });
 
     const std::vector<PGE::String>& enabledMods = config->enabledMods->value;
 
@@ -176,8 +179,17 @@ void ScriptWorld::updateFrame(float interpolation) {
     perFrameGameEventDefinition->setArgument("interpolation", interpolation);
     perFrameGameEventDefinition->execute();
 }
-
-void ScriptWorld::updateEveryFrame(float interpolation) {
+void ScriptWorld::updateFrameMenu(float interpolation) {
     perFrameMenuEventDefinition->setArgument("interpolation", interpolation);
     perFrameMenuEventDefinition->execute();
+}
+
+void ScriptWorld::updateEveryFrame(float interpolation) {
+    perEveryFrameEventDefinition->setArgument("interpolation", interpolation);
+    perEveryFrameEventDefinition->execute();
+}
+void ScriptWorld::updateResolution(int newWidth, int newHeight) {
+    resolutionChangedEventDefinition->setArgument("newWidth", newWidth);
+    resolutionChangedEventDefinition->setArgument("newHeight", newHeight);
+    resolutionChangedEventDefinition->execute();
 }

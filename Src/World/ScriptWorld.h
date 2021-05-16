@@ -36,6 +36,9 @@ class ScriptWorld {
 
         EventDefinition* perFrameGameEventDefinition;
         EventDefinition* perFrameMenuEventDefinition;
+        EventDefinition* perEveryFrameEventDefinition;
+
+        EventDefinition* resolutionChangedEventDefinition;
 
         std::vector<ScriptModule*> modules;
         World* gameWorld;
@@ -48,7 +51,9 @@ class ScriptWorld {
         void updateEveryTick(uint32_t tick, float interp);
 
         void updateFrame(float interp);
+        void updateFrameMenu(float interp);
         void updateEveryFrame(float interp);
+        void updateResolution(int newWidth, int newHeight);
 };
 
 #endif // SCRIPTWORLD_H_INCLUDED

@@ -12,6 +12,7 @@ class Timing {
         int tickRate;
         int tickStep;
         float sinceLastTick;
+        float avgTickRate;
         std::chrono::high_resolution_clock::duration tickStepDuration;
         std::chrono::high_resolution_clock::time_point compareTick;
         std::chrono::high_resolution_clock::time_point lastTick;
@@ -20,6 +21,7 @@ class Timing {
         int frameRate;
         int frameStep;
         float sinceLastFrame;
+        float avgFrameRate;
         std::chrono::high_resolution_clock::duration frameStepDuration;
         std::chrono::high_resolution_clock::time_point compareFrame;
         std::chrono::high_resolution_clock::time_point lastFrame;
@@ -30,6 +32,7 @@ class Timing {
         // Tick rates
         int getTickRate() const;
         float getSinceTick() const;
+        float getAvgTickRate() const;
         void setTickRate(int rate);
         bool tickReady();
         void tickFinished();
@@ -37,6 +40,7 @@ class Timing {
         // Frame rates
         int getFrameRate() const;
         float getSinceFrame() const;
+        float getAvgFrameRate() const;
         void setFrameRate(int rate);
         bool frameReady();
         void frameFinished();

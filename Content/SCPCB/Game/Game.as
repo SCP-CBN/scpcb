@@ -50,10 +50,8 @@ namespace Game {
 		tickHook.call();
 	}
 
-	float avgTickrate=0.1f;
 	void updateAlways(uint32 tick, float interp) {
-		avgTickrate=(avgTickrate+interp)/2;
-		Debug::log("Tick: " + toString(tick) + "," + toString(interp) + ", Real " + toString(Environment::tickRate) + ", Est " + toString(1/avgTickrate));
+		//Debug::log("Tick: " + toString(tick) + "," + toString(interp) + ", Real " + toString(Environment::tickRate) + ", Est " + toString(1/avgTickrate));
 
 		if(!loading) { updateMenuState(tick,interp); }
 		updateFunc(tick,interp);
@@ -63,13 +61,17 @@ namespace Game {
 		if(DEBUGGING) { AngelDebug::render(interp); }
 		Game::World::render();
 	}
-	float avgFramerate=0.1f;
 	void renderMenu(float interp) {
-		avgFramerate=(avgFramerate+interp)/2;
-		Debug::log("Render: " + toString(interp) + ", Real " + toString(Environment::frameRate) + ", Est " + toString(1/avgFramerate));
+		//Debug::log("Render: " + toString(interp) + ", Real " + toString(Environment::frameRate) + ", Est " + toString(1/avgFramerate));
 		if(DEBUGGING) { AngelDebug::renderMenu(interp); }
 	}
+	void renderAlways(float interp) {
+		if(loading) { return; }
+		//Game::World::render();
+	}
 
+	void resolutionChanged(int newWidth, int newHeight) {
+	}
 
 	// After loading, this becomes the updateFunc
 	void updateMain(uint32 tick, float interp) {
@@ -202,13 +204,9 @@ namespace Game {
 }
 
 // # Game::Model@ ----
-// A world-model mesh object.
-namespace CModel {
-	Model@ create(string&in pth) { return ::Model::create(pth); }
-}
-
+// A CModel mesh object.
 namespace Game { class Model {
-	::Model@ mesh;
+	CModel@ mesh;
 	Model(string&in cPath, float&in cScale=1.f, string&in cSkin="") { create(cPath,cScale,cSkin); }
 	Model(Item::Model@&in iMdl) { create(iMdl.path,iMdl.scale,iMdl.skin); }
 	void create(string&in cPath, float&in cScale=1.f, string&in cSkin="") {
@@ -218,7 +216,7 @@ namespace Game { class Model {
 		mesh.scale=Vector3f(cScale);
 		skin=cSkin; //mesh.skin=cSkin;
 	}
-	~Model() { ::Model::destroy(mesh); }
+	~Model() { CModel::destroy(mesh); }
 	bool pickable;
 	Vector3f position { get { return mesh.position; } set { mesh.position = value; } }
 	Vector3f rotation { get { return mesh.rotation; } set { mesh.rotation = value; } }
@@ -245,7 +243,7 @@ namespace Game { namespace Model { class Picker : Game::Model {
 		pickable=true;
 	}
 
-	~Picker() { ::Model::destroy(mesh); pickable=false; }
+	~Picker() { CModel::destroy(mesh); pickable=false; }
 	Vector3f position { get { return mesh.position; } set { mesh.position = value; _picker.position = value; } }
 	bool picked { get { return _picker.getPicked(); } }
 	bool _pickable;

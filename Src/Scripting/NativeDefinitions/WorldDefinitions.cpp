@@ -21,9 +21,11 @@ WorldDefinitions::WorldDefinitions(ScriptManager* mgr, World* w) :
     
     engine->RegisterGlobalFunction("int get_tickRate() property", asMETHOD(World, getTickRate), asCALL_THISCALL_ASGLOBAL, w);
     engine->RegisterGlobalFunction("void set_tickRate(int rate) property", asMETHOD(World, setTickRate), asCALL_THISCALL_ASGLOBAL, w);
-
     engine->RegisterGlobalFunction("int get_frameRate() property", asMETHOD(World, getFrameRate), asCALL_THISCALL_ASGLOBAL, w);
     engine->RegisterGlobalFunction("void set_frameRate(int rate) property", asMETHOD(World, setFrameRate), asCALL_THISCALL_ASGLOBAL, w);
+
+    engine->RegisterGlobalFunction("int get_avgTickRate() property", asMETHOD(World, getAvgTickRate), asCALL_THISCALL_ASGLOBAL, w);
+    engine->RegisterGlobalFunction("int get_avgFrameRate() property", asMETHOD(World, getAvgFrameRate), asCALL_THISCALL_ASGLOBAL, w);
 
     engine->RegisterGlobalFunction("void quit()", asMETHOD(World, quit), asCALL_THISCALL_ASGLOBAL, w);
 

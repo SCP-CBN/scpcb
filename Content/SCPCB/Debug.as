@@ -22,9 +22,9 @@ namespace AngelDebug {
 
 Billboard@ lol;
 Billboard@ two;
-Model@ mask;
-Model@ mask2;
-Model@ scp173;
+CModel@ mask;
+CModel@ mask2;
+CModel@ scp173;
 
 int fps;
 int tick = 0;
@@ -49,15 +49,15 @@ void Initialize() { // This is the first function that is called lol.
 	Billboard::create(rootDirGFX + "Map/Textures/dirtymetal", Vector3f(1, 4, 1), Vector3f(0, 3, 0), test2, Color(0.0, 1.0, 1.0));
 	@two = Billboard::create(rootDirGFX + "Map/Textures/dirtymetal", Vector3f(2, 7, 15), Vector3f(0, 3, 0), test2, Color(1.0, 0.0, 1.0));
 
-	@mask = Model::create(rootDirGFX + "Items/Gasmask/gasmask.fbx");
+	@mask = CModel::create(rootDirGFX + "Items/Gasmask/gasmask.fbx");
 	mask.position = Vector3f(10, 5, 0);
 	mask.rotation = Vector3f(-1, 0.1, 0);
-	@mask2 = Model::create(rootDirGFX + "Items/Gasmask/gasmask.fbx");
+	@mask2 = CModel::create(rootDirGFX + "Items/Gasmask/gasmask.fbx");
 	mask2.position = Vector3f(-8, 4, 1);
 	mask2.rotation = Vector3f(-1, -0.1, 0);
 
 	// The 173 model takes a long time to load so commented
-	//@scp173 = Model::create(rootDirGFX + "NPCs/SCP173/173.fbx");
+	//@scp173 = CModel::create(rootDirGFX + "NPCs/SCP173/173.fbx");
 	//scp173.position = Vector3f(-4, 0, 1);
 	//scp173.rotation = Vector3f(0, 0, 0);
 

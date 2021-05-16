@@ -42,27 +42,23 @@ shared string rootDirSFX	= rootDirAssets + "SFX/";
 
 namespace RootScript {
 
-	void initialize() {
-		GUI::Initialize();
-	}
-	void renderMenu(float interp) {
-		GUI::startRender();
-	}
-	void render(float interp) {
-	}
-	void update(uint32 tick, float timeStep) {
-	}
-	void updateAlways(uint32 tick, float timeStep) {
-		GUI::startUpdate();
-	}
+	void initialize() { GUI::initialize(); }
+	//void render(float interp) {}
+	void renderMenu(float interp) { GUI::startRender(); }
+	//void renderAlways(float interp) {}
+	//void update(uint32 tick, float timeStep) {}
+	void updateAlways(uint32 tick, float timeStep) { GUI::startUpdate(); }
+	void resolutionChanged(int newWidth, int newHeight) { GUI::updateResolution(); }
 	void exit() { }
 }
 void main() {
 	RootScript::initialize();
-	PerTick::register(RootScript::update);
+	//PerFrame::register(RootScript::render);
+	PerMenuFrame::register(RootScript::renderMenu);
+	//PerEveryFrame::register(RootScript::renderAlways);
+	//PerTick::register(RootScript::update);
 	PerEveryTick::register(RootScript::updateAlways);
-	PerFrame::register(RootScript::render);
-	PerEveryFrame::register(RootScript::renderMenu);
+	ResolutionChanged::register(RootScript::resolutionChanged);
 }
 void exit() { RootScript::exit(); }
 

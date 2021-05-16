@@ -68,6 +68,7 @@ class World {
 
         void startFrame(float sinceLast);
         void runEveryFrame(float sinceLast);
+        void runFrameMenu(float sinceLast);
         void runFrame(float sinceLast);
 
         void startTick(float sinceLast);
@@ -97,8 +98,11 @@ class World {
         // Tick timing and frame timing environment
         int getTickRate() const;
         int getFrameRate() const;
+        float getAvgTickRate() const;
+        float getAvgFrameRate() const;
         void setTickRate(int rate);
         void setFrameRate(int rate);
+
 
 
         // Fonts

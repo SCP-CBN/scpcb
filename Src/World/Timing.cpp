@@ -10,6 +10,8 @@ Timing::Timing(int tickrate, int framerate) {
     setFrameRate(framerate-1);
     sinceLastTick = 0.f;
     sinceLastFrame = 0.f;
+    avgTickRate = 0.f;
+    avgFrameRate = 0.f;
 
     initialTime = std::chrono::high_resolution_clock::now();
     compareTick = initialTime - tickStepDuration; // runFirst
@@ -34,6 +36,8 @@ int Timing::getTickRate() const { return tickRate; }
 int Timing::getFrameRate() const { return frameRate; }
 float Timing::getSinceTick() const { return sinceLastTick; }
 float Timing::getSinceFrame() const { return sinceLastFrame; }
+float Timing::getAvgTickRate() const { return avgTickRate; }
+float Timing::getAvgFrameRate() const { return avgFrameRate; }
 
 // Clock Ticking
 bool Timing::tickReady() {

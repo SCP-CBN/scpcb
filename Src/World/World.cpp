@@ -124,6 +124,8 @@ void World::applyConfig(const Config* config) {
 // Timer interface
 int World::getTickRate() const { return timing->getTickRate(); }
 int World::getFrameRate() const { return timing->getFrameRate(); }
+float World::getAvgFrameRate() const { return timing->getAvgFrameRate(); }
+float World::getAvgTickRate() const { return timing->getAvgTickRate(); }
 void World::setTickRate(int rate) { return timing->setTickRate(rate); }
 void World::setFrameRate(int rate) { return timing->setFrameRate(rate); }
 
@@ -140,6 +142,7 @@ bool World::run() {
 
 
 void World::runEveryFrame(float interp) { scripting->updateEveryFrame(interp); }
+void World::runFrameMenu(float interp) { scripting->updateFrameMenu(interp); }
 void World::runFrame(float interp) { scripting->updateFrame(interp); }
 void World::runEveryTick(uint32_t tick, float interp) { scripting->updateEveryTick(tick,interp); }
 void World::runTick(uint32_t tick, float interp) { scripting->updateTick(tick,interp); }
@@ -198,10 +201,13 @@ void World::startFrame(float interpolation) {
     gfxRes->setCameraUniforms(camera);
     pickMng->render();
 
-    scripting->updateFrame(interpolation);
+
+    scripting->updateEveryFrame(interpolation);
+    if (!paused) { scripting->updateFrame(interpolation); }
 
     graphics->setDepthTest(false);
-    scripting->updateEveryFrame(interpolation);
+
+    scripting->updateFrameMenu(interpolation);
     graphics->setDepthTest(true);
 
     //lol->render(PGE::Matrix4x4f::constructWorldMat(PGE::Vector3f(0, 0, 0), PGE::Vector3f(0.1, 0.1, 0.1), PGE::Vector3f(0, 0, 0)));
