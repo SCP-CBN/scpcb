@@ -42,7 +42,7 @@ bool Timing::tickReady() {
         Clock::duration sinceLast = (now - lastTick);
         sinceLastTick = float(std::chrono::duration_cast<std::chrono::nanoseconds>(sinceLast).count()) / 1000000000.f;
         compareTick = (lastTick + tickStepDuration + tickStepDuration) - sinceLast;
-        lastTick = now; // idk why this works but it does fantastically
+        lastTick = now;
         return true;
     }
     return false;

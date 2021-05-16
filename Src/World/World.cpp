@@ -42,7 +42,7 @@ World::World() {
     graphics->setViewport(PGE::Rectanglei(0, 0, config->getWidth(), config->getHeight()));
     io = PGE::IO::create(graphics);
 
-    timing = new Timing(60, 60); // 60 felt too slow
+    timing = new Timing(60, 60);
 
     gfxRes = new GraphicsResources(graphics, config);
 
