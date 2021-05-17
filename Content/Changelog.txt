@@ -1,4 +1,16 @@
-﻿v1.3.11
+﻿v1.4.0
+
+- Massive Engine overhaul.
+- Modernized 3d engine.
+- Re-worked and rebuilt all features from scratch to be improved and optimized.
+
+...tba
+
+
+
+---------------------------------------------------------------------------------
+
+v1.3.11
 
 - Added the ability to toggle mouse smoothing.
 - New voice lines for SCP-049.

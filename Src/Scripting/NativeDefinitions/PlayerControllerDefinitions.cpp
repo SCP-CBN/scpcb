@@ -10,6 +10,7 @@ PlayerController* PlayerControllerDefinitions::playerControllerFactory(float rad
     PlayerController* newController = new PlayerController(radius, height);
     refCount.emplace(newController, 1);
     refCounterManager->linkPtrToCounter(newController, this);
+    this->height = height;
     return newController;
 }
 
@@ -45,11 +46,11 @@ void PlayerControllerDefinitions::setCollisionCollection(PlayerController* contr
 
 void PlayerControllerDefinitions::__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(PlayerController* controller, Input input, float timeStep) {
     controller->update(tempCamera->getYawAngle(), tempCamera->getPitchAngle(), input, timeStep);
-    tempCamera->position = controller->position;// .add(PGE::Vector3f(0.f, 15.f, 0.f));
+    tempCamera->position = controller->position + PGE::Vector3f(0.f, height, 0.f);
     // Fixes interpolation bug, hella ugly but we'll get rid of this altogether soon anyways.
-    if (timeStep == 0.f) {
+    // if (timeStep == 0.f) { // This does not appear to do anything
         tempCamera->update();
-    }
+    //}
 
     release(controller);
 }
@@ -72,4 +73,5 @@ PlayerControllerDefinitions::PlayerControllerDefinitions(ScriptManager* mgr, Ref
     engine->RegisterGlobalFunction("void __UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(PlayerController@ controller, int input, float timeStep)", asMETHOD(PlayerControllerDefinitions, __UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE), asCALL_THISCALL_ASGLOBAL, this);
 
     engine->RegisterObjectProperty("PlayerController", "Vector3f position", asOFFSET(PlayerController, position));
+    engine->RegisterObjectProperty("PlayerController", "bool noclip", asOFFSET(PlayerController, vNoclip));
 }

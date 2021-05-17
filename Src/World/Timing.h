@@ -5,38 +5,46 @@
 
 class Timing {
     private:
-        double timeStep;
-        double accumulatedSeconds;
-
-        double secondToLastFixedTime;
-        double lastFixedTime;
-
-        // Total time since the object's initialization.
         std::chrono::high_resolution_clock::time_point initialTime;
-        // Previous time when the last call to getElapsedSeconds() was made.
         std::chrono::high_resolution_clock::time_point prevTime;
 
+        // Tick timers (Milliseconds)
+        int tickRate;
+        int tickStep;
+        float sinceLastTick;
+        float avgTickRate;
+        std::chrono::high_resolution_clock::duration tickStepDuration;
+        std::chrono::high_resolution_clock::time_point compareTick;
+        std::chrono::high_resolution_clock::time_point lastTick;
+
+        // Frame timers (Milliseconds)
+        int frameRate;
+        int frameStep;
+        float sinceLastFrame;
+        float avgFrameRate;
+        std::chrono::high_resolution_clock::duration frameStepDuration;
+        std::chrono::high_resolution_clock::time_point compareFrame;
+        std::chrono::high_resolution_clock::time_point lastFrame;
+
     public:
-        Timing(int tickrate);
+        Timing(int tickrate, int framerate);
 
-        double getTimeStep() const;
-        void addSecondsToAccumulator(double secondsPassed);
+        // Tick rates
+        int getTickRate() const;
+        float getSinceTick() const;
+        float getAvgTickRate() const;
+        void setTickRate(int rate);
+        bool tickReady();
+        void tickFinished();
 
-        // Returns whether enough time is left on the accumulator for another tick.
-        bool tickReady() const;
+        // Frame rates
+        int getFrameRate() const;
+        float getSinceFrame() const;
+        float getAvgFrameRate() const;
+        void setFrameRate(int rate);
+        bool frameReady();
+        void frameFinished();
 
-        // Subtracts one tick from the accumlator.
-        void subtractTick();
-
-        void updateInterpolationFactor();
-
-        double getInterpolationFactor() const;
-
-        // Returns the total elapsed time since the object's creation.
-        double getTotalElapsedTime() const;
-
-        // Returns the elapsed seconds since the last call to this function.
-        double getElapsedSeconds();
 };
 
 #endif // TIMING_H_INCLUDED

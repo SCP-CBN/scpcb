@@ -29,8 +29,10 @@ class Model {
     public:
         Model(Assimp::Importer* importer, GraphicsResources* gr, const PGE::String& filename);
         ~Model();
-        
-        void render(const PGE::Matrix4x4f& modelMatrix) const;
+
+        int createTexture(const PGE::String& tex);
+
+        void render(const PGE::Matrix4x4f& modelMatrix, int matIdx=0) const;
 };
 
 class ModelInstance {
@@ -44,12 +46,17 @@ class ModelInstance {
         PGE::Vector3f rotation = PGE::Vector3f::ZERO;
         PGE::Vector3f scale = PGE::Vector3f::ONE;
 
+        int materialID = 0;
+
     public:
         ModelInstance(Model* model);
 
         void setPosition(const PGE::Vector3f& pos);
         void setRotation(const PGE::Vector3f& rot);
         void setScale(const PGE::Vector3f& scl);
+
+        int createTexture(const PGE::String& tex);
+        void setTexture(int tex);
 
         const PGE::Vector3f& getPosition() const;
         const PGE::Vector3f& getRotation() const;

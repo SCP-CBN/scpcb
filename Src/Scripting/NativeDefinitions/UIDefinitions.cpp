@@ -28,4 +28,14 @@ UIDefinitions::UIDefinitions(ScriptManager* mgr, UIMesh* uiMesh, Config* config,
 
     engine->SetDefaultNamespace("Font");
     engine->RegisterGlobalFunction("Font@ get_large() property", asMETHOD(World, getFont), asCALL_THISCALL_ASGLOBAL, world);
+    engine->RegisterGlobalFunction("Font@ get_apple_small() property", asMETHOD(World, getFontAppleSmall), asCALL_THISCALL_ASGLOBAL, world);
+    engine->RegisterGlobalFunction("Font@ get_apple_large() property", asMETHOD(World, getFontAppleLarge), asCALL_THISCALL_ASGLOBAL, world);
+    engine->RegisterGlobalFunction("Font@ get_inconsolata_large() property", asMETHOD(World, getFontInconsolataLarge), asCALL_THISCALL_ASGLOBAL, world);
+    engine->RegisterGlobalFunction("Font@ get_inconsolata_small() property", asMETHOD(World, getFontInconsolataSmall), asCALL_THISCALL_ASGLOBAL, world);
+    engine->RegisterGlobalFunction("Font@ get_crystal_large() property", asMETHOD(World, getFontCrystalLarge), asCALL_THISCALL_ASGLOBAL, world);
+    engine->RegisterGlobalFunction("Font@ get_crystal_small() property", asMETHOD(World, getFontCrystalSmall), asCALL_THISCALL_ASGLOBAL, world);
+    engine->RegisterGlobalFunction("Font@ get_subotype_large() property", asMETHOD(World, getFontSubotypeLarge), asCALL_THISCALL_ASGLOBAL, world);
+    engine->RegisterGlobalFunction("Font@ get_subotype_small() property", asMETHOD(World, getFontSubotypeSmall), asCALL_THISCALL_ASGLOBAL, world);
+    engine->RegisterGlobalFunction("Font@ get_bold_large() property", asMETHOD(World, getFontBoldLarge), asCALL_THISCALL_ASGLOBAL, world);
+    engine->RegisterGlobalFunction("Font@ get_bold_small() property", asMETHOD(World, getFontBoldSmall), asCALL_THISCALL_ASGLOBAL, world);
 }

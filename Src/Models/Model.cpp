@@ -40,8 +40,10 @@ Model::Model(Assimp::Importer* importer, GraphicsResources* gr, const PGE::Strin
 
     PGE::String err = importer->GetErrorString();
     PGE_ASSERT(err.isEmpty(), "Failed to load model (err: " + err + ")");
-
     materialCount = scene->mNumMaterials;
+
+    //printf("Loading model: %s. Material count: %i\n", filename.cstr(), materialCount);
+
     materials = new PGE::Material*[materialCount];
     for (unsigned int i = 0; i < materialCount; i++) {
         aiString texturePath;
@@ -49,6 +51,7 @@ Model::Model(Assimp::Importer* importer, GraphicsResources* gr, const PGE::Strin
         PGE::String textureName = PGE::String(texturePath.C_Str()).replace("\\", "/");
         int lastSlash = textureName.findLast("/").getPosition();
         textureName = textureName.substr(lastSlash + 1, textureName.length() - lastSlash - 5);
+        //printf("Resolved to Texture: %s\n", textureName.cstr());
         materials[i] = new PGE::Material(shader, gr->getTexture(path + textureName));
     }
 
@@ -96,18 +99,35 @@ Model::~Model() {
     gfxRes->dropShader(shader);
 }
 
-void Model::render(const PGE::Matrix4x4f& modelMatrix) const {
+void Model::render(const PGE::Matrix4x4f& modelMatrix, int matIdx) const {
     this->modelMatrix->setValue(modelMatrix);
     for (unsigned int i = 0; i < meshCount; i++) {
+        meshes[i]->setMaterial(materials[matIdx]);
         meshes[i]->render();
     }
 }
 
+int Model::createTexture(const PGE::String& tex) {
+    if (materialCount <= 0) { return 0; }
+    PGE::Texture* texture = gfxRes->getTexture(tex);
+    int newid = sizeof(materials);
+    materials[newid] = new PGE::Material(shader, texture, true);
+    return newid;
+}
+
+
 ModelInstance::ModelInstance(Model* model) {
     this->model = model;
+    materialID = 0;
     modelMatrixNeedsRecalculation = false;
 }
 
+int ModelInstance::createTexture(const PGE::String& tex) {
+    return model->createTexture(tex);
+}
+void ModelInstance::setTexture(int tex) {
+    materialID = tex;
+}
 void ModelInstance::setPosition(const PGE::Vector3f& pos) {
     if (position != pos) {
         position = pos;
@@ -150,5 +170,5 @@ void ModelInstance::render() {
         modelMatrix = PGE::Matrix4x4f::constructWorldMat(position, scale, rotation);
         modelMatrixNeedsRecalculation = false;
     }
-    model->render(modelMatrix);
+    model->render(modelMatrix,materialID);
 }

@@ -28,6 +28,8 @@ class INIFile {
         INIFile(const PGE::FilePath& filename);
         ~INIFile();
 
+        INIFile* iniFileFactory(const PGE::FilePath& filename);
+        void close(void* ptr);
         void save();
 
         PGE::String getString(const PGE::String& section, const PGE::String& key, const PGE::String& defaultValue = "");
