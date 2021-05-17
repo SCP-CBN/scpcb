@@ -116,11 +116,7 @@ external class GUITextEntry; // Shoop da whoop
 external bool GUI::squareInSquare(Vector2f&in pos, Vector2f&in size, Vector2f&in sPos, Vector2f&in sSize);
 external bool GUI::pointInSquare(Vector2f&in point, Vector2f&in pos, Vector2f&in size);
 
-external void GUI::Initialize();
-external void GUI::startRender();
-external void GUI::startUpdate();
-external void GUI::updateResolution();
-
+external float GUI::interp;
 external float GUI::tileScale;
 external float GUI::aspectScale;
 
@@ -161,15 +157,19 @@ namespace GUI {
 // # Engine Hooks --------
 void render(float interp) { Game::render(interp); }
 void renderMenu(float interp) { Game::renderMenu(interp); }
+void renderLoading(float interp) { Game::renderLoading(interp); }
 void renderAlways(float interp) { Game::renderAlways(interp); }
 void update(uint32 tick, float interp) { Game::update(tick, interp); }
 void updateAlways(uint32 tick, float interp) { Game::updateAlways(tick, interp); }
+void updateLoading(float interp) { Game::updateLoading(interp); }
 void resolutionChanged(int newWidth, int newHeight) { Game::resolutionChanged(newWidth, newHeight); }
 void mainEngine() {
 	PerFrame::register(render);
 	PerMenuFrame::register(renderMenu);
+	PerLoadFrame::register(renderLoading);
 	PerEveryFrame::register(renderAlways);
 	PerTick::register(update);
+	PerLoadTick::register(updateLoading);
 	PerEveryTick::register(updateAlways);
 	ResolutionChanged::register(resolutionChanged);
 }

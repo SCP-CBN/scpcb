@@ -38,7 +38,7 @@ void load() {
 	@testCollCollection=@Game::World::Collision;
 }
 
-void Initialize() { // This is the first function that is called lol.
+void initialize() { // This is the first function that is called lol.
 	Debug::log("AngelDebug - Start Testing Area");
 
 

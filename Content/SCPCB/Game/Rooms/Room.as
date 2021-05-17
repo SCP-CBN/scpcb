@@ -98,18 +98,17 @@ namespace Room {
 	array<Room::Template@> templates;
 
 	void startLoading() {
-		Game::loadMax=templates.length();
+		Environment::loadMax=templates.length();
 		
 	}
 	void finishLoading() {
 		
 	}
 	bool load() {
-		if(Game::loadDone>=templates.length()-1) { finishLoading(); return true; }
-		Room::Template @template=templates[Game::loadDone];
+		if(Environment::loadDone>=templates.length()-1) { finishLoading(); return true; }
+		Room::Template @template=templates[Environment::loadDone];
+		Environment::loadMessage=template.zone + ":" + template.name;
 		template.internalConstruct();
-		Game::loadDone++;
-		Game::loadMessage=template.zone + ":" + template.name;
 		return false;
 	}
 

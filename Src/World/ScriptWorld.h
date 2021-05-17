@@ -33,10 +33,12 @@ class ScriptWorld {
         EventDefinition* perTickEventDefinition;
         EventDefinition* perEveryTickEventDefinition;
         EventDefinition* perTickMenuEventDefinition;
+        EventDefinition* perLoadTickEventDefinition;
 
         EventDefinition* perFrameGameEventDefinition;
-        EventDefinition* perFrameMenuEventDefinition;
+        EventDefinition* perMenuFrameEventDefinition;
         EventDefinition* perEveryFrameEventDefinition;
+        EventDefinition* perLoadFrameEventDefinition;
 
         EventDefinition* resolutionChangedEventDefinition;
 
@@ -49,9 +51,11 @@ class ScriptWorld {
 
         void updateTick(uint32_t tick,float interp);
         void updateEveryTick(uint32_t tick, float interp);
+        void updateLoadTick(float interp);
 
         void updateFrame(float interp);
-        void updateFrameMenu(float interp);
+        void updateMenuFrame(float interp);
+        void updateLoadFrame(float interp);
         void updateEveryFrame(float interp);
         void updateResolution(int newWidth, int newHeight);
 };

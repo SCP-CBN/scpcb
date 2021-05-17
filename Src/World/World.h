@@ -68,13 +68,17 @@ class World {
 
         void startFrame(float sinceLast);
         void runEveryFrame(float sinceLast);
-        void runFrameMenu(float sinceLast);
+        void runMenuFrame(float sinceLast);
+        void runLoadFrame(float sinceLast);
         void runFrame(float sinceLast);
 
         void startTick(float sinceLast);
-        void runEveryTick(uint32_t tick, float sinceLast);
         void runTick(uint32_t tick, float sinceLast);
+        void runLoadTick(float sinceLast);
+        void runEveryTick(uint32_t tick, float sinceLast);
 
+        //const char** loadMessage;
+        //const char** loadPart;
 
         PGE::Vector2f gameMousePos;
         PGE::Vector2f menuMousePos;
@@ -84,6 +88,16 @@ class World {
     public:
         // ScriptWorld :: Environment global properties
         bool paused;
+        bool loading;
+        int loadState;
+        int loadMax;
+        int loadDone;
+
+        //const char** getLoadMessage();
+        //const char** getLoadPart();
+        //void setLoadMessage(PGE::String* msg);
+        //void setLoadPart(PGE::String* msg);
+
         uint32_t tick;
 
         World();

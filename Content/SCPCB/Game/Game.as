@@ -33,7 +33,7 @@ namespace Game {
 	int tick { get { return Environment::tick; } set { Environment::tick=value; } }
 	Hook@ tickHook=Hook("tick");
 
-	Util::TickFunction@ updateFunc=@Util::noopTick;
+	//Util::TickFunction@ updateFunc=@Util::noopTick;
 
 	void initialize() {
 		Environment::paused = true;
@@ -45,44 +45,37 @@ namespace Game {
 
 	// Inputs are updated before each tick update
 	// Is not called while Environment::paused==true.
-	void update(uint32 tick, float interp) {
+	void update(uint32 tick, float interp) { // tick++;
+		//Debug::log("Tick: " + toString(tick) + "," + toString(interp) + ", Real " + toString(Environment::tickRate) + ", Est " + toString(1/avgTickrate));
 		Timer::update(tick);
 		tickHook.call();
+		Game::World::update(tick,interp);
 	}
-
 	void updateAlways(uint32 tick, float interp) {
-		//Debug::log("Tick: " + toString(tick) + "," + toString(interp) + ", Real " + toString(Environment::tickRate) + ", Est " + toString(1/avgTickrate));
-
-		if(!loading) { updateMenuState(tick,interp); }
-		updateFunc(tick,interp);
-	}
-	void render(float interp) {
-		if(loading) { return; }
-		if(DEBUGGING) { AngelDebug::render(interp); }
-		Game::World::render();
-	}
-	void renderMenu(float interp) {
-		//Debug::log("Render: " + toString(interp) + ", Real " + toString(Environment::frameRate) + ", Est " + toString(1/avgFramerate));
-		if(DEBUGGING) { AngelDebug::renderMenu(interp); }
-	}
-	void renderAlways(float interp) {
-		if(loading) { return; }
-		//Game::World::render();
-	}
-
-	void resolutionChanged(int newWidth, int newHeight) {
-	}
-
-	// After loading, this becomes the updateFunc
-	void updateMain(uint32 tick, float interp) {
-		if(loading) { return; }
-		Game::World::update();
+		updateMenuState(tick,interp);
+		Game::World::updateAlways(tick,interp);
 		if(queuedNewGame) {
 			BuildNewGame();
 			queuedNewGame=false;
 		}
 		if(DEBUGGING) { AngelDebug::update(interp); }
 	}
+	void render(float interp) {
+		if(DEBUGGING) { AngelDebug::render(interp); }
+		Game::World::render(interp);
+	}
+	void renderMenu(float interp) {
+		//Debug::log("Render: " + toString(interp) + ", Real " + toString(Environment::frameRate) + ", Est " + toString(1/avgFramerate));
+		if(DEBUGGING) { AngelDebug::renderMenu(interp); }
+		//Game::World::renderMenu(interp);
+	}
+	void renderAlways(float interp) {
+		Game::World::renderAlways(interp);
+	}
+
+	void resolutionChanged(int newWidth, int newHeight) {
+	}
+
 
 
 
@@ -94,7 +87,7 @@ namespace Game {
 			Debug::log("Escape was pressed11"); // Apparently this code doesn't run without calling a Debug.log. isHit() is weird.
 			bool menuWasOpen=false;
 			for(int i=0; i<GUI::baseInstances.length(); i++) {
-				if(GUI::baseInstances[i].visible==true) {
+				if(GUI::baseInstances[i].visible==true && GUI::baseInstances[i].cls!="HUD") {
 					menuWasOpen=true;
 					GUI::baseInstances[i].visible=false;
 				}
@@ -110,44 +103,35 @@ namespace Game {
 
 
 // # Game::load; Used by a repeating timer.
+namespace Environment {
+	string loadPart="Booting up...";
+	string loadMessage="[$/C++]";
+}
+
 namespace Game {
-	bool loading;
-
-	int loadState;
-	float loadMax;
-	float loadDone;
-	string loadMessage;
-	string loadPart;
-
 	void initLoad() {
-		Debug::log("Initialize Game");
-		@updateFunc=@updateLoad;
-
+		Debug::log(Environment::loadPart + " " + Environment::loadMessage);
 		//Introscreen::initialize(); // Ahh!!
 		// PlayIntroMovie();
-
 		Loadscreen::initialize();
 		Loadscreen::activate("SCP-173");
-
-		loading=true;
-		loadState=0;
-		loadPart="Initializing...";
-		loadMessage="";
+		Environment::loadMessage="scripts";
 	}
 	void loadNext(string&in nextPart) {
-		Debug::log("Loading Next Part: " + nextPart);
-		loadPart=nextPart + "...";
-		loadMessage="";
-		loadState++;
-		loadDone=0;
+		Debug::log("Loading Next: " + nextPart + " --------");
+		Environment::loadPart="Loaded : " + nextPart + "...";
+		Environment::loadMessage="";
+		Environment::loadState++;
+		Environment::loadDone=0;
 	}
-
-	void updateLoad(uint32 tick, float interp) {
-		Debug::log("Loading... " + loadPart + " " + loadMessage);
-		switch(loadState) {
+	string loadMessage { set { Environment::loadMessage=value; } }
+	void renderLoading(float interp) {}
+	void updateLoading(float interp) {
+		Debug::log(Environment::loadPart + " " + Environment::loadMessage);
+		switch(Environment::loadState) {
 		case 0:
 			loadNext("World");
-			World::Initialize();
+			World::initialize();
 			loadMessage="done!";
 			break;
 		case 1:
@@ -160,16 +144,16 @@ namespace Game {
 			Item::startLoading();
 			break;
 		case 3:
-			if(Item::load()) { loadNext("Rooms"); }
-			else { loadDone++; }
+			if(Item::load()) { Item::finishLoading(); loadNext("Rooms"); }
+			else { Environment::loadDone++; }
 			break;
 		case 4:
-			loadNext("Rooms");
+			loadNext("Room Definitions");
 			Room::startLoading();
 			break;
 		case 5:
-			if(Room::load()) { loadNext("Game"); }
-			else { loadDone++; }
+			if(Room::load()) { Room::finishLoading(); loadNext("Game"); }
+			else { Environment::loadDone++; }
 			break;
 		case 6:
 			loadNext("Zones...");
@@ -184,7 +168,7 @@ namespace Game {
 			break;
 		case 8:
 			loadNext("Starting up");
-			if(DEBUGGING) { AngelDebug::Initialize(); }
+			if(DEBUGGING) { AngelDebug::initialize(); }
 			@MainMenu=menu_Main();
 			Menu::Pause::load();
 			@ConsoleMenu=menu_Console();
@@ -196,8 +180,7 @@ namespace Game {
 			Menu::Pause::instance.visible=false;
 			break;
 		default:
-			loading=false;
-			@updateFunc=@updateMain;
+			Environment::loading=false;
 			break;
 		}
 	}
@@ -284,14 +267,20 @@ namespace Game { class Room {
 // # Game::World --------
 namespace Game { namespace World {
 	Collision::Collection@ Collision;
-	void Initialize() {
+	void initialize() {
 		@Collision=Collision::Collection();
 	}
-	void update() {
+	void update(uint32 tick, float interp) { // tick++;
+
+	}
+	void updateAlways(uint32 tick, float interp) {
 		Item::updateAll();
 		Room::updateAll();
 	}
-	void render() {
+	void render(float interp) {
+
+	}
+	void renderAlways(float interp) {
 		Item::renderAll();
 		Room::renderAll();
 	}

@@ -76,6 +76,9 @@ World::World() {
 
     // ScriptWorld
     paused = false;
+    loading = true;
+    loadState = 0;
+    loadDone = 0;
     tick = 0;
 
     miGen = new ModelImageGenerator(graphics, gfxRes);
@@ -142,10 +145,12 @@ bool World::run() {
 
 
 void World::runEveryFrame(float interp) { scripting->updateEveryFrame(interp); }
-void World::runFrameMenu(float interp) { scripting->updateFrameMenu(interp); }
+void World::runMenuFrame(float interp) { scripting->updateMenuFrame(interp); }
+void World::runLoadFrame(float interp) { scripting->updateLoadFrame(interp); }
 void World::runFrame(float interp) { scripting->updateFrame(interp); }
-void World::runEveryTick(uint32_t tick, float interp) { scripting->updateEveryTick(tick,interp); }
-void World::runTick(uint32_t tick, float interp) { scripting->updateTick(tick,interp); }
+void World::runTick(uint32_t tick, float interp) { scripting->updateTick(tick, interp); }
+void World::runLoadTick(float interp) { scripting->updateLoadTick(interp); }
+void World::runEveryTick(uint32_t tick, float interp) { scripting->updateEveryTick(tick, interp); }
 
 // Lifecycle - Ticking
 void World::startTick(float sinceLast) {
@@ -157,6 +162,11 @@ void World::startTick(float sinceLast) {
     Input downInputs = keyBinds->getDownInputs();
     Input hitInputs = keyBinds->getHitInputs();
     PGE::Vector2f mousePos = io->getMousePosition();
+    if (loading) { // convenience function to only run the updateAll function.
+        paused = true;
+        runLoadTick(sinceLast);
+        return;
+    }
 
     bool wasPaused = paused;
     bool wasUnpaused=false;
@@ -199,15 +209,22 @@ void World::startFrame(float interpolation) {
 
     camera->updateDrawTransform(interpolation);
     gfxRes->setCameraUniforms(camera);
-    pickMng->render();
 
+    if (loading) {
+        graphics->setDepthTest(false);
+        scripting->updateLoadFrame(interpolation);
+        graphics->setDepthTest(true);
+        graphics->swap();
+        return;
+    }
+
+    pickMng->render();
 
     scripting->updateEveryFrame(interpolation);
     if (!paused) { scripting->updateFrame(interpolation); }
 
     graphics->setDepthTest(false);
-
-    scripting->updateFrameMenu(interpolation);
+    scripting->updateMenuFrame(interpolation);
     graphics->setDepthTest(true);
 
     //lol->render(PGE::Matrix4x4f::constructWorldMat(PGE::Vector3f(0, 0, 0), PGE::Vector3f(0.1, 0.1, 0.1), PGE::Vector3f(0, 0, 0)));

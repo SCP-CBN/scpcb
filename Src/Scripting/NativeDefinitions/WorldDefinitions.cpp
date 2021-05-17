@@ -17,6 +17,11 @@ WorldDefinitions::WorldDefinitions(ScriptManager* mgr, World* w) :
 
     engine->SetDefaultNamespace("Environment");
     engine->RegisterGlobalProperty("bool paused", &w->paused);
+    engine->RegisterGlobalProperty("bool loading", &w->loading);
+    engine->RegisterGlobalProperty("int loadState", &w->loadState);
+    engine->RegisterGlobalProperty("int loadDone", &w->loadDone);
+    engine->RegisterGlobalProperty("int loadMax", &w->loadMax);
+
     engine->RegisterGlobalProperty("uint32 tick", &w->tick);
     
     engine->RegisterGlobalFunction("int get_tickRate() property", asMETHOD(World, getTickRate), asCALL_THISCALL_ASGLOBAL, w);

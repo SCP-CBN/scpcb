@@ -139,9 +139,9 @@ namespace GUI {
 	shared Vector2f center; // Center of screen from origin.
 
 	// # Resolution change hook.
-	shared void updateResolution() {
+	shared void updateResolution(int screenWidth=UI::getScreenWidth(),int screenHeight=UI::getScreenHeight()) {
 		aspectScale=tileScale*UI::getAspectRatio()*2.f;
-		resolution=Vector2f(UI::getScreenWidth(),UI::getScreenHeight())*aspectScale;
+		resolution=Vector2f(screenWidth,screenHeight)*aspectScale;
 		center=resolution/2;
 		for(int i=0; i<baseInstances.length(); i++) { baseInstances[i].invalidateLayout(); } // Update all menus.
 	}
@@ -212,7 +212,9 @@ namespace GUI {
 
 
 	// #### Cascade GUI Renderer & Updater.
-	shared void startRender() {
+	shared float interp;
+	shared void startRender(float interp) {
+		GUI::interp=interp;
 		UI::setTextureless();
 		UI::setColor(Color::White);
 		for(int i=0; i<baseInstances.length(); i++) { if(baseInstances[i].visible) { baseInstances[i].drillPreRender(); } }
@@ -222,7 +224,8 @@ namespace GUI {
 		UI::setColor(Color::White);
 	}
 
-	shared void startUpdate() {
+	shared void startUpdate(float interp) {
+		GUI::interp=interp;
 		updateMouse();
 		updateTextEntering();
 		int baseLen=baseInstances.length();

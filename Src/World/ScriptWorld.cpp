@@ -69,9 +69,14 @@ ScriptWorld::ScriptWorld(World* world, GraphicsResources* gfxRes, Camera* camera
         std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::UInt32, "tick"), ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
     perEveryTickEventDefinition = new EventDefinition(manager, "PerEveryTick", // Some things need to always tick
         std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::UInt32, "tick"), ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
+    perLoadTickEventDefinition = new EventDefinition(manager, "PerLoadTick", // Some things need to always tick
+        std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
+
     perFrameGameEventDefinition = new EventDefinition(manager, "PerFrame", // Frame++
         std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
-    perFrameMenuEventDefinition = new EventDefinition(manager, "PerMenuFrame", // Render every menu.
+    perMenuFrameEventDefinition = new EventDefinition(manager, "PerMenuFrame", // Render every menu.
+        std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
+    perLoadFrameEventDefinition = new EventDefinition(manager, "PerLoadFrame", // Render stuff while environment is loading
         std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
     perEveryFrameEventDefinition = new EventDefinition(manager, "PerEveryFrame", // Render every frame.
         std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
@@ -151,8 +156,13 @@ ScriptWorld::~ScriptWorld() {
     }
 
     delete perTickEventDefinition;
+    delete perEveryTickEventDefinition;
+    delete perLoadTickEventDefinition;
     delete perFrameGameEventDefinition;
-    delete perFrameMenuEventDefinition;
+    delete perMenuFrameEventDefinition;
+    delete perLoadFrameEventDefinition;
+    delete perEveryFrameEventDefinition;
+    delete resolutionChangedEventDefinition;
 
     for (NativeDefinition* nd : nativeDefs) {
         delete nd;
@@ -174,16 +184,22 @@ void ScriptWorld::updateEveryTick(uint32_t tick, float interp) {
     perEveryTickEventDefinition->setArgument("interpolation", interp);
     perEveryTickEventDefinition->execute();
 }
-
+void ScriptWorld::updateLoadTick(float interp) {
+    perLoadTickEventDefinition->setArgument("interpolation", interp);
+    perLoadTickEventDefinition->execute();
+}
 void ScriptWorld::updateFrame(float interpolation) {
     perFrameGameEventDefinition->setArgument("interpolation", interpolation);
     perFrameGameEventDefinition->execute();
 }
-void ScriptWorld::updateFrameMenu(float interpolation) {
-    perFrameMenuEventDefinition->setArgument("interpolation", interpolation);
-    perFrameMenuEventDefinition->execute();
+void ScriptWorld::updateMenuFrame(float interpolation) {
+    perMenuFrameEventDefinition->setArgument("interpolation", interpolation);
+    perMenuFrameEventDefinition->execute();
 }
-
+void ScriptWorld::updateLoadFrame(float interpolation) {
+    perLoadFrameEventDefinition->setArgument("interpolation", interpolation);
+    perLoadFrameEventDefinition->execute();
+}
 void ScriptWorld::updateEveryFrame(float interpolation) {
     perEveryFrameEventDefinition->setArgument("interpolation", interpolation);
     perEveryFrameEventDefinition->execute();
