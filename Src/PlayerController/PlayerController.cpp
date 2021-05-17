@@ -69,7 +69,7 @@ void PlayerController::update(float yaw, float pitch, Input input, float timeSte
             // -------
 
             stand(timeStep); //inputs cancel each other out: we're standing still
-        } else {
+        } else if(!vNoclip) {
             noclip = false; // Also remove
             targetDir = targetDir.normalize();
             walk(targetDir, timeStep);
@@ -105,6 +105,6 @@ void PlayerController::stand(float timeStep) {
 void PlayerController::walk(PGE::Vector2f dir, float timeStep) {
     if (vNoclip) { position += PGE::Vector3f(dir.x * currWalkSpeed, 0.f, dir.y * currWalkSpeed) * timeStep; }
     else {
-        position = collider->tryMove(position, position+PGE::Vector3f(dir.x * currWalkSpeed, 0.f, dir.y * currWalkSpeed) * timeStep);
+        position = collider->tryMove(position, position + PGE::Vector3f(dir.x * currWalkSpeed, 0.f, dir.y * currWalkSpeed) * timeStep);
     }
 }

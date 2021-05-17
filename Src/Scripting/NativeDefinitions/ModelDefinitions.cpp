@@ -19,8 +19,8 @@ ModelDefinitions::ModelDefinitions(ScriptManager* mgr, GraphicsResources* gr) {
     engine->RegisterObjectMethod("CModel", "const Vector3f& get_scale() property", asMETHOD(ModelInstance, getScale), asCALL_THISCALL);
     engine->RegisterObjectMethod("CModel", "void set_scale(const Vector3f&in scl) property", asMETHOD(ModelInstance, setScale), asCALL_THISCALL);
 
-    engine->RegisterObjectMethod("CModel", "int createTexture(const string&in tex)", asMETHOD(ModelInstance, createTexture), asCALL_THISCALL);
-    engine->RegisterObjectMethod("CModel", "void setTexture(int tex)", asMETHOD(ModelInstance, setTexture), asCALL_THISCALL);
+    //engine->RegisterObjectMethod("CModel", "int createTexture(const string&in tex)", asMETHOD(ModelInstance, createTexture), asCALL_THISCALL);
+    //engine->RegisterObjectMethod("CModel", "void setTexture(int tex)", asMETHOD(ModelInstance, setTexture), asCALL_THISCALL);
     //engine->RegisterObjectMethod("CModel", "void setMaterial(int materialID) property", asMETHOD(ModelInstance, setMaterial), asCALL_THISCALL);
 
     engine->SetDefaultNamespace("CModel");

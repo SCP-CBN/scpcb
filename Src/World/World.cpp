@@ -161,6 +161,7 @@ void World::startTick(float sinceLast) {
     Input downInputs = keyBinds->getDownInputs();
     Input hitInputs = keyBinds->getHitInputs();
     PGE::Vector2f mousePos = io->getMousePosition();
+    printf("Runtick : %s\n", paused ? "PAUSED" : "NOT paused");
     if (loading) { // convenience function to only run the updateAll function.
         paused = true;
         runLoadTick(sinceLast);
@@ -195,9 +196,9 @@ void World::applyCameraMouseMovement(PGE::Vector2f mousePos) {
     PGE::Vector2f screenCenter = PGE::Vector2f((float)config->getWidth(), (float)config->getHeight()) * (0.5f);
     PGE::Vector2f addAngle =(mousePos - screenCenter) * (config->sensitivity->value / 30000.f);
     camera->addAngle(addAngle.x, addAngle.y);
+    io->setMousePosition(screenCenter);
     camera->update();
     pickMng->update();
-    io->setMousePosition(screenCenter);
 }
 
 // Lifecycle - Frames Per Second
