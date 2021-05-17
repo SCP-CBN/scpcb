@@ -18,7 +18,6 @@
 #include "../Input/MouseData.h"
 #include "../Utils/LocalizationManager.h"
 #include "../Graphics/ModelImageGenerator.h"
-#include "../Utils/MathUtil.h"
 #include "../Scripting/ScriptObject.h"
 #include "../Graphics/UIMesh.h"
 #include "../Graphics/Billboard.h"
@@ -185,9 +184,9 @@ void World::draw(float interpolation, RenderType r) {
 }
 
 void World::updatePlaying(float timeStep) {
-    PGE::Vector2f center = PGE::Vector2f((float)config->getWidth(), (float)config->getHeight()).multiply(0.5f);
+    PGE::Vector2f center = PGE::Vector2f((float)config->getWidth(), (float)config->getHeight()) * 0.5f;
     
-    PGE::Vector2f addAngle = io->getMousePosition().subtract(center).multiply(config->sensitivity->value / 30000.f);
+    PGE::Vector2f addAngle = (io->getMousePosition() - center) * (config->sensitivity->value / 30000.f);
     camera->addAngle(addAngle.x, addAngle.y);
 
     // Reset mouse to center.

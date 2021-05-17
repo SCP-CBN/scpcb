@@ -226,13 +226,13 @@ bool Billboard::updateVertices(std::vector<PGE::Vertex>& vertices, int startInde
         PGE::Vector3f offset2 = rotationMatrix.transform(PGE::Vector3f(scale.x * 0.5f, -scale.y * 0.5f, 0.f));
         PGE::Vector3f offset3 = rotationMatrix.transform(PGE::Vector3f(-scale.x * 0.5f, -scale.y * 0.5f, 0.f));
 
-        vertices[startIndex + 0].setVector4f("position", PGE::Vector4f(position.add(offset0),1.f));
+        vertices[startIndex + 0].setVector4f("position", PGE::Vector4f(position + offset0,1.f));
         vertices[startIndex + 0].setVector2f("offset", PGE::Vector2f::ZERO);
-        vertices[startIndex + 1].setVector4f("position", PGE::Vector4f(position.add(offset1),1.f));
+        vertices[startIndex + 1].setVector4f("position", PGE::Vector4f(position + offset1,1.f));
         vertices[startIndex + 1].setVector2f("offset", PGE::Vector2f::ZERO);
-        vertices[startIndex + 2].setVector4f("position", PGE::Vector4f(position.add(offset2),1.f));
+        vertices[startIndex + 2].setVector4f("position", PGE::Vector4f(position + offset2,1.f));
         vertices[startIndex + 2].setVector2f("offset", PGE::Vector2f::ZERO);
-        vertices[startIndex + 3].setVector4f("position", PGE::Vector4f(position.add(offset3),1.f));
+        vertices[startIndex + 3].setVector4f("position", PGE::Vector4f(position + offset3,1.f));
         vertices[startIndex + 3].setVector2f("offset", PGE::Vector2f::ZERO);
     }
 

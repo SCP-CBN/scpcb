@@ -9,7 +9,7 @@
 #include "../Graphics/GraphicsResources.h"
 #include "../Save/Config.h"
 
-static constexpr int atlasDims = 1024;
+constexpr int atlasDims = 1024;
 
 Font::Font(FT_Library ftLibrary, GraphicsResources* gr, Config* con, const PGE::FilePath& fn, int h) {
     graphicsRes = gr;
@@ -172,7 +172,7 @@ void Font::draw(const PGE::String& text, const PGE::Vector3f& pos, const PGE::Ve
                 PGE::Vector3f glyphPos = PGE::Vector3f(currPos.x-gd.drawOffset.x,
                                                        currPos.y-gd.drawOffset.y,
                                                        currPos.z);
-                PGE::Vector3f glyphPos2 = glyphPos.add(PGE::Vector3f(gd.srcRect.width()*atlasDims,gd.srcRect.height()*atlasDims,0.f));
+                PGE::Vector3f glyphPos2 = glyphPos + PGE::Vector3f(gd.srcRect.width()*atlasDims,gd.srcRect.height()*atlasDims,0.f);
                 PGE::Vector2f glyphUv = PGE::Vector2f(gd.srcRect.topLeftCorner().x,gd.srcRect.topLeftCorner().y);
                 PGE::Vector2f glyphUv2 = PGE::Vector2f(gd.srcRect.bottomRightCorner().x,gd.srcRect.bottomRightCorner().y);
 
@@ -197,7 +197,7 @@ void Font::draw(const PGE::String& text, const PGE::Vector3f& pos, const PGE::Ve
                 atlases[it->second.atlasIndex].primitives.push_back(PGE::Primitive(vertCount + 0, vertCount + 2, vertCount + 1));
                 atlases[it->second.atlasIndex].primitives.push_back(PGE::Primitive(vertCount + 1, vertCount + 2, vertCount + 3));
             }
-            currPos = currPos.add(PGE::Vector3f(it->second.horizontalAdvance,0.f,0.f));
+            currPos.x += it->second.horizontalAdvance;
         }
     }
     for (int i=0;i<atlases.size();i++) {

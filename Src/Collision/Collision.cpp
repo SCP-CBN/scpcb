@@ -29,7 +29,7 @@ Permission is granted to anyone to use this software for any purpose, including 
 
 using namespace PGE;
 
-static constexpr float COLLISION_EPSILON = 0.001f;
+constexpr float COLLISION_EPSILON = 0.001f;
 
 Collision::Collision() { coveredAmount = 1.0f; hit = false; }
 
@@ -47,8 +47,8 @@ Collision Collision::update(const Line3f& line,float t,const Vector3f& n) {
 
     if (t<0.f || t>1.f) { return retVal; }
 
-    Plane p = Plane(n,line.pointB.subtract(line.pointA).multiply(t).add(line.pointA));
-    if (p.normal.dotProduct(line.pointB.subtract(line.pointA))>=0) { return retVal; }
+    Plane p = Plane(n,(line.pointB - line.pointA) * t + line.pointA);
+    if (p.normal.dotProduct(line.pointB - line.pointA)>=0) { return retVal; }
     if (p.evalAtPoint(line.pointA)<-COLLISION_EPSILON) { return retVal; }
 
     retVal.line = line;
@@ -65,7 +65,7 @@ Collision Collision::sphereCollide(const Line3f& line,float radius,const Vector3
 
     radius+=other_radius;
     //Line3f l = Line3f(line.pointA.subtract(otherPos),line.pointB.subtract(otherPos));
-    Vector3f lineDir = line.pointB.subtract(line.pointA);
+    Vector3f lineDir = line.pointB - line.pointA;
 
     float a=lineDir.dotProduct(lineDir);
     if (fabs(a)<COLLISION_EPSILON) { return retVal; }
@@ -81,8 +81,8 @@ Collision Collision::sphereCollide(const Line3f& line,float radius,const Vector3
 
     if (t<0.f || t>1.f) { return retVal; }
 
-    if (line.pointA.add(lineDir.multiply(t)).length()<COLLISION_EPSILON) { return retVal; }
-    return update(line,t,line.pointA.add(lineDir.multiply(t)).normalize());
+    if ((line.pointA + lineDir * t).length()<COLLISION_EPSILON) { return retVal; }
+    return update(line,t,(line.pointA + lineDir * t).normalize());
 }
 
 //v0,v1 = edge verts
@@ -93,17 +93,17 @@ Collision Collision::edgeTest(const Vector3f& v0,const Vector3f& v1,const Vector
     retVal.hit = false;
 
     Vector3f tm0 = en.normalize();
-    Vector3f tm1 = v1.subtract(v0).normalize();
+    Vector3f tm1 = (v1 - v0).normalize();
     Vector3f tm2 = pn.normalize();
 
     Vector3f tm0Transposed = Vector3f(tm0.x,tm1.x,tm2.x);
     Vector3f tm1Transposed = Vector3f(tm0.y,tm1.y,tm2.y);
     Vector3f tm2Transposed = Vector3f(tm0.z,tm1.z,tm2.z);
 
-    Vector3f sv = line.pointA.subtract(v0);
+    Vector3f sv = line.pointA - v0;
     sv = Vector3f(sv.dotProduct(tm0),sv.dotProduct(tm1),sv.dotProduct(tm2));
-    Vector3f dv = line.pointB.subtract(v0);
-    dv = Vector3f(dv.dotProduct(tm0),dv.dotProduct(tm1),dv.dotProduct(tm2)).subtract(sv);
+    Vector3f dv = line.pointB - v0;
+    dv = Vector3f(dv.dotProduct(tm0),dv.dotProduct(tm1),dv.dotProduct(tm2)) - sv;
 
     //do cylinder test...
     float a,b,c,d,t1,t2,t;
@@ -117,7 +117,8 @@ Collision Collision::edgeTest(const Vector3f& v0,const Vector3f& v1,const Vector
     t2=(-b-sqrt(d))/(2*a);
     t=t1<t2 ? t1 : t2;
     if( t>1.f ) { return retVal; }    //intersects too far away
-    Vector3f i=sv.add(dv.multiply(t)),p=Vector3f::ZERO;
+    Vector3f i=sv + dv * t;
+    Vector3f p=Vector3f::ZERO;
     if( i.y>v0.distance(v1) ) { return retVal; }    //intersection above cylinder
     if( i.y>=0 ){
         p.y=i.y;
@@ -133,10 +134,10 @@ Collision Collision::edgeTest(const Vector3f& v0,const Vector3f& v1,const Vector
         t2=(-b-sqrt(d))/(2*a);
         t=t1<t2 ? t1 : t2;
         if( t>1.f ) { return retVal; }
-        i=sv.add(dv.multiply(t));
+        i=sv + dv * t;
     }
 
-    Vector3f n = i.subtract(p);
+    Vector3f n = i - p;
     n = Vector3f(n.dotProduct(tm0Transposed),n.dotProduct(tm1Transposed),n.dotProduct(tm2Transposed));
     return update(line,t,n);
 }
@@ -153,15 +154,15 @@ Collision Collision::triangleCollide(const PGE::Line3f& line,float radius,const 
     float t = 1.f;
 
     //edge planes
-    Plane p0( v0.add(p.normal),v1,v0 );
-    Plane p1( v1.add(p.normal),v2,v1 );
-    Plane p2( v2.add(p.normal),v0,v2 );
+    Plane p0( v0 + p.normal,v1,v0 );
+    Plane p1( v1 + p.normal,v2,v1 );
+    Plane p2( v2 + p.normal,v0,v2 );
 
-    if (p.normal.dotProduct(line.pointB.subtract(line.pointA))<0.f) {
-        t = -p.evalAtPoint(line.pointA)/p.normal.dotProduct(line.pointB.subtract(line.pointA));
+    if (p.normal.dotProduct(line.pointB - line.pointA)<0.f) {
+        t = -p.evalAtPoint(line.pointA)/p.normal.dotProduct(line.pointB - line.pointA);
 
         //intersects triangle?
-        Vector3f i=line.pointB.subtract(line.pointA).multiply(t).add(line.pointA);
+        Vector3f i=(line.pointB - line.pointA) * t + line.pointA;
 
         float eval0 = p0.evalAtPoint(i);
         float eval1 = p1.evalAtPoint(i);
@@ -205,12 +206,12 @@ Collision Collision::triangleCollide(const Line3f& line,float height,float radiu
     Collision retVal;
     retVal.hit = false;
     
-    Vector3f forward = line.pointB.subtract(line.pointA);
+    Vector3f forward = line.pointB - line.pointA;
     Vector3f upVector = Vector3f(0.f,1.f,0.f);
 
     if (abs(forward.normalize().dotProduct(upVector))>0.9999f) {
         forward.x = 0.f; forward.z = 0.f;
-        Line3f newLine = Line3f(line.pointA,line.pointA.add(forward));
+        Line3f newLine = Line3f(line.pointA,line.pointA + forward);
 
         if (forward.y>0.f) {
             newLine.pointA.y -= height*0.5f - radius;
@@ -224,7 +225,7 @@ Collision Collision::triangleCollide(const Line3f& line,float height,float radiu
 
         if (retVal.hit)
         {
-            Vector3f diff = newLine.pointB.subtract(newLine.pointA).multiply(retVal.coveredAmount).add(newLine.pointA).subtract(line.pointA);
+            Vector3f diff = (newLine.pointB - newLine.pointA) * retVal.coveredAmount + newLine.pointA - line.pointA;
             if (forward.y>0.f) {
                 diff.y -= height*0.5f - radius;
             } else {
@@ -245,13 +246,13 @@ Collision Collision::triangleCollide(const Line3f& line,float height,float radiu
     }
 
     Vector3f forwardXZ = Vector3f(forward.x,0.f,forward.z);
-    Vector3f planePoint = forwardXZ.normalize().multiply(radius);
+    Vector3f planePoint = forwardXZ.normalize() * radius;
 
     Vector3f planeNormal = upVector.crossProduct(forward).crossProduct(forward).normalize();
-    if (planeNormal.y<0.f) { planeNormal = planeNormal.multiply(-1.f); }
+    if (planeNormal.y<0.f) { planeNormal = -planeNormal; }
 
-    Plane bottomPlane = Plane(planeNormal, line.pointA.add(Vector3f(0.f,-height*0.5f + radius,0.f)).add(planePoint));
-    Plane topPlane = Plane(planeNormal, line.pointA.add(Vector3f(0.f,height*0.5f - radius,0.f)).add(planePoint));
+    Plane bottomPlane = Plane(planeNormal, line.pointA + Vector3f(0.f,-height*0.5f + radius,0.f) + planePoint);
+    Plane topPlane = Plane(planeNormal, line.pointA + Vector3f(0.f,height*0.5f - radius,0.f) + planePoint);
 
     //cylinder collision
     //we only check for edges here because the sphere collision can handle the other case just fine
@@ -300,7 +301,7 @@ Collision Collision::triangleCollide(const Line3f& line,float height,float radiu
 
         edgePoint0.y = 0.f; edgePoint1.y = 0.f;
 
-        Plane edgePlane(edgePoint0.add(upVector),edgePoint1,edgePoint0);
+        Plane edgePlane(edgePoint0 + upVector,edgePoint1,edgePoint0);
 
         temp = edgeTest(edgePoint0,edgePoint1,upVector,edgePlane.normal,newLine,radius);
         if (temp.hit) {

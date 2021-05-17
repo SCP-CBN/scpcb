@@ -33,7 +33,7 @@ void DebugGraphics::draw3DLine(const PGE::Line3f& line, const PGE::Color& color,
     std::vector<PGE::Vertex> vertices;
     std::vector<PGE::Primitive> triangles;
 
-    PGE::Vector3f v1 = line.pointB.subtract(line.pointA).normalize();
+    PGE::Vector3f v1 = (line.pointB - line.pointA).normalize();
     PGE::Vector3f v2 = fabs(v1.dotProduct(PGE::Vector3f(0, 1, 0))) < 0.8f ? PGE::Vector3f(0, 1, 0) : PGE::Vector3f(0, 0, 1);
     PGE::Vector3f v3 = v1.crossProduct(v2).normalize();
     v2 = v1.crossProduct(v3).normalize();
@@ -43,16 +43,16 @@ void DebugGraphics::draw3DLine(const PGE::Line3f& line, const PGE::Color& color,
 
     vertex.setVector3f("normal", v3);
 
-    tempPos = line.pointA.add(v2.multiply(thickness));
+    tempPos = line.pointA + v2 * thickness;
     vertex.setVector4f("position", PGE::Vector4f(tempPos, 1.f));
     vertices.push_back(vertex);
-    tempPos = line.pointA.add(v2.multiply(-thickness));
+    tempPos = line.pointA + v2 * -thickness;
     vertex.setVector4f("position", PGE::Vector4f(tempPos, 1.f));
     vertices.push_back(vertex);
-    tempPos = line.pointB.add(v2.multiply(thickness));
+    tempPos = line.pointB + v2 * thickness;
     vertex.setVector4f("position", PGE::Vector4f(tempPos, 1.f));
     vertices.push_back(vertex);
-    tempPos = line.pointB.add(v2.multiply(-thickness));
+    tempPos = line.pointB + v2 * -thickness;
     vertex.setVector4f("position", PGE::Vector4f(tempPos, 1.f));
     vertices.push_back(vertex);
     triangles.push_back(PGE::Primitive(0,1,2));
@@ -62,16 +62,16 @@ void DebugGraphics::draw3DLine(const PGE::Line3f& line, const PGE::Color& color,
 
     vertex.setVector3f("normal", v2);
 
-    tempPos = line.pointA.add(v3.multiply(thickness));
+    tempPos = line.pointA +v3 * thickness;
     vertex.setVector4f("position", PGE::Vector4f(tempPos, 1.f));
     vertices.push_back(vertex);
-    tempPos = line.pointA.add(v3.multiply(-thickness));
+    tempPos = line.pointA + v3 * -thickness;
     vertex.setVector4f("position", PGE::Vector4f(tempPos, 1.f));
     vertices.push_back(vertex);
-    tempPos = line.pointB.add(v3.multiply(thickness));
+    tempPos = line.pointB + v3 * thickness;
     vertex.setVector4f("position", PGE::Vector4f(tempPos, 1.f));
     vertices.push_back(vertex);
-    tempPos = line.pointB.add(v3.multiply(-thickness));
+    tempPos = line.pointB + v3 * -thickness;
     vertex.setVector4f("position", PGE::Vector4f(tempPos, 1.f));
     vertices.push_back(vertex);
     triangles.push_back(PGE::Primitive(4,5,6));

@@ -92,9 +92,6 @@
     <ClCompile Include="..\Src\Utils\INI.cpp">
       <Filter>Utils</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\Utils\MathUtil.cpp">
-      <Filter>Utils</Filter>
-    </ClCompile>
     <ClCompile Include="..\Src\World\World.cpp">
       <Filter>World</Filter>
     </ClCompile>
@@ -291,9 +288,6 @@
       <Filter>Graphics</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Utils\INI.h">
-      <Filter>Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Utils\MathUtil.h">
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\World\World.h">

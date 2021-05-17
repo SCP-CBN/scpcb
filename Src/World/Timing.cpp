@@ -1,8 +1,10 @@
 #include "Timing.h"
-#include "../Utils/MathUtil.h"
+
+#include <Math/Math.h>
+
 
 // The maximum amount of time the accumulator can store.
-static constexpr double MAX_ACCUMULATED_SECONDS = 3.0;
+constexpr double MAX_ACCUMULATED_SECONDS = 3.0;
 
 Timing::Timing(int tickrate) {
     timeStep = 1.0 / tickrate;
@@ -43,7 +45,7 @@ void Timing::updateInterpolationFactor() {
 }
 
 double Timing::getInterpolationFactor() const {
-    if (MathUtil::absDouble(secondToLastFixedTime - lastFixedTime) > MathUtil::MARGIN_ERROR) {
+    if (PGE::Math::equalFloats(secondToLastFixedTime, lastFixedTime)) {
         return (getTotalElapsedTime() - lastFixedTime) / (lastFixedTime - secondToLastFixedTime);
     } else {
         return 1.0;

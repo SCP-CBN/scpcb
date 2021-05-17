@@ -1,7 +1,8 @@
 #include <Math/Rectangle.h>
 
+#include <Math/Math.h>
+
 #include "Camera.h"
-#include "../Utils/MathUtil.h"
 #include "GraphicsResources.h"
 #include "../World/DataInterpolator.h"
 
@@ -17,7 +18,7 @@ Camera::Camera(GraphicsResources* gr, int w, int h, float fov, float nearZ, floa
 
     yawAngle = 0.f;
     pitchAngle = 0.f;
-    pitchAngleLimit = MathUtil::PI / 2.f;
+    pitchAngleLimit = PGE::Math::PI / 2.f;
     tilt = 0.f;
 
     this->nearPlaneZ = nearZ;
@@ -34,7 +35,7 @@ Camera::Camera(GraphicsResources* gr, int w, int h, float fov, float nearZ, floa
     update();
 }
 
-Camera::Camera(GraphicsResources* gr, int w, int h) : Camera(gr, w, h, MathUtil::degToRad(70.0f)) { /* default */ }
+Camera::Camera(GraphicsResources* gr, int w, int h) : Camera(gr, w, h, PGE::Math::degToRad(70.0f)) { /* default */ }
 
 void Camera::update() {
     dataInter.update(position, PGE::Vector3f(-pitchAngle, yawAngle, tilt), PGE::Vector3f::ZERO);
@@ -57,7 +58,7 @@ void Camera::updateDrawTransform(float interpolation) {
 }
 
 void Camera::addAngle(float x, float y) {
-    if (MathUtil::equalFloats(x, 0.f) && MathUtil::equalFloats(y, 0.f)) {
+    if (PGE::Math::equalFloats(x, 0.f) && PGE::Math::equalFloats(y, 0.f)) {
         return;
     }
 
@@ -70,7 +71,7 @@ void Camera::addAngle(float x, float y) {
         pitchAngle = pitchAngleLimit;
     }
 
-    float PI_MUL_2 = MathUtil::PI * 2.f;
+    float PI_MUL_2 = PGE::Math::PI * 2.f;
 
     if (yawAngle > PI_MUL_2) {
         yawAngle -= PI_MUL_2;

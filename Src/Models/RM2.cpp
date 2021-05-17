@@ -8,13 +8,13 @@
 #include "../Graphics/GraphicsResources.h"
 #include "../Graphics/Camera.h"
 
-static const PGE::FilePath opaqueShaderPath = PGE::FilePath::fromStr("SCPCB/GFX/Shaders/RoomOpaque/");
-static const PGE::FilePath OPAQUE_NORMAL_MAP_SHADER_PATH = PGE::FilePath::fromStr("SCPCB/GFX/Shaders/RoomOpaqueNormalMap/");
-static const PGE::FilePath ALPHA_SHADER_PATH = PGE::FilePath::fromStr("SCPCB/GFX/Shaders/RoomAlpha/");
+const PGE::FilePath opaqueShaderPath = PGE::FilePath::fromStr("SCPCB/GFX/Shaders/RoomOpaque/");
+const PGE::FilePath OPAQUE_NORMAL_MAP_SHADER_PATH = PGE::FilePath::fromStr("SCPCB/GFX/Shaders/RoomOpaqueNormalMap/");
+const PGE::FilePath ALPHA_SHADER_PATH = PGE::FilePath::fromStr("SCPCB/GFX/Shaders/RoomAlpha/");
 
-static const PGE::String TEXTURE_PATH = "SCPCB/GFX/Map/Textures/";
+const PGE::String TEXTURE_PATH = "SCPCB/GFX/Map/Textures/";
 
-static const PGE::String EXTENSION = ".rm2";
+const PGE::String EXTENSION = ".rm2";
 
 enum class FileSections {
     Textures = 1,

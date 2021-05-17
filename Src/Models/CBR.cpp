@@ -8,10 +8,10 @@
 #include "../Graphics/GraphicsResources.h"
 #include "../Utils/TextureUtil.h"
 
-static const PGE::FilePath shaderPath = PGE::FilePath::fromStr("SCPCB/GFX/Shaders/RoomOpaque/");
-static const PGE::FilePath shaderNormalPath = PGE::FilePath::fromStr("SCPCB/GFX/Shaders/RoomOpaqueNormalMap/");
+const PGE::FilePath shaderPath = PGE::FilePath::fromStr("SCPCB/GFX/Shaders/RoomOpaque/");
+const PGE::FilePath shaderNormalPath = PGE::FilePath::fromStr("SCPCB/GFX/Shaders/RoomOpaqueNormalMap/");
 
-static const PGE::String texturePath = "SCPCB/GFX/Map/Textures/";
+const PGE::String texturePath = "SCPCB/GFX/Map/Textures/";
 
 enum Lightmapped {
     No = 0,
