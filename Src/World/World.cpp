@@ -161,7 +161,7 @@ void World::startTick(float sinceLast) {
     Input downInputs = keyBinds->getDownInputs();
     Input hitInputs = keyBinds->getHitInputs();
     PGE::Vector2f mousePos = io->getMousePosition();
-    printf("Runtick : %s\n", paused ? "PAUSED" : "NOT paused");
+    //printf("Runtick : %s\n", paused ? "PAUSED" : "NOT paused");
     if (loading) { // convenience function to only run the updateAll function.
         paused = true;
         runLoadTick(sinceLast);
@@ -207,7 +207,7 @@ void World::startFrame(float interpolation) {
     graphics->resetRenderTarget();
     graphics->clear(PGE::Color(1.f, 0.f, 1.f));
 
-    camera->updateDrawTransform(interpolation);
+    camera->updateDrawTransform(1.f);
     gfxRes->setCameraUniforms(camera);
 
     if (loading) {
