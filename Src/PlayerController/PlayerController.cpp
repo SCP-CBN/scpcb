@@ -1,16 +1,17 @@
 #include "PlayerController.h"
 
+#include <Math/Math.h>
 #include <Math/Plane.h>
 #include <Math/Math.h>
 
 #include "../Collision/Collider.h"
 #include "../World/Pickable.h"
 
-// All of this should be handled by angelscript
-static constexpr float WALK_SPEED_MAX = 18.0f;
-static constexpr float SPRINT_SPEED_MAX = 42.0f;
-static constexpr float WALK_SPEED_SMOOTHING_FACTOR = 0.9f;
-static constexpr float STAMINA_RECOVERY_RATE = 0.2f;
+
+constexpr float WALK_SPEED_MAX = 18.0f;
+constexpr float SPRINT_SPEED_MAX = 42.0f;
+constexpr float WALK_SPEED_SMOOTHING_FACTOR = 0.9f;
+constexpr float STAMINA_RECOVERY_RATE = 0.2f;
 
 PlayerController::PlayerController(float r, float chestHeight) {
     collider = new Collider(r, chestHeight);
@@ -51,6 +52,7 @@ void PlayerController::update(float yaw, float pitch, Input input, float timeSte
 
         PGE::Vector2f targetDir = PGE::Vector2f::ZERO;
         if ((input & Input::FORWARD) != Input::NONE) {
+
             targetDir = targetDir+PGE::Vector2f(sinAngle, cosAngle);
         }
         if ((input & Input::BACKWARD) != Input::NONE) {
@@ -65,6 +67,7 @@ void PlayerController::update(float yaw, float pitch, Input input, float timeSte
         if (targetDir.lengthSquared() < 0.01f) {
             //TODO: remove
             position = position+(PGE::Vector3f(0.f, 60.f, 0.f) * timeStep);
+
             noclip = true;
             // -------
 
@@ -103,8 +106,10 @@ void PlayerController::stand(float timeStep) {
 }
 
 void PlayerController::walk(PGE::Vector2f dir, float timeStep) {
+
     if (vNoclip) { position += PGE::Vector3f(dir.x * currWalkSpeed, 0.f, dir.y * currWalkSpeed) * timeStep; }
     else {
         position = collider->tryMove(position, position + PGE::Vector3f(dir.x * currWalkSpeed, 0.f, dir.y * currWalkSpeed) * timeStep);
     }
+
 }

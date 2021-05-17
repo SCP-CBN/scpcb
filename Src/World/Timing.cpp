@@ -1,8 +1,10 @@
 #include "Timing.h"
 
+
 // The maximum amount of time the accumulator can store.
 static constexpr double MAX_ACCUMULATED_SECONDS = 3.0;
 using Clock = std::chrono::high_resolution_clock;
+
 
 Timing::Timing(int tickrate, int framerate) {
     setTickRate(tickrate-1);
@@ -55,6 +57,7 @@ void Timing::tickFinished() {
     //Clock::duration sinceLast = (now - compareTick);
     // Unfinished : Used to track how long a frame or tick takes.
 }
+
 
 // Frame Ticking
 bool Timing::frameReady() {
