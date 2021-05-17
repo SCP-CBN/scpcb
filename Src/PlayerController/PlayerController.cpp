@@ -1,6 +1,7 @@
 #include "PlayerController.h"
 
 #include <Math/Plane.h>
+#include <Math/Math.h>
 
 #include "../Collision/Collider.h"
 #include "../World/Pickable.h"
@@ -23,6 +24,7 @@ PlayerController::PlayerController(float r, float chestHeight) {
     stamina = 1.f;
     
     noclip = false;
+    vNoclip = false;
 }
 
 PlayerController::~PlayerController() {
