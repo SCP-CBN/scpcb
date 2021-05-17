@@ -46,7 +46,7 @@ void PlayerControllerDefinitions::setCollisionCollection(PlayerController* contr
 
 void PlayerControllerDefinitions::__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(PlayerController* controller, Input input, float timeStep) {
     controller->update(tempCamera->getYawAngle(), tempCamera->getPitchAngle(), input, timeStep);
-    tempCamera->position = controller->position.add(PGE::Vector3f(0.f, height, 0.f));
+    tempCamera->position = controller->position + PGE::Vector3f(0.f, height, 0.f);
     // Fixes interpolation bug, hella ugly but we'll get rid of this altogether soon anyways.
     // if (timeStep == 0.f) { // This does not appear to do anything
         tempCamera->update();
