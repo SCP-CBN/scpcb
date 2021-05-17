@@ -1,9 +1,31 @@
 
+// # Menu::Loading (namespace) ----
+namespace Menu { namespace Loading {
+	Window@ instance;
+
+	Texture@ progressTexture = Texture::get(rootDirGFX + "HUD/BlinkMeter");
+	Texture@ defaultLoadingTexture = Texture::get(rootDirLoadscreens+"loadingback");
+	array<GUILoadscreen@> screens;
+	GUI@ canvas;
+	GUILoadscreen@ activeScreen;
+	float progress;
+
+	void load() {
+		@instance=Window();
+	}
+} }
+
+// # Menu::Loading::Window@ (main class) ----
+namespace Menu { namespace Loading { class Window : GUI {
+
+	Window() { super("Menu::Loading::Window");
+	}
+} } }
+
 menu_Loading@ LoadingMenu;
 namespace Loadscreen {
 
 	Texture@ defaultLoadingTexture = Texture::get(rootDirLoadscreens+"loadingback");
-
 	array<GUILoadscreen@> screens;
 	GUI@ canvas;
 	GUILoadscreen@ activeScreen;
@@ -19,7 +41,6 @@ namespace Loadscreen {
 			""
 		);
 		screens.insertLast(@scp173);
-		
 	}
 
 	GUILoadscreen@ Fetch(string key) {
@@ -120,7 +141,7 @@ class menu_Loading : GUI {
 	GUI@ canvas; // Textbox
 	GUI@ debugCanv;
 
-	GUILabel@ loadbar;
+	GUIProgressBar@ loadbar;
 	GUILabel@ loadpct;
 	GUILabel@ loadTitle;
 	GUILabelBox@ loadText;
@@ -150,14 +171,19 @@ class menu_Loading : GUI {
 		loadpct.height=5;
 		loadpct.margin={8,8,8,1};
 
-		@loadbar=GUILabel(@canvas);
-		loadbar.align=GUI::Align::Top;
-		loadbar.alignHorizontal=GUI::Align::Center;
-		loadbar.alignVertical=GUI::Align::Center;
-		loadbar.text="insert progress bar here";
-		loadbar.fontScale=1;
-		loadbar.height=5;
-		loadbar.margin={8,1,8,12};
+
+		GUIPanel@ loadPanel=GUIPanel(@canvas);
+		loadPanel.align=GUI::Align::Top;
+		loadPanel.height=14;
+		loadPanel.margin={GUI::resolution.x/8,1,GUI::resolution.x/8,8};
+		@loadPanel.texture=@GUI::Skin::menublack;
+
+
+		@loadbar=GUIProgressBar(@loadPanel);
+		loadbar.align=GUI::Align::Fill;
+		loadbar.margin={0.5,0.5,0.5,0.5};
+		loadbar.barWidth=2.f;
+		@loadbar.texture=@Menu::Loading::progressTexture;
 
 		@loadTitle=GUILabel(@canvas);
 		loadTitle.align=GUI::Align::Top;
@@ -193,6 +219,11 @@ class menu_Loading : GUI {
 
 	int loadedState;
 	int loadedDone;
+	void setProgress(float amt) {
+		loadbar.amount=amt;
+		loadpct.text="LOADING - " + toString(Math::floor((amt*100+0.5))) + " %";
+		loadpct.layoutPhrase();
+	}
 	void update() {
 		if(DEBUGGING && Environment::loading) {
 			if(loadedState!=Environment::loadState || loadedDone != Environment::loadDone) {

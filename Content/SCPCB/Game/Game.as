@@ -46,12 +46,14 @@ namespace Game {
 	// Inputs are updated before each tick update
 	// Is not called while Environment::paused==true.
 	void update(uint32 tick, float interp) { // tick++;
+		Environment::fpsFactor=Util::fpsFactor(interp);
 		//Debug::log("Tick: " + toString(tick) + "," + toString(interp) + ", Real " + toString(Environment::tickRate) + ", Est " + toString(1/avgTickrate));
 		Timer::update(tick);
 		tickHook.call();
 		Game::World::update(tick,interp);
 	}
 	void updateAlways(uint32 tick, float interp) {
+		Environment::fpsFactor=Util::fpsFactor(interp);
 		updateMenuState(tick,interp);
 		Game::World::updateAlways(tick,interp);
 		if(queuedNewGame) {
@@ -61,15 +63,18 @@ namespace Game {
 		if(DEBUGGING) { AngelDebug::update(interp); }
 	}
 	void render(float interp) {
+		Environment::fpsFactor=Util::fpsFactor(interp);
 		if(DEBUGGING) { AngelDebug::render(interp); }
 		Game::World::render(interp);
 	}
 	void renderMenu(float interp) {
+		Environment::fpsFactor=Util::fpsFactor(interp);
 		//Debug::log("Render: " + toString(interp) + ", Real " + toString(Environment::frameRate) + ", Est " + toString(1/avgFramerate));
 		if(DEBUGGING) { AngelDebug::renderMenu(interp); }
 		//Game::World::renderMenu(interp);
 	}
 	void renderAlways(float interp) {
+		Environment::fpsFactor=Util::fpsFactor(interp);
 		Game::World::renderAlways(interp);
 	}
 
@@ -128,6 +133,8 @@ namespace Game {
 	void renderLoading(float interp) {}
 	void updateLoading(float interp) {
 		Debug::log(Environment::loadPart + " " + Environment::loadMessage);
+		LoadingMenu.setProgress(0.f);
+
 		switch(Environment::loadState) {
 		case 0:
 			loadNext("World");
@@ -135,38 +142,46 @@ namespace Game {
 			loadMessage="done!";
 			break;
 		case 1:
+			LoadingMenu.setProgress(0.1f);
 			loadNext("Player");
 			Player::Initialize();
 			loadMessage="done!";
 			break;
 		case 2:
+			LoadingMenu.setProgress(0.2f);
 			loadNext("Items");
 			Item::startLoading();
 			break;
 		case 3:
+			LoadingMenu.setProgress(0.2f+(Environment::loadDone/Environment::loadMax)*0.3f);
 			if(Item::load()) { Item::finishLoading(); loadNext("Rooms"); }
 			else { Environment::loadDone++; }
 			break;
 		case 4:
+			LoadingMenu.setProgress(0.55f);
 			loadNext("Room Definitions");
 			Room::startLoading();
 			break;
 		case 5:
-			if(Room::load()) { Room::finishLoading(); loadNext("Game"); }
+			LoadingMenu.setProgress(0.55f+(Environment::loadDone/Environment::loadMax)*0.3f);
+			Environment::loadState++; if(Room::load()) { Room::finishLoading(); loadNext("Game"); }
 			else { Environment::loadDone++; }
 			break;
 		case 6:
+			LoadingMenu.setProgress(0.9f);
 			loadNext("Zones...");
 		//	@lcz = LightContainmentZone();
 		//	@test_shared_global = @lcz;
 			loadMessage="done!";
 			break;
 		case 7:
+			LoadingMenu.setProgress(0.95f);
 			loadNext("AngelDebug");
 			if(DEBUGGING) { AngelDebug::load(); }
 			loadMessage="done!";
 			break;
 		case 8:
+			LoadingMenu.setProgress(1.f);
 			loadNext("Starting up");
 			if(DEBUGGING) { AngelDebug::initialize(); }
 			@MainMenu=menu_Main();
@@ -181,6 +196,8 @@ namespace Game {
 			break;
 		default:
 			Environment::loading=false;
+			HUD::initialize();
+
 			break;
 		}
 	}

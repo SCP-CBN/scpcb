@@ -61,7 +61,7 @@ namespace Menu { namespace Pause { class SpawnRoomButton : GUIButtonLabel {
 	}
 	void doClick() {
 		Debug::log("Wants to spawn Room : " + room.name);
-		Room::spawn(room.name, Player::Controller.position-Vector3f(0,20-Player::height,0));
+		Room::spawn(room.name, Player::Controller.position-Vector3f(0,20+Player::height,0));
 		instance.unpause();
 	}
 } } }

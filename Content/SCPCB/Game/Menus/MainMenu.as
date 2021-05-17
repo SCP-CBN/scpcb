@@ -152,6 +152,7 @@ class menu_Main_QuitButton : GUIButtonLabel {
 	menu_Main_QuitButton(GUI@&in parent) { super(@parent,"menu_Main_QuitButton"); }
 	void doClick() {
 		Loadscreen::activate("SCP-173");
+		LoadingMenu.setProgress(1.f);
 		MainMenu.visible=false;
 
 	}

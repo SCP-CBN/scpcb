@@ -54,6 +54,10 @@ namespace Util {
 // # AngelMath ----
 // Numeracy functions, definitions, libraries etc
 
+namespace Util {
+	shared float fpsFactor(float interp) { return Math::maxFloat(Math::minFloat(interp*70.f,5.f),0.2f); } // Original math
+}
+
 
 // # Util::FloatInterpolator@ ----
 // Number smoother

@@ -66,6 +66,13 @@ external string rootDirCBR_HCZ;
 external string rootDirCBR_ETZ;
 
 
+namespace Environment {
+	float fpsFactor; // todo
+}
+
+namespace Util { external float fpsFactor(float interp); }
+
+
 // #### SECTION 1. Import ----
 
 // # import(RootScript/BaseClasses/Utility/Util.as); ----
@@ -112,6 +119,7 @@ external class GUIButton; // Generic clickable component.
 external class GUIButtonLabel; // Generic clickable button with text.
 external class GUIScrollPanel; // Panel with a scrollbar
 external class GUITextEntry; // Shoop da whoop
+external class GUIProgressBar; // for blink panel and thelike.
 
 external bool GUI::squareInSquare(Vector2f&in pos, Vector2f&in size, Vector2f&in sPos, Vector2f&in sSize);
 external bool GUI::pointInSquare(Vector2f&in point, Vector2f&in pos, Vector2f&in size);
