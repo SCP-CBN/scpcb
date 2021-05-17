@@ -39,13 +39,24 @@
 // -------------------------------------------------------------------- \\
 // Begin Script
 
-namespace Util { shared funcdef void Function(); }
-
+// # Util::Function@, TickFunction and RenderFunction, and noops ----
+namespace Util {
+	shared funcdef void Function();
+	shared void noop() {}
+	shared funcdef void TickFunction(uint32 tick, float interp);
+	shared void noopTick(uint32 tick, float interp) {}
+	shared funcdef void RenderFunction(float interp);
+	shared void noopRender(float interp) {}
+}
 
 // #### SECTION 1. AngelMath ----
 
 // # AngelMath ----
 // Numeracy functions, definitions, libraries etc
+
+namespace Util {
+	shared float fpsFactor(float interp) { return Math::maxFloat(Math::minFloat(interp*70.f,5.f),0.2f); } // Original math
+}
 
 
 // # Util::FloatInterpolator@ ----

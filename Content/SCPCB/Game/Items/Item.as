@@ -35,12 +35,14 @@ namespace Item { interface TemplateInterface { Item@ instantiate(); } }
 namespace Item { abstract class Template : Item::TemplateInterface {
 	Item@ instantiate() {return null;}
 	Template() { Item::templates.insertLast(@this); }
-	void construct() {
+	void internalConstruct() {
 		if(@model!=null) { model.pickable=(@pickSound != null && (@icon != null || @iconModel != null)); }
 		localName = Local::getTxt("Items."+name+".Name");
 		if(@iconModel!=null) { iconModel.generate(); }
 		if(@icon==null && @iconModel!=null) { @icon=@iconModel; }
+		construct();
 	}
+	void construct() {} // override
 
 	string name = "SCP-000";
 	string localName = "000";
@@ -94,23 +96,19 @@ namespace Item {
 	array<Item::Template@> templates;
 
 	void startLoading() {
-		Game::loadMax=templates.length();
+		Environment::loadMax=templates.length();
 		ModelImageGenerator::initialize(256);
 	}
 	void finishLoading() {
-		ModelImageGenerator::deinitialize();
+		if(ModelImageGenerator::getInitialized()) { ModelImageGenerator::deinitialize(); }
 	}
 	bool load() {
-		if(Game::loadDone>=templates.length()-1) { finishLoading(); return true; }
-		Item::Template @template=templates[Game::loadDone];
-		template.construct();
-		Game::loadDone++;
-		Game::loadMessage=template.name;
+		if(Environment::loadDone>=templates.length()-1) { finishLoading(); return true; }
+		Item::Template @template=templates[Environment::loadDone];
+		Environment::loadMessage=template.name;
+		if(!ModelImageGenerator::getInitialized()) { ModelImageGenerator::initialize(256); }
+		template.internalConstruct();
 		return false;
-	}
-
-	void Initialize() {
-		for(int i=0;i<templates.length();i++) { templates[i].construct(); }
 	}
 
 	Item@ spawn(const string&in name) { return spawn(name,Vector3f(),Vector3f()); }

@@ -61,13 +61,30 @@ external string rootDirGFXMenu;
 
 external string rootDirSFX;
 external string rootDirCBR;
+external string rootDirCBR_LCZ;
+external string rootDirCBR_HCZ;
+external string rootDirCBR_ETZ;
+
+
+namespace Environment {
+	float fpsFactor; // todo
+}
+
+namespace Util { external float fpsFactor(float interp); }
 
 
 // #### SECTION 1. Import ----
 
 // # import(RootScript/BaseClasses/Utility/Util.as); ----
 
-namespace Util { external funcdef void Function(); }
+namespace Util {
+	external funcdef void Function();
+	external funcdef void TickFunction(uint32 tick, float interp);
+	external funcdef void RenderFunction(float interp);
+	external void noop();
+	external void noopTick(uint32 tick, float interp);
+	external void noopRender(float interp);
+}
 
 // # util->AngelMath ----
 namespace Util { external class FloatInterpolator; } // Number smoothing
@@ -102,15 +119,12 @@ external class GUIButton; // Generic clickable component.
 external class GUIButtonLabel; // Generic clickable button with text.
 external class GUIScrollPanel; // Panel with a scrollbar
 external class GUITextEntry; // Shoop da whoop
+external class GUIProgressBar; // for blink panel and thelike.
 
 external bool GUI::squareInSquare(Vector2f&in pos, Vector2f&in size, Vector2f&in sPos, Vector2f&in sSize);
 external bool GUI::pointInSquare(Vector2f&in point, Vector2f&in pos, Vector2f&in size);
 
-external void GUI::Initialize();
-external void GUI::startRender();
-external void GUI::startUpdate();
-external void GUI::updateResolution();
-
+external float GUI::interp;
 external float GUI::tileScale;
 external float GUI::aspectScale;
 
@@ -149,10 +163,24 @@ namespace GUI {
 
 
 // # Engine Hooks --------
-void renderMenu(float interp) { Game::renderMenu(interp); }
 void render(float interp) { Game::render(interp); }
-void update(float interp) { Game::update(interp); }
-void mainEngine() { PerTick::register(update); PerFrameGame::register(render); PerFrameMenu::register(renderMenu); }
+void renderMenu(float interp) { Game::renderMenu(interp); }
+void renderLoading(float interp) { Game::renderLoading(interp); }
+void renderAlways(float interp) { Game::renderAlways(interp); }
+void update(uint32 tick, float interp) { Game::update(tick, interp); }
+void updateAlways(uint32 tick, float interp) { Game::updateAlways(tick, interp); }
+void updateLoading(float interp) { Game::updateLoading(interp); }
+void resolutionChanged(int newWidth, int newHeight) { Game::resolutionChanged(newWidth, newHeight); }
+void mainEngine() {
+	PerFrame::register(render);
+	PerMenuFrame::register(renderMenu);
+	PerLoadFrame::register(renderLoading);
+	PerEveryFrame::register(renderAlways);
+	PerTick::register(update);
+	PerLoadTick::register(updateLoading);
+	PerEveryTick::register(updateAlways);
+	ResolutionChanged::register(resolutionChanged);
+}
 void exit() { Game::exit(); Debug::log("GAME OVER, YEAH!"); }
 void main() { mainEngine(); Game::initialize(); }
 
@@ -163,31 +191,33 @@ void main() { mainEngine(); Game::initialize(); }
 // # Misc --------
 bool queuedNewGame=false;
 void QueueNewGame() {
-	World::paused=false;
+	Environment::paused=false;
 	Loadscreen::activate("SCP-173");
 	queuedNewGame=true;
 }
 void BuildNewGame() {
-	World::paused=true;
-	initRooms_OBSOLETE();
-	Player::Controller.position=Vector3f(0,Player::Height+5,0);
-	World::paused=false;
+	Environment::paused=true;
+	//initRooms_OBSOLETE();
+	Player::Controller.position=Vector3f(0,Player::height+5,0);
+	Environment::paused=false;
 	MainMenu.visible=false;
-	PauseMenu.visible=false;
+	Menu::Pause::instance.close();
 	LoadingMenu.visible=false;
 }
 
 
-external class Room;
-serialize LightContainmentZone@ lcz;
-external Zone@ test_shared_global;
+//external class Room;
+//serialize LightContainmentZone@ lcz;
+//external Zone@ test_shared_global;
 
-external enum RoomType;
-external int testCounter;
+//external enum RoomType;
+//external int testCounter;
 
 void initRooms_OBSOLETE() {
 
 	// OBSOLETE REGISTRATION CODE AND ZONE TESTING --------
+
+/*
 	lcz.registerRoom("hll_plain_4_empty_a", Room4);
 	lcz.registerRoom("hll_plain_4_empty_b", Room4);
 	lcz.registerRoom("hll_plain_4_walkway", Room4);
@@ -216,6 +246,9 @@ void initRooms_OBSOLETE() {
 	lcz.registerRoom("hll_plain_1_empty_a", Room1);
 	lcz.registerRoom("hll_plain_1_empty_b", Room1);
 	lcz.generate();
+
+*/
+
 }
 
 

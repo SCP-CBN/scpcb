@@ -130,9 +130,9 @@ shared class GUILabelBox : GUI {
 
 		while(words.length()>0) {
 			for(int i=0; i<words.length(); i++) {
-				if(i>0) { phrase += " "; }
-				phrase+=words[i];
-				if((i==words.length()-1) || font.stringWidth((phrase+" "+words[i]),fontSize) > paintSize.x ) {
+				if(phrase!="") { phrase += " "; }
+				if(words[i] != "\n") { phrase+=words[i]; }
+				if((i==words.length()-1) || words[i]=="\n" || font.stringWidth((phrase+" "+words[i]),fontSize) > paintSize.x ) {
 					addPhrase(phrase,fontHeight);
 					for(int u=0; u<=i; u++) { words.removeAt(0); }
 					phrase = "";

@@ -1,9 +1,31 @@
 
+// # Menu::Loading (namespace) ----
+namespace Menu { namespace Loading {
+	Window@ instance;
+
+	Texture@ progressTexture = Texture::get(rootDirGFX + "HUD/BlinkMeter");
+	Texture@ defaultLoadingTexture = Texture::get(rootDirLoadscreens+"loadingback");
+	array<GUILoadscreen@> screens;
+	GUI@ canvas;
+	GUILoadscreen@ activeScreen;
+	float progress;
+
+	void load() {
+		@instance=Window();
+	}
+} }
+
+// # Menu::Loading::Window@ (main class) ----
+namespace Menu { namespace Loading { class Window : GUI {
+
+	Window() { super("Menu::Loading::Window");
+	}
+} } }
+
 menu_Loading@ LoadingMenu;
 namespace Loadscreen {
 
 	Texture@ defaultLoadingTexture = Texture::get(rootDirLoadscreens+"loadingback");
-
 	array<GUILoadscreen@> screens;
 	GUI@ canvas;
 	GUILoadscreen@ activeScreen;
@@ -19,7 +41,6 @@ namespace Loadscreen {
 			""
 		);
 		screens.insertLast(@scp173);
-		
 	}
 
 	GUILoadscreen@ Fetch(string key) {
@@ -38,7 +59,8 @@ namespace Loadscreen {
 		LoadingMenu.visible=true;
 		LoadingMenu.loadTitle.text=scn.title;
 		LoadingMenu.loadText.text=scn.stages[0];
-		LoadingMenu.invalidateLayout();
+		LoadingMenu.drillLayout();
+		Debug::log("Loading menu activated");
 	}
 	void setProgress(float n) {
 		progress=n;
@@ -117,11 +139,16 @@ class menu_Loading : GUI {
 
 	GUI@ screenCanvas; // draw GUILoadscreen under everything.
 	GUI@ canvas; // Textbox
+	GUI@ debugCanv;
 
-	GUILabel@ loadbar;
+	GUIProgressBar@ loadbar;
 	GUILabel@ loadpct;
 	GUILabel@ loadTitle;
 	GUILabelBox@ loadText;
+
+	array<string> debugLoadStrings;
+	array<float> opacityCounters;
+	GUILabel@ debugLoadText;
 
 	menu_Loading() { super("LoadingMenu");
 		align=GUI::Align::Fill;
@@ -144,14 +171,19 @@ class menu_Loading : GUI {
 		loadpct.height=5;
 		loadpct.margin={8,8,8,1};
 
-		@loadbar=GUILabel(@canvas);
-		loadbar.align=GUI::Align::Top;
-		loadbar.alignHorizontal=GUI::Align::Center;
-		loadbar.alignVertical=GUI::Align::Center;
-		loadbar.text="insert progress bar here";
-		loadbar.fontScale=1;
-		loadbar.height=5;
-		loadbar.margin={8,1,8,12};
+
+		GUIPanel@ loadPanel=GUIPanel(@canvas);
+		loadPanel.align=GUI::Align::Top;
+		loadPanel.height=14;
+		loadPanel.margin={GUI::resolution.x/8,1,GUI::resolution.x/8,8};
+		@loadPanel.texture=@GUI::Skin::menublack;
+
+
+		@loadbar=GUIProgressBar(@loadPanel);
+		loadbar.align=GUI::Align::Fill;
+		loadbar.margin={0.5,0.5,0.5,0.5};
+		loadbar.barWidth=2.f;
+		@loadbar.texture=@Menu::Loading::progressTexture;
 
 		@loadTitle=GUILabel(@canvas);
 		loadTitle.align=GUI::Align::Top;
@@ -170,6 +202,14 @@ class menu_Loading : GUI {
 		loadText.fontScale=1;
 		loadText.height=4;
 		loadText.margin={8,1,8,0};
+
+		@debugCanv=GUI(@canvas);
+		debugCanv.align=GUI::Align::None;
+		debugCanv.pos=Vector2f(GUI::resolution.x*0.05,GUI::resolution.y*0.95-10);
+		debugCanv.size=Vector2f(GUI::resolution.x*0.3,GUI::resolution.y*0.2);
+
+
+
 	}
 
 	void doLayout() {
@@ -177,10 +217,49 @@ class menu_Loading : GUI {
 	}
 	Rectanglef square;
 
+	int loadedState;
+	int loadedDone;
+	void setProgress(float amt) {
+		loadbar.amount=amt;
+		loadpct.text="LOADING - " + toString(Math::floor((amt*100+0.5))) + " %";
+		loadpct.layoutPhrase();
+	}
+	void update() {
+		if(DEBUGGING && Environment::loading) {
+			if(loadedState!=Environment::loadState || loadedDone != Environment::loadDone) {
+				loadedState=Environment::loadState;
+				loadedDone=Environment::loadDone;
+				string dbgMsg=Environment::loadPart;
+				if(Environment::loadMessage!="") { dbgMsg=dbgMsg + " - " + Environment::loadMessage; }
+				debugLoadStrings.insertAt(0,dbgMsg);
+				opacityCounters.insertAt(0,1.f);
+				if(debugLoadStrings.length()>5) {
+					debugLoadStrings.removeAt(debugLoadStrings.length()-1);
+					opacityCounters.removeAt(opacityCounters.length()-1);
+				}
+				debugCanv.removeChildren();
+				for(int i=0; i<debugLoadStrings.length(); i++) {
+					GUILabel@ lbl=GUILabel(@debugCanv);
+					lbl.align=GUI::Align::Top;
+					lbl.fontColor=Color::White;
+					lbl.fontColor.alpha=opacityCounters[i];
+					opacityCounters[i]=Math::maxFloat(opacityCounters[i]-GUI::interp*0.5,0.f);
+					lbl.alignHorizontal=GUI::Align::Left;
+					lbl.alignVertical=GUI::Align::Top;
+					lbl.text=debugLoadStrings[i];
+					lbl.fontScale=1;
+					lbl.height=2;
+					lbl.margin={0.25,0.25,0.25,0.25};
+				}
+				drillLayout();
+			}
+		}
+	}
 
 
 	void prePaint() {
 		// float rng=rnjesus.nextFloat(); // rnjesus.pray();
+
 	}
 	void paint() {
 		UI::setTextureless();

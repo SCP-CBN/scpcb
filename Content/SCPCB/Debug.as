@@ -22,9 +22,11 @@ namespace AngelDebug {
 
 Billboard@ lol;
 Billboard@ two;
-Model@ mask;
-Model@ mask2;
-Model@ scp173;
+CModel@ mask;
+CModel@ mask2;
+CModel@ scp173;
+CModel@ mdl;
+array<CModel@> mdls;
 
 int fps;
 int tick = 0;
@@ -32,13 +34,14 @@ int tick = 0;
 float time = 0.f;
 float blinkTimer = 10.f;
 Util::FloatInterpolator@ blinkInterpolator = Util::FloatInterpolator();
+//Texture@ tmpTex=@Texture::get();
 
 void load() {
 	@testController=@Player::Controller;
 	@testCollCollection=@Game::World::Collision;
 }
 
-void Initialize() { // This is the first function that is called lol.
+void initialize() { // This is the first function that is called lol.
 	Debug::log("AngelDebug - Start Testing Area");
 
 
@@ -49,17 +52,12 @@ void Initialize() { // This is the first function that is called lol.
 	Billboard::create(rootDirGFX + "Map/Textures/dirtymetal", Vector3f(1, 4, 1), Vector3f(0, 3, 0), test2, Color(0.0, 1.0, 1.0));
 	@two = Billboard::create(rootDirGFX + "Map/Textures/dirtymetal", Vector3f(2, 7, 15), Vector3f(0, 3, 0), test2, Color(1.0, 0.0, 1.0));
 
-	@mask = Model::create(rootDirGFX + "Items/Gasmask/gasmask.fbx");
+	@mask = CModel::create(rootDirGFX + "Items/Gasmask/gasmask.fbx");
 	mask.position = Vector3f(10, 5, 0);
 	mask.rotation = Vector3f(-1, 0.1, 0);
-	@mask2 = Model::create(rootDirGFX + "Items/Gasmask/gasmask.fbx");
+	@mask2 = CModel::create(rootDirGFX + "Items/Gasmask/gasmask.fbx");
 	mask2.position = Vector3f(-8, 4, 1);
 	mask2.rotation = Vector3f(-1, -0.1, 0);
-
-	// The 173 model takes a long time to load so commented
-	//@scp173 = Model::create(rootDirGFX + "NPCs/SCP173/173.fbx");
-	//scp173.position = Vector3f(-4, 0, 1);
-	//scp173.rotation = Vector3f(0, 0, 0);
 
 
 	Item::spawn("Gasmask", Vector3f(-15.0, 5.0, 20.0));
@@ -72,11 +70,28 @@ void Initialize() { // This is the first function that is called lol.
 	Item::spawn("Battery9v", Vector3f(-12.0, 5.0, 20.0));
 	Item::spawn("Battery18v", Vector3f(-8.0, 5.0, 20.0));
 	Item::spawn("StrangeBattery", Vector3f(-4.0, 5.0, 20.0));
+
+
+
+	// The 173 model takes a long time to load so commented
+	int i=40;
+	int iAdd=40;
+	string folder=rootDirGFX+"Items/";
+
+	@mdl = CModel::create(folder + "Battery/battery.fbx");
+	mdls.insertLast(@mdl); mdl.position=Vector3f(-15,0,i); i+=iAdd;
+	//int texID=mdl.createTexture(rootDirGFX + "Map/Textures/dirtymetal");
+	//mdl.setTexture(texID);
+
+
+
+
+
 }
 void update(float deltaTime) {
-	if (!World::paused) {
-		__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(testController, Input::getDown(), deltaTime);
-		lcz.update(deltaTime);
+	if (!Environment::paused) {
+		//__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(testController, Input::getDown(), deltaTime);
+	//	lcz.update(deltaTime);
 		time += deltaTime;
 		if (time > 1.f) { // So you don't get a fucking seizure.
 			lol.visible = !lol.visible;
@@ -101,10 +116,14 @@ void update(float deltaTime) {
 		}
 		//aaaa.blinkMeter.value = Math::ceil(blinkTimer / 10.f * aaaa.blinkMeter.maxValue);
 	} else if (deltaTime == 0.f) {
-		__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(testController, Input::getDown(), 0.f);
+		//__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(testController, Input::getDown(), 0.f);
 	}
 }
 void render(float interpolation) {
+	for(int i=0; i<mdls.length(); i++) {
+		mdls[i].render();
+	}
+
 	mask.render();
 	mask2.render();
 	//scp173.render();
@@ -113,8 +132,8 @@ void render(float interpolation) {
 	//fpsCounter.render();
 
 
-	if (test_shared_global == null) { return; }
-	test_shared_global.render(interpolation);
+	//if (test_shared_global == null) { return; }
+	//test_shared_global.render(interpolation);
 
 	float interpolatedBlink = blinkInterpolator.lerp(interpolation);
 	if (interpolatedBlink < 0.f) {

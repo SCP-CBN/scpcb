@@ -139,9 +139,9 @@ namespace GUI {
 	shared Vector2f center; // Center of screen from origin.
 
 	// # Resolution change hook.
-	shared void updateResolution() {
+	shared void updateResolution(int screenWidth=UI::getScreenWidth(),int screenHeight=UI::getScreenHeight()) {
 		aspectScale=tileScale*UI::getAspectRatio()*2.f;
-		resolution=Vector2f(UI::getScreenWidth(),UI::getScreenHeight())*aspectScale;
+		resolution=Vector2f(screenWidth,screenHeight)*aspectScale;
 		center=resolution/2;
 		for(int i=0; i<baseInstances.length(); i++) { baseInstances[i].invalidateLayout(); } // Update all menus.
 	}
@@ -212,7 +212,9 @@ namespace GUI {
 
 
 	// #### Cascade GUI Renderer & Updater.
-	shared void startRender() {
+	shared float interp;
+	shared void startRender(float interp) {
+		GUI::interp=interp;
 		UI::setTextureless();
 		UI::setColor(Color::White);
 		for(int i=0; i<baseInstances.length(); i++) { if(baseInstances[i].visible) { baseInstances[i].drillPreRender(); } }
@@ -222,7 +224,8 @@ namespace GUI {
 		UI::setColor(Color::White);
 	}
 
-	shared void startUpdate() {
+	shared void startUpdate(float interp) {
+		GUI::interp=interp;
 		updateMouse();
 		updateTextEntering();
 		int baseLen=baseInstances.length();
@@ -230,7 +233,7 @@ namespace GUI {
 
 	}
 
-	shared void Initialize() {
+	shared void initialize() {
 		updateResolution();
 	}	
 }
@@ -507,11 +510,13 @@ shared class GUI {
 
 	// # Clicking
 	// Generally handled by GUI::Clickable, but the base class requires the click drill functions to propogate clicks to the clickables.
+	Util::Function@ clickFunc;
+
 	void drillClick(Vector2f mpos,array<GUI@> &clickables) { clickables.insertLast(@this); if(hasChild) { for(int i=0; i<_children.length(); i++) {
 		GUI@ child=@_children[i]; if( child.visible && GUI::pointInSquare(mpos,child.paintPos,child.paintSize)) { child.drillClick(mpos,clickables); }
 	} } }
 
-	void callClick(Vector2f mpos) { internalClick(mpos); doClick(mpos); hovering=false; wasHovered=false; }
+	void callClick(Vector2f mpos) { internalClick(mpos); doClick(mpos); hovering=false; wasHovered=false; if(@clickFunc!=null) { clickFunc(); } }
 	void internalClick(Vector2f mpos) {} // internal override
 	void doClick(Vector2f mpos) {doClick();} // Vector2f override
 	void doClick() {} // Override without Vector2f / alias.

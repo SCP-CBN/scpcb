@@ -3,30 +3,10 @@
 //			SCP : Containment Breach			//
 //									//
 // -------------------------------------------------------------------- //
-// Script: RootScript/RootMain.as						//
+// Script: RootScript/RootMain.as					//
 // Source: https://github.com/juanjp600/scpcb/Content/			//
 // Purpose:								//
 //	- Background engine tasks					//
-//									//
-// -------------------------------------------------------------------- //
-// Authors:								//
-//	- Juan								//
-//	- Salvage							//
-//	- Pyro-Fire							//
-//									//
-//									//
-// -------------------------------------------------------------------- //
-// Links:								//
-//	- Website : https://www.scpcbgame.com				//
-//	- Discord : https://discord.gg/undertow				//
-//									//
-//									//
-//									//
-// -------------------------------------------------------------------- //
-// Licence:								\\
-// 
-// insert license here
-// 
 //									//
 // -------------------------------------------------------------------- \\
 // Documentation
@@ -51,28 +31,38 @@ shared string rootDirLoadscreens = rootDirGFX + "Loadingscreens/";
 shared string rootDirGFXItems	= rootDirGFX + "Items/";
 shared string rootDirGFXMenu	= rootDirGFX + "Menu/";
 
-shared string rootDirCBR	= rootDirAssets + "CBR/";
-shared string rootDirCBR_LCZ	= rootDirCBR + "LCZ/";
-shared string rootDirCBR_HCZ	= rootDirCBR + "HCZ/";
-shared string rootDirCBR_ETZ	= rootDirCBR + "ETZ/";
+shared string rootDirCBR	= rootDirAssets + "Map/";
+shared string rootDirCBR_LCZ	= rootDirCBR + "LightContainmentZone/";
+shared string rootDirCBR_HCZ	= rootDirCBR + "HeavyContainmentZone/";
+shared string rootDirCBR_ETZ	= rootDirCBR + "EntranceZone/";
 
 shared string rootDirSFX	= rootDirAssets + "SFX/";
 
 
-/*
 
 namespace RootScript {
-	void Initialize() {
-	}
-	void renderMenu(float interp) {
-	}
-	void render(float interp) {
-		
-	}
-	void update(float interp) {
-	}
+
+	void initialize() { GUI::initialize(); }
+	//void render(float interp) {}
+	void renderMenu(float interp) { GUI::startRender(interp); }
+	void renderLoading(float interp) { GUI::startUpdate(interp); GUI::startRender(interp);  }
+	//void renderAlways(float interp) {}
+	//void update(uint32 tick, float timeStep) {}
+	void updateLoading(float interp) { GUI::updateResolution(); GUI::startUpdate(interp); }
+	void updateAlways(uint32 tick, float interp) { GUI::startUpdate(interp); }
+	void resolutionChanged(int newWidth, int newHeight) { GUI::updateResolution(); }
 	void exit() { }
 }
-void main() { RootScript::Initialize(); PerTick::register(RootScript::update); PerFrameGame::register(RootScript::render); PerFrameMenu::register(RootScript::renderMenu); }
+void main() {
+	RootScript::initialize();
+	//PerFrame::register(RootScript::render);
+	PerMenuFrame::register(RootScript::renderMenu);
+	PerLoadFrame::register(RootScript::renderLoading);
+	//PerEveryFrame::register(RootScript::renderAlways);
+	//PerTick::register(RootScript::update);
+	PerLoadTick::register(RootScript::updateLoading);
+	PerEveryTick::register(RootScript::updateAlways);
+	ResolutionChanged::register(RootScript::resolutionChanged);
+}
 void exit() { RootScript::exit(); }
-*/
+

@@ -6,6 +6,7 @@ CachedArgument::CachedArgument(const PGE::String& nm, Type* t) {
 }
 
 CachedArgument::Value::Value() {
+    truthy = false;
     i32 = 0;
     u32 = 0;
     f = 0;

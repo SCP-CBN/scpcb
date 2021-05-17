@@ -28,67 +28,82 @@ namespace Game {
 
 
 namespace Game {
-	int tick;
-	shared Hook@ tickHook=Hook("tick");
 
-	bool loading;
+	// # Tick updates
+	int tick { get { return Environment::tick; } set { Environment::tick=value; } }
+	Hook@ tickHook=Hook("tick");
+
+	//Util::TickFunction@ updateFunc=@Util::noopTick;
 
 	void initialize() {
-		loadInitStart();
+		Environment::paused = true;
+		initLoad();
+	}
+	void exit() {
+
 	}
 
-	void onTick() { // Immediately after tick is incremented and timers are called
-	
-					
-	}
-
-	void update(float interp) {
-		tick++;
-		Timer::update();
+	// Inputs are updated before each tick update
+	// Is not called while Environment::paused==true.
+	void update(uint32 tick, float interp) { // tick++;
+		Environment::fpsFactor=Util::fpsFactor(interp);
+		//Debug::log("Tick: " + toString(tick) + "," + toString(interp) + ", Real " + toString(Environment::tickRate) + ", Est " + toString(1/avgTickrate));
+		Timer::update(tick);
 		tickHook.call();
-		updateMenuState(); // Escape doesn't always capture in renderMenu ??
-
-		if(loading) { return; }
-		GUI::startUpdate();
-		Game::World::update();
+		Game::World::update(tick,interp);
+	}
+	void updateAlways(uint32 tick, float interp) {
+		Environment::fpsFactor=Util::fpsFactor(interp);
+		updateMenuState(tick,interp);
+		Game::World::updateAlways(tick,interp);
 		if(queuedNewGame) {
 			BuildNewGame();
 			queuedNewGame=false;
 		}
 		if(DEBUGGING) { AngelDebug::update(interp); }
+		float deltaCtrl=0.f;
+		if(!Environment::paused) { deltaCtrl=interp; }
+		__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(Player::Controller, Input::getDown(), deltaCtrl );
 	}
 	void render(float interp) {
-		if(loading) { return; }
+		Environment::fpsFactor=Util::fpsFactor(interp);
 		if(DEBUGGING) { AngelDebug::render(interp); }
-		Game::World::render();
+		Game::World::render(interp);
 	}
 	void renderMenu(float interp) {
-		GUI::startRender();
+		Environment::fpsFactor=Util::fpsFactor(interp);
+		//Debug::log("Render: " + toString(interp) + ", Real " + toString(Environment::frameRate) + ", Est " + toString(1/avgFramerate));
 		if(DEBUGGING) { AngelDebug::renderMenu(interp); }
+		//Game::World::renderMenu(interp);
+	}
+	void renderAlways(float interp) {
+		Environment::fpsFactor=Util::fpsFactor(interp);
+		Game::World::renderAlways(interp);
 	}
 
-	void exit() {
-
+	void resolutionChanged(int newWidth, int newHeight) {
 	}
 
-	void updateMenuState() {
+
+
+
+	void updateMenuState(uint32 tick,float interp) {
 		if(Input::getHit() & Input::Inventory != 0) { Debug::log("hotkey Open Inventory"); }
 		else if(Input::getHit() & Input::ToggleConsole != 0) { Debug::log("hotkey Open Console"); ConsoleMenu.open(); }
 		else if(Input::getHit() & Input::Crouch != 0) { Debug::log("hotkey Crouch"); }
 		else if(Input::Escape::isHit()) {
 			Debug::log("Escape was pressed11"); // Apparently this code doesn't run without calling a Debug.log. isHit() is weird.
-			bool menuIsOpen=false;
+			bool menuWasOpen=false;
 			for(int i=0; i<GUI::baseInstances.length(); i++) {
-				if(GUI::baseInstances[i].visible==true) {
-					menuIsOpen=true;
+				if(GUI::baseInstances[i].visible==true && GUI::baseInstances[i].cls!="HUD") {
+					menuWasOpen=true;
 					GUI::baseInstances[i].visible=false;
 				}
 			}
-			if(menuIsOpen==true) {
-				World::paused=false;
+			if(menuWasOpen==true) {
+				Environment::paused=false;
 			} else {
-				World::paused=true;
-				PauseMenu.open();
+				Menu::pause();
 			}
 		}
 	}
@@ -96,108 +111,115 @@ namespace Game {
 
 
 // # Game::load; Used by a repeating timer.
+namespace Environment {
+	string loadPart="Booting up...";
+	string loadMessage="[$/C++]";
+}
+
 namespace Game {
-	int loadState;
-	float loadMax;
-	float loadDone;
-	string loadMessage;
-	string loadPart;
-
-	void loadInitStart() {
-		Debug::log("Initialize Game");
-		::World::paused = true;
-		GUI::Initialize();
-		Loadscreen::initialize();
+	void initLoad() {
+		Debug::log(Environment::loadPart + " " + Environment::loadMessage);
 		//Introscreen::initialize(); // Ahh!!
-
+		// PlayIntroMovie();
+		Loadscreen::initialize();
 		Loadscreen::activate("SCP-173");
-
-		loading=true;
-		loadState=0;
-		loadPart="Initializing...";
-		loadMessage="";
-
-		tickHook.add(@load);
+		Environment::loadMessage="scripts";
 	}
 	void loadNext(string&in nextPart) {
-		Debug::log("Loading Next Part: " + nextPart);
-		loadPart=nextPart + "...";
-		loadMessage="";
-		loadState++;
-		loadDone=0;
+		Debug::log("Loading Next: " + nextPart + " --------");
+		Environment::loadPart="Loaded : " + nextPart + "...";
+		Environment::loadMessage="";
+		Environment::loadState++;
+		Environment::loadDone=0;
 	}
+	string loadMessage { set { Environment::loadMessage=value; } }
+	void renderLoading(float interp) {}
+	void updateLoading(float interp) {
+		Debug::log(Environment::loadPart + " " + Environment::loadMessage);
+		LoadingMenu.setProgress(0.f);
 
-	void load() {
-	Debug::log("Loading... " + loadPart + " " + loadMessage);
-	switch(loadState) {
+		switch(Environment::loadState) {
 		case 0:
 			loadNext("World");
-			World::Initialize();
+			World::initialize();
 			loadMessage="done!";
 			break;
 		case 1:
+			LoadingMenu.setProgress(0.1f);
 			loadNext("Player");
 			Player::Initialize();
 			loadMessage="done!";
 			break;
 		case 2:
+			LoadingMenu.setProgress(0.2f);
 			loadNext("Items");
 			Item::startLoading();
 			break;
 		case 3:
-			if(Item::load()) {
-				loadNext("Game");
-			} else {
-				loadDone++;
-			}
+			LoadingMenu.setProgress(0.2f+(Environment::loadDone/Environment::loadMax)*0.3f);
+			if(Item::load()) { Item::finishLoading(); loadNext("Rooms"); }
+			else { Environment::loadDone++; }
 			break;
 		case 4:
-			loadNext("Zones...");
-			@lcz = LightContainmentZone();
-			@test_shared_global = @lcz;
-			loadMessage="done!";
+			LoadingMenu.setProgress(0.55f);
+			loadNext("Room Definitions");
+			Room::startLoading();
 			break;
 		case 5:
+			LoadingMenu.setProgress(0.55f+(Environment::loadDone/Environment::loadMax)*0.3f);
+			Environment::loadState++; if(Room::load()) { Room::finishLoading(); loadNext("Game"); }
+			else { Environment::loadDone++; }
+			break;
+		case 6:
+			LoadingMenu.setProgress(0.9f);
+			loadNext("Zones...");
+		//	@lcz = LightContainmentZone();
+		//	@test_shared_global = @lcz;
+			loadMessage="done!";
+			break;
+		case 7:
+			LoadingMenu.setProgress(0.95f);
 			loadNext("AngelDebug");
 			if(DEBUGGING) { AngelDebug::load(); }
 			loadMessage="done!";
 			break;
-		case 6:
+		case 8:
+			LoadingMenu.setProgress(1.f);
 			loadNext("Starting up");
-			if(DEBUGGING) { AngelDebug::Initialize(); }
-			tickHook.add(@onTick);
+			if(DEBUGGING) { AngelDebug::initialize(); }
 			@MainMenu=menu_Main();
-			@PauseMenu=menu_Pause();
+			Menu::Pause::load();
 			@ConsoleMenu=menu_Console();
-			loading=false;
-			tickHook.remove(@load);
-			MainMenu.visible=true;
-			LoadingMenu.visible=false;
 			break;
-	}
+		case 9:
+			loadNext("Finished!");
+			LoadingMenu.visible=false;
+			MainMenu.visible=true;
+			Menu::Pause::instance.visible=false;
+			break;
+		default:
+			Environment::loading=false;
+			HUD::initialize();
+
+			break;
+		}
 	}
 }
-						
 
 // # Game::Model@ ----
-// A world-model mesh object.
-namespace CModel {
-	Model@ create(string&in pth) { return ::Model::create(pth); }
-}
-
+// A CModel mesh object.
 namespace Game { class Model {
-	::Model@ mesh;
+	CModel@ mesh;
 	Model(string&in cPath, float&in cScale=1.f, string&in cSkin="") { create(cPath,cScale,cSkin); }
 	Model(Item::Model@&in iMdl) { create(iMdl.path,iMdl.scale,iMdl.skin); }
 	void create(string&in cPath, float&in cScale=1.f, string&in cSkin="") {
-		string pth=cPath;
-		@mesh=CModel::create(pth);
+		@mesh=CModel::create(cPath);
 		mesh.position=Vector3f(0,0,0);
 		mesh.rotation=Vector3f(0,0,0);
 		mesh.scale=Vector3f(cScale);
 		skin=cSkin; //mesh.skin=cSkin;
 	}
-	~Model() { ::Model::destroy(mesh); }
+	~Model() { CModel::destroy(mesh); }
 	bool pickable;
 	Vector3f position { get { return mesh.position; } set { mesh.position = value; } }
 	Vector3f rotation { get { return mesh.rotation; } set { mesh.rotation = value; } }
@@ -224,7 +246,7 @@ namespace Game { namespace Model { class Picker : Game::Model {
 		pickable=true;
 	}
 
-	~Picker() { ::Model::destroy(mesh); pickable=false; }
+	~Picker() { CModel::destroy(mesh); pickable=false; }
 	Vector3f position { get { return mesh.position; } set { mesh.position = value; _picker.position = value; } }
 	bool picked { get { return _picker.getPicked(); } }
 	bool _pickable;
@@ -235,22 +257,54 @@ namespace Game { namespace Model { class Picker : Game::Model {
 } } }
 
 
+// # Game::Room@ ----
+// A world matrix mesh
+
+namespace Game { class Room {
+	RM2@ mesh;
+	Room(string&in cPath) { create(cPath); }
+	Room(Room::Model@&in iMdl) { create(iMdl.path); }
+	void create(string&in cPath) {
+		@mesh=RM2::load(cPath);
+	}
+	~Room() { RM2::delete(@mesh); }
+
+	Collision::Collection@ meshCollisions;
+
+	void render(Matrix4x4f&in matrix) { mesh.render(matrix); }
+	array<Collision::Instance> getCollision() { return array<Collision::Instance>(mesh.collisionMeshCount()); }
+	void appendCollisionsToWorld(Matrix4x4f&in matrix) {
+		auto meshes=array<Collision::Instance>(mesh.collisionMeshCount());
+		for(int i=0; i<mesh.collisionMeshCount(); i++) {
+			Collision::Instance collider = Game::World::Collision.addInstance(mesh.getCollisionMesh(i),matrix);
+			Game::World::Collision.updateInstance(collider,matrix);
+		}
+	}
+
+} }
+
 
 // # Game::World --------
 namespace Game { namespace World {
 	Collision::Collection@ Collision;
-	void Initialize() {
+	void initialize() {
 		@Collision=Collision::Collection();
 	}
-	void update() {
-		Item::updateAll();
+	void update(uint32 tick, float interp) { // tick++;
+
 	}
-	void render() {
+	void updateAlways(uint32 tick, float interp) {
+		Item::updateAll();
+		Room::updateAll();
+	}
+	void render(float interp) {
+
+	}
+	void renderAlways(float interp) {
 		Item::renderAll();
+		Room::renderAll();
 	}
 } }
-
-
 
 
 // #### SECTION 6. Timer ----
@@ -264,7 +318,7 @@ namespace Game { namespace World {
 //external Timer@ Timer::repeat(int tock, Timer::Repeater@ func);
 //external void Timer::Stop(Timer@ tmr);
 //external void Timer::Stop(TickTimer@ tmr);
-//external void Timer::update();
+//external void Timer::update(uint32 tick);
 
 // # TickTimer@ ----
 // A one-time timer.
@@ -272,7 +326,7 @@ class TickTimer {
 	int tickTarget;
 	Util::Function@ func;
 	TickTimer(int tick, Util::Function@&in f) { tickTarget=tick; @func=@f; }
-	void tryTimer() { if(Game::tick>=tickTarget) { func(); } }
+	void tryTimer(uint32 tick) { if(tick>=tickTarget) { func(); } }
 	void stop() { Timer::Stop(@this); }
 }
 
@@ -283,7 +337,7 @@ class Timer {
 	int tickStart;
 	Timer::Repeater@ func;
 	Timer(int tick, Timer::Repeater@&in f) { tickStart=Game::tick+tick; tickTarget=tick; @func=@f; }
-	void tryTimer() { if((Game::tick-tickStart)%tickTarget==0) { func(@this); } }
+	void tryTimer(uint32 tick) { if((tick-tickStart)%tickTarget==0) { func(@this); } }
 	void stop() { Timer::Stop(@this); }
 }
 
@@ -314,9 +368,9 @@ namespace Timer {
 		for(int i=0; i<tickTimers.length(); i++) { if(@tickTimers[i]==@tmr) { tickTimers.removeAt(i); break; } }
 	}
 
-	void update() {
-		for(int i=0; i<tickTimers.length(); i++) { tickTimers[i].tryTimer(); }
-		for(int i=0; i<tickRepeaters.length(); i++) { tickRepeaters[i].tryTimer(); }
+	void update(uint32 tick) {
+		for(int i=0; i<tickTimers.length(); i++) { tickTimers[i].tryTimer(tick); }
+		for(int i=0; i<tickRepeaters.length(); i++) { tickRepeaters[i].tryTimer(tick); }
 	}
 }
 
