@@ -69,8 +69,8 @@ Collision CollisionMeshCollection::checkCollision(const Line3f& line, float heig
     Collision retVal; retVal.hit = false;
 
     AABBox lineBox(line.pointA,line.pointB);
-    lineBox.addPoint(lineBox.getMin().add(Vector3f(-radius-0.5f,-height*0.5f-0.5f,-radius-0.5f)));
-    lineBox.addPoint(lineBox.getMax().add(Vector3f(radius+0.5f,height*0.5f+0.5f,radius+0.5f)));
+    lineBox.addPoint(lineBox.getMin() + Vector3f(-radius-0.5f,-height*0.5f-0.5f,-radius-0.5f));
+    lineBox.addPoint(lineBox.getMax() + Vector3f(radius+0.5f,height*0.5f+0.5f,radius+0.5f));
 
     for (const auto& it : instances) {
         AABBox bbox = it.second.getBBox();

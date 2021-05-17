@@ -1,10 +1,11 @@
 #include "Pickable.h"
 
+#include <Math/Math.h>
+
 #include "../Collision/CollisionMeshCollection.h"
 #include "../Input/KeyBinds.h"
 #include "../Graphics/UIMesh.h"
 #include "../Graphics/Camera.h"
-#include "../Utils/MathUtil.h"
 
 CollisionMeshCollection* PickableManager::cmc;
 
@@ -82,11 +83,11 @@ void PickableManager::render() {
         PGE::Vector2f lookAtTwo = PGE::Vector2f(lookAt.x, lookAt.z).normalize();
         float f = -camera->getYawAngle() + std::atan2(lookAtTwo.x, lookAtTwo.y);
         float f2 = -(lookAt.y - forward.y) * 50;
-        if (f < -MathUtil::PI) {
-            f += MathUtil::PI * 2;
+        if (f < -PGE::Math::PI) {
+            f += PGE::Math::PI * 2;
         }
-        if (f > MathUtil::PI) {
-            f -= MathUtil::PI * 2;
+        if (f > PGE::Math::PI) {
+            f -= PGE::Math::PI * 2;
         }
         f *= 50;
         uiMesh->addRect(PGE::Rectanglef(f - 5, f2 - 5, f + 5, f2 + 5));

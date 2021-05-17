@@ -111,7 +111,7 @@ void UIMesh::addRect(const PGE::Rectanglef& rect) {
             // Lower the scale from [-50, 50] to [-2, 2] so there's less frequent tiling.
             float tileScale = 0.04f; // 2.f / 50.f;
             
-            uvRect = PGE::Rectanglef(rect.topLeftCorner().multiply(tileScale), rect.bottomRightCorner().multiply(tileScale));
+            uvRect = PGE::Rectanglef(rect.topLeftCorner() * tileScale, rect.bottomRightCorner() * tileScale);
         } else {
             uvRect = PGE::Rectanglef(PGE::Vector2f(0.f, 0.f), PGE::Vector2f(1.f, 1.f));
         }

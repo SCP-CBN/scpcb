@@ -4,13 +4,13 @@
 #include "../Input/Input.h"
 #include "../Graphics/GraphicsResources.h"
 
-static const PGE::String CORP_FOLDER = "Undertow Games";
-static const PGE::String GAME_FOLDER = "SCP - Containment Breach";
+const PGE::String CORP_FOLDER = "Undertow Games";
+const PGE::String GAME_FOLDER = "SCP - Containment Breach";
 
-static const PGE::String SEC_GEN = "general";
-static const PGE::String SEC_GFX = "graphics";
-static const PGE::String SEC_CON = "controls";
-static const PGE::String SEC_MOD = "mods";
+const PGE::String SEC_GEN = "general";
+const PGE::String SEC_GFX = "graphics";
+const PGE::String SEC_CON = "controls";
+const PGE::String SEC_MOD = "mods";
 
 PGE::FilePath getConfigDir() {
     // return ""; // Uncomment this if you want options.ini in the root game folder.

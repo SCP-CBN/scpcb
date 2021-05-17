@@ -4,8 +4,8 @@
 #endif
 
 #include <Exception/Exception.h>
+#include <Math/Math.h>
 
-#include "../../Utils/MathUtil.h"
 #include "../../Input/KeyBinds.h"
 #include "../ScriptManager.h"
 #include "../ScriptModule.h"
@@ -159,7 +159,7 @@ void ConsoleDefinitions::executeCommand(const PGE::String& in) {
                     }
 
                     // If the user enters a float.
-                    if (!MathUtil::equalFloats((float)arg, params[i].toFloat())) {
+                    if (!PGE::Math::equalFloats((float)arg, params[i].toFloat())) {
                         addConsoleMessage("Loss of data!", PGE::Color::YELLOW);
                     }
 
