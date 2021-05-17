@@ -78,7 +78,6 @@ void initialize() { // This is the first function that is called lol.
 	int iAdd=40;
 	string folder=rootDirGFX+"Items/";
 
-
 	@mdl = CModel::create(folder + "Battery/battery.fbx");
 	mdls.insertLast(@mdl); mdl.position=Vector3f(-15,0,i); i+=iAdd;
 	int texID=mdl.createTexture(rootDirGFX + "Map/Textures/dirtymetal");
@@ -302,7 +301,7 @@ void initialize() { // This is the first function that is called lol.
 }
 void update(float deltaTime) {
 	if (!Environment::paused) {
-		__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(testController, Input::getDown(), deltaTime);
+		//__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(testController, Input::getDown(), deltaTime);
 	//	lcz.update(deltaTime);
 		time += deltaTime;
 		if (time > 1.f) { // So you don't get a fucking seizure.
@@ -328,7 +327,7 @@ void update(float deltaTime) {
 		}
 		//aaaa.blinkMeter.value = Math::ceil(blinkTimer / 10.f * aaaa.blinkMeter.maxValue);
 	} else if (deltaTime == 0.f) {
-		__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(testController, Input::getDown(), 0.f);
+		//__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(testController, Input::getDown(), 0.f);
 	}
 }
 void render(float interpolation) {

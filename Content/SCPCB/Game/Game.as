@@ -61,6 +61,9 @@ namespace Game {
 			queuedNewGame=false;
 		}
 		if(DEBUGGING) { AngelDebug::update(interp); }
+		float deltaCtrl=0.f;
+		if(!Environment::paused) { deltaCtrl=interp; }
+		__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(Player::Controller, Input::getDown(), deltaCtrl );
 	}
 	void render(float interp) {
 		Environment::fpsFactor=Util::fpsFactor(interp);
