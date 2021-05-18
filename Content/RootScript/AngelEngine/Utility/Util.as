@@ -60,9 +60,26 @@ namespace Util {
 
 // # Util::Vector2f::rotate(vec,ang/Math::PI); ----
 namespace Util { namespace Vector2f {
-	shared Vector2f rotate(Vector2f vec, float angle) {
+	shared Vector2f rotate(Vector2f&in vec, float&in angle) {
 		float ang=((angle+Math::PI)%(Math::PI*2))-Math::PI; // Wraparound PI
 		return Vector2f((vec.x*Math::cos(ang)) - (vec.y*Math::sin(ang)), (vec.x*Math::sin(ang)) + (vec.y*Math::cos(ang)));
+	}
+} }
+
+// # Util::Vector3f::rotate(vec,ang/Math::PI); ----
+namespace Util { namespace Vector3f {
+	shared Vector3f rotate(Vector3f&in vec, float&in angle) {
+		float ang=((angle+Math::PI)%(Math::PI*2))-Math::PI; // Wraparound PI
+		return Vector3f((vec.x*Math::cos(ang)) - (vec.z*Math::sin(ang)), vec.y, (vec.x*Math::sin(ang)) + (vec.z*Math::cos(ang)));
+	}
+	shared Vector3f rotate(Vector3f&in vec, Vector3f&in angle) {
+		float ang=((angle.y+Math::PI)%(Math::PI*2))-Math::PI; // Wraparound PI
+		return Vector3f((vec.x*Math::cos(ang)) - (vec.z*Math::sin(ang)), vec.y, (vec.x*Math::sin(ang)) + (vec.z*Math::cos(ang)));
+	}
+
+	shared Vector3f localToWorldPos(Vector3f&in origin, Vector3f&in originAng, Vector3f&in localPos) { return localToWorldPos(origin,originAng.y,localPos); }
+	shared Vector3f localToWorldPos(Vector3f&in origin, float&in originAng, Vector3f&in localPos) {
+		return Vector3f();
 	}
 } }
 

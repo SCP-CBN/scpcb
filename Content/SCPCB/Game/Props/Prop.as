@@ -73,6 +73,7 @@ abstract class Prop {
 		@template=@antiCrashWorkaround;
 		if(@template.model!=null) { @model=template.model.instantiate(); }
 	}
+	void construct() {} // override
 	Prop::Template@ template;
 	Prop::Icon@ iconInventory; // Must be calculated per Prop, i.e empty clipboard. Does not need to be saved.
 
@@ -118,6 +119,7 @@ namespace Prop {
 		instance.position=position;
 		instance.rotation=rotation;
 		instances.insertLast(@instance);
+		instance.construct();
 		return @instance;
 	}
 	void updateAll() { for (int i=0; i<instances.length(); i++) { instances[i].update(); } }

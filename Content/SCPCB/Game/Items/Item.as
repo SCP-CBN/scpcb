@@ -74,6 +74,7 @@ abstract class Item {
 		if(@template.model!=null) { @model=template.model.instantiate(); }
 		
 	}
+	void construct() {} // override
 	Item::Template@ template;
 	Item::Icon@ iconInventory; // Must be calculated per item, i.e empty clipboard. Does not need to be saved.
 
@@ -119,6 +120,7 @@ namespace Item {
 		instance.position=position;
 		instance.rotation=rotation;
 		instances.insertLast(@instance);
+		instance.construct();
 		return @instance;
 	}
 	void updateAll() { for (int i=0; i<instances.length(); i++) { instances[i].update(); } }

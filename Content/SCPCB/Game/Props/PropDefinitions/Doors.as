@@ -13,15 +13,16 @@ namespace Prop { namespace Doors {
 			@pickSound	= Prop::Sound(); // 2
 			@model		= Prop::Model(rootDirGFXProps + "Doors/DoorFrame.fbx", 0.1);
 			model.pickable	= false;
-			@doorInnerModel	= Prop::Model(rootDirGFXProps + "Doors/door.fbx",Vector3f(1.78,1.3,1.5));
-			@doorOuterModel	= Prop::Model(rootDirGFXProps + "Doors/door.fbx",Vector3f(1.78,1.3,1.5));
+			@doorInnerModel	= Prop::Model(rootDirGFXProps + "Doors/door.fbx",Vector3f(1.8,1.3,1.5));
+			@doorOuterModel	= Prop::Model(rootDirGFXProps + "Doors/door.fbx",Vector3f(1.8,1.3,1.5));
 			@iconModel	= Prop::Icon::Model(model.path,0.8,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
 		void registerDoor() {
 			name = doorClass;
 			iconModel.path=doorInnerModel.path;
 		}
-		float slideSize=8.85;
+		float doorScale=1.f;
+		float slideSize=8.95;
 		float slideInset=1.15;
 		string doorClass;
 		Util::Model@ doorInnerModel;
@@ -48,8 +49,8 @@ namespace Prop { namespace Doors {
 			float angle=-rotation.y;
 
 			float doorPct=1.f+Math::sin(accum);
-			Vector2f innerDoorSlide=Util::Vector2f::rotate(Vector2f(doorTemplate.slideSize*doorPct-0.05,-doorTemplate.slideInset),angle);
-			Vector2f outerDoorSlide=Util::Vector2f::rotate(Vector2f(-doorTemplate.slideSize*doorPct+0.05,doorTemplate.slideInset),angle);
+			Vector2f innerDoorSlide=Util::Vector2f::rotate(Vector2f(doorTemplate.slideSize*doorPct-0.5,-doorTemplate.slideInset),angle);
+			Vector2f outerDoorSlide=Util::Vector2f::rotate(Vector2f(-doorTemplate.slideSize*doorPct+0.5,doorTemplate.slideInset),angle);
 
 			doorInner.position=position+Vector3f(innerDoorSlide.x,0.25f,innerDoorSlide.y);
 			doorOuter.position=position+Vector3f(outerDoorSlide.x,0.25f,outerDoorSlide.y);
@@ -115,11 +116,11 @@ namespace Prop { namespace ContainmentDoor { Template@ thisTemplate=Template();
 		Template() { super();
 			doorClass="containmentdoor";
 			model.path = rootDirGFXProps + "Doors/ContDoorFrame.fbx";
-			model.scale=Vector3f(10);
+			model.scale=Vector3f(10,5,10);
 			doorInnerModel.path = rootDirGFXProps + "Doors/ContDoorLeft.fbx";
 			doorOuterModel.path = rootDirGFXProps + "Doors/ContDoorRight.fbx";
-			doorInnerModel.scale=Vector3f(10);
-			doorOuterModel.scale=Vector3f(10);
+			doorInnerModel.scale=Vector3f(10,5,10);
+			doorOuterModel.scale=Vector3f(10,5,10);
 			slideInset=0.f;
 			slideSize=-16.f;
 			registerDoor();

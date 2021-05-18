@@ -75,6 +75,7 @@ abstract class Room {
 		//if(@template.model!=null) { @model=template.model.instantiate(); }
 	}
 	Room::Template@ template;
+	void construct() {} // override
 
 	Vector3f _position;
 	Vector3f position { get { return _position; } set { _position=value; recalculateWorldMatrix(); } }
@@ -86,11 +87,11 @@ abstract class Room {
 	Matrix4x4f _worldMatrix;
 	Matrix4x4f worldMatrix { get { return _worldMatrix; } }
 
-	void recalculateWorldMatrix() { doCalculateMatrix(); }
+	void recalculateWorldMatrix() { doCalculateMatrix(); updatePosition(); }
 	void doCalculateMatrix() {
-		_worldMatrix = Matrix4x4f::constructWorldMat(position, scale, Vector3f(0.0, Math::degToRad(rotation), 0.0));
+		_worldMatrix = Matrix4x4f::constructWorldMat(position, scale, Vector3f(0.0, rotation, 0.0));
 	}
-
+	void updatePosition() {} // override
 	void render() { template.mesh.render(worldMatrix); }
 	void update() {
 	}
@@ -132,6 +133,7 @@ namespace Room {
 		instance.recalculateWorldMatrix();
 		template.mesh.appendCollisionsToWorld(instance.worldMatrix);
 		Debug::log("Spawned room : " + template.name);
+		instance.construct();
 		return @instance;
 	}
 	void updateAll() { for (int i=0; i<instances.length(); i++) { instances[i].update(); } }

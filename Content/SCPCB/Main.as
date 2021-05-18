@@ -91,7 +91,13 @@ namespace Util {
 // # util->AngelMath ----
 namespace Util { external class FloatInterpolator; } // Number smoothing
 namespace Util { namespace Vector2f {
-	external Vector2f rotate(Vector2f vec, float ang);
+	external Vector2f rotate(Vector2f&in vec, float&in ang);
+} }
+
+// Vector3f::rotate(Vec,angle);
+namespace Util { namespace Vector3f {
+	external Vector3f rotate(Vector3f&in vec, float&in angle);
+	external Vector3f rotate(Vector3f&in vec, Vector3f&in angle);
 } }
 
 // # util->AngelString ----
