@@ -46,6 +46,7 @@ namespace Game {
 	// Inputs are updated before each tick update
 	// Is not called while Environment::paused==true.
 	void update(uint32 tick, float interp) { // tick++;
+		Environment::interp=interp;
 		Environment::fpsFactor=Util::fpsFactor(interp);
 		//Debug::log("Tick: " + toString(tick) + "," + toString(interp) + ", Real " + toString(Environment::tickRate) + ", Est " + toString(1/avgTickrate));
 		Timer::update(tick);
@@ -53,6 +54,7 @@ namespace Game {
 		Game::World::update(tick,interp);
 	}
 	void updateAlways(uint32 tick, float interp) {
+		Environment::interp=interp;
 		Environment::fpsFactor=Util::fpsFactor(interp);
 		updateMenuState(tick,interp);
 		Game::World::updateAlways(tick,interp);
@@ -66,17 +68,20 @@ namespace Game {
 		__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(Player::Controller, Input::getDown(), deltaCtrl );
 	}
 	void render(float interp) {
+		Environment::interp=interp;
 		Environment::fpsFactor=Util::fpsFactor(interp);
 		if(DEBUGGING) { AngelDebug::render(interp); }
 		Game::World::render(interp);
 	}
 	void renderMenu(float interp) {
+		Environment::interp=interp;
 		Environment::fpsFactor=Util::fpsFactor(interp);
 		//Debug::log("Render: " + toString(interp) + ", Real " + toString(Environment::frameRate) + ", Est " + toString(1/avgFramerate));
 		if(DEBUGGING) { AngelDebug::renderMenu(interp); }
 		//Game::World::renderMenu(interp);
 	}
 	void renderAlways(float interp) {
+		Environment::interp=interp;
 		Environment::fpsFactor=Util::fpsFactor(interp);
 		Game::World::renderAlways(interp);
 	}

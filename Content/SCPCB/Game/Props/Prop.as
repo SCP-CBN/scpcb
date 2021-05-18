@@ -70,7 +70,6 @@ abstract class Prop {
 		Prop::Template@ antiCrashWorkaround=@temp;
 		@template=@antiCrashWorkaround;
 		if(@template.model!=null) { @model=template.model.instantiate(); }
-		
 	}
 	Prop::Template@ template;
 	Prop::Icon@ iconInventory; // Must be calculated per Prop, i.e empty clipboard. Does not need to be saved.
