@@ -2,6 +2,7 @@
 // # Prop::Cast::Doors(@prop); <Cast as Button> ----
 namespace Prop { namespace Cast { Prop::Doors::Instance@ Doors(Prop@ obj) { return cast<Prop::Doors::Instance>(@obj); } } }
 
+
 // # Prop::Doors (parent prop type, note Button[S] from regular button); ----
 namespace Prop { namespace Doors {
 	enum Type {
@@ -11,8 +12,8 @@ namespace Prop { namespace Doors {
 		Template() { super();
 			@pickSound	= Prop::Sound(); // 2
 			@model		= Prop::Model(rootDirGFXProps + "Doors/DoorFrame.fbx", 0.1);
-			@doorInnerModel	= Prop::Model(rootDirGFXProps + "Doors/door.fbx",1.35);
-			@doorOuterModel	= Prop::Model(rootDirGFXProps + "Doors/door.fbx",1.35);
+			@doorInnerModel	= Prop::Model(rootDirGFXProps + "Doors/door.fbx",Vector3f(1.78,1.3,1.4));
+			@doorOuterModel	= Prop::Model(rootDirGFXProps + "Doors/door.fbx",Vector3f(1.78,1.3,1.4));
 			@iconModel	= Prop::Icon::Model(model.path,0.8,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
 		void registerDoor() {
@@ -31,16 +32,23 @@ namespace Prop { namespace Doors {
 		Game::Model@ doorOuter;
 		Vector3f position { get { return model.position; } set {
 			model.position=value;
-			updateDoorPositions(value);
+			updateDoorPositions();
 		} }
 		Vector3f rotation { get { return model.rotation; } set {
 			model.rotation=value;
 			doorInner.rotation=value+Vector3f(0,Math::PI,0);
 			doorOuter.rotation=value;
 		} }
-		void updateDoorPositions(Vector3f&in vec) {
-			doorInner.position=vec+Vector3f(-1,0,-1);
-			doorOuter.position=vec+Vector3f(1,0,1);
+		void updateDoorPositions() {
+			float angle=-rotation.y; // (((rotation.y+Math::PI*1.5)%Math::PI*2)-Math::PI)/Math::PI;
+			//Debug::log("Rotation: " + toString(angle*180));
+
+			float doorPct=1.f+Math::sin(accum);
+			Vector2f innerDoorSlide=Util::Vector2f::rotate(Vector2f(9*doorPct,-1.1),angle);
+			Vector2f outerDoorSlide=Util::Vector2f::rotate(Vector2f(-9*doorPct,1.1),angle);
+
+			doorInner.position=position+Vector3f(innerDoorSlide.x,0.25f,innerDoorSlide.y);
+			doorOuter.position=position+Vector3f(outerDoorSlide.x,0.25f,outerDoorSlide.y);
 		}
 		Instance(Prop::Doors::Template@ subTemplate) { super(@subTemplate);
 			@doorInner=@subTemplate.doorInnerModel.instantiate();
@@ -55,9 +63,8 @@ namespace Prop { namespace Doors {
 		float accum;
 		void update() {
 			accum+=Environment::interp*0.5;
-			float sinx=Math::sin(accum);
-			doorInner.position=position+Vector3f(sinx*15,0,0);
-			doorOuter.position=position-Vector3f(sinx*15,0,0);
+			//rotation=Vector3f(rotation.x,rotation.y+Environment::interp,rotation.z);
+			updateDoorPositions();
 		}
 	}
 

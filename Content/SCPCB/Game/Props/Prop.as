@@ -1,7 +1,8 @@
 
 // # Prop::Model@ ----
 namespace Prop { class Model : Util::Model {
-	Model(string iPath, float&in iScale=1.f, string&in iSkin="") { super(iPath,iScale,iSkin); }
+	Model(string iPath, float&in iScale=1.f, string&in iSkin="") { super(iPath,Vector3f(iScale),iSkin); }
+	Model(string iPath, Vector3f&in iScale, string&in iSkin="") { super(iPath,iScale,iSkin); }
 } }
 
 // # Prop::Sound@ ----
@@ -20,6 +21,7 @@ namespace Prop {
 	// Prop::Icon::Model@ ----
 	namespace Icon { class Model : Util::Icon::Model {
 		Model(string&in iPath, float&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") {super(iPath,iScale,iRotation,iPos,iSkin);}
+		Model(string&in iPath, Vector3f&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") {super(iPath,iScale,iRotation,iPos,iSkin);}
 	} }
 }
 

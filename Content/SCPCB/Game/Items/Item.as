@@ -1,7 +1,8 @@
 
 // # Item::Model@ ----
 namespace Item { class Model : Util::Model {
-	Model(string iPath, float&in iScale=1.f, string&in iSkin="") { super(iPath,iScale,iSkin); pickable=true; }
+	Model(string iPath, float&in iScale=1.f, string&in iSkin="") { super(iPath,Vector3f(iScale),iSkin); pickable=true; }
+	Model(string iPath, Vector3f&in iScale, string&in iSkin="") { super(iPath,iScale,iSkin); pickable=true; }
 } }
 
 // # Item::Sound@ ----
@@ -20,6 +21,7 @@ namespace Item {
 	// Item::Icon::Model@ ----
 	namespace Icon { class Model : Util::Icon::Model {
 		Model(string&in iPath, float&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") {super(iPath,iScale,iRotation,iPos,iSkin);}
+		Model(string&in iPath, Vector3f&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") {super(iPath,iScale,iRotation,iPos,iSkin);}
 	} }
 }
 

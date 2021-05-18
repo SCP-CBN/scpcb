@@ -212,18 +212,44 @@ namespace Game {
 	}
 }
 
+// # Utility Models ----
+namespace Util {
+	// Primary purpose is to store resource data without actually loading the resource.
+	// Secondary purpose is to abstractify this resource data and generate instances of the resources without creating new copies.
+	// This is defined here instead of util because of the need for Game::Model@ instantiate(), unless that too is ported to Util.
+
+	// # Util::Model@ ----
+	abstract class Model {
+		string path;
+		string skin;
+		Vector3f scale;
+		bool pickable;
+		Texture@ texture; //keep-texture-alive;
+		CMaterial@ material;
+		Model(string iPath, float&in iScale=1.f, string&in iSkin="") { path=iPath; scale=Vector3f(iScale); skin=iSkin; }
+		Model(string iPath, Vector3f&in iScale, string&in iSkin="") { path=iPath; scale=iScale; skin=iSkin; }
+		void construct() {
+			if(skin!="") {
+				@texture=@Texture::get(skin);
+				@material=@CMaterial::create(@texture);
+			}
+		}
+		Game::Model@ instantiate() { return (pickable ? cast<Game::Model@>(Game::Model::Picker(@this)) : (Game::Model(@this))); }
+	}
+}
 
 // # Game::Model@ ----
 // A CModel mesh object.
 namespace Game { class Model {
 	CModel@ mesh;
-	Model(string&in cPath, float&in cScale=1.f, CMaterial@ cMaterial=null) { create(cPath,cScale,@cMaterial); }
+	Model(string&in cPath, float&in cScale=1.f, CMaterial@ cMaterial=null) { create(cPath,Vector3f(cScale),@cMaterial); }
+	Model(string&in cPath, Vector3f&in cScale, CMaterial@ cMaterial=null) { create(cPath,cScale,@cMaterial); }
 	Model(Util::Model@&in iMdl) { create(iMdl.path,iMdl.scale,@iMdl.material); }
-	void create(string&in cPath, float&in cScale=1.f, CMaterial@ mat=null) {
+	void create(string&in cPath, Vector3f&in cScale=Vector3f(1.f), CMaterial@ mat=null) {
 		@mesh=CModel::create(cPath);
 		mesh.position=Vector3f(0,0,0);
 		mesh.rotation=Vector3f(0,0,0);
-		mesh.scale=Vector3f(cScale);
+		mesh.scale=cScale;
 		@material=@mat;
 		if(@material != null) { mesh.setMaterial(@material); }
 	}
@@ -247,7 +273,8 @@ namespace Game { class Model {
 
 namespace Game { namespace Model { class Picker : Game::Model {
 	Pickable@ _picker;
-	Picker(string cPath,float&in cScale=1.f, CMaterial@&in cMaterial=null) { super(cPath,cScale,@cMaterial); createPicker(); }
+	Picker(string cPath, float&in cScale=1.f, CMaterial@&in cMaterial=null) { super(cPath,Vector3f(cScale),@cMaterial); createPicker(); }
+	Picker(string cPath, Vector3f&in cScale, CMaterial@&in cMaterial=null) { super(cPath,cScale,@cMaterial); createPicker(); }
 	Picker(Util::Model@&in iMdl) { super(@iMdl); createPicker(); }
 	void createPicker() {
 		@_picker=Pickable();
@@ -266,30 +293,7 @@ namespace Game { namespace Model { class Picker : Game::Model {
 } } }
 
 
-// # Utility Models ----
-namespace Util {
-	// Primary purpose is to store resource data without actually loading the resource.
-	// Secondary purpose is to abstractify this resource data and generate instances of the resources without creating new copies.
-	// This is defined here instead of util because of the need for Game::Model@ instantiate(), unless that too is ported to Util.
 
-	// # Util::Model@ ----
-	abstract class Model {
-		string path;
-		string skin;
-		float scale;
-		bool pickable;
-		Texture@ texture; //keep-texture-alive;
-		CMaterial@ material;
-		Model(string iPath, float&in iScale=1.f, string&in iSkin="") { path=iPath; scale=iScale; skin=iSkin; }
-		void construct() {
-			if(skin!="") {
-				@texture=@Texture::get(skin);
-				@material=@CMaterial::create(@texture);
-			}
-		}
-		Game::Model@ instantiate() { return (pickable ? cast<Game::Model@>(Game::Model::Picker(@this)) : (Game::Model(@this))); }
-	}
-}
 
 // # Game::Room@ ----
 // A world matrix mesh

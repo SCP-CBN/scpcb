@@ -27,6 +27,11 @@ namespace Room {
 	// Room::Icon@ ----
 	class Icon : Util::Icon { Icon() {super();} Icon(string&in texStr) {super(texStr);} Icon(Texture@&in tex) {super(@tex);} }
 
+	// Room::Icon::Model@ ----
+	namespace Icon { class Model : Util::Icon::Model {
+		Model(string&in iPath, float&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") {super(iPath,iScale,iRotation,iPos,iSkin);}
+		Model(string&in iPath, Vector3f&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") {super(iPath,iScale,iRotation,iPos,iSkin);}
+	} }
 }
 
 

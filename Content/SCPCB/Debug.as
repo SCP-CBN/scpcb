@@ -91,7 +91,7 @@ void initialize() { // This is the first function that is called lol.
 	Prop::spawn("buttonkeycard",Vector3f(-20,5,-35));
 	Prop::spawn("buttonscanner",Vector3f(-20,5,-40));
 
-	Prop::spawn("door",Vector3f(20,5,40));
+	Prop::spawn("door",Vector3f(20,5,40),Vector3f(0,Math::PI*0.125,0));
 
 
 	// The 173 model takes a long time to load so commented

@@ -90,6 +90,9 @@ namespace Util {
 
 // # util->AngelMath ----
 namespace Util { external class FloatInterpolator; } // Number smoothing
+namespace Util { namespace Vector2f {
+	external Vector2f rotate(Vector2f vec, float ang);
+} }
 
 // # util->AngelString ----
 external int String::findFirstChar(string&in str,string&in delim);

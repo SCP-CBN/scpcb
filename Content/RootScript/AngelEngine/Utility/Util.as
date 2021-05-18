@@ -58,6 +58,20 @@ namespace Util {
 	shared float fpsFactor(float interp) { return Math::maxFloat(Math::minFloat(interp*70.f,5.f),0.2f); } // Original math
 }
 
+// # Util::Vector2f::rotate(vec,ang/Math::PI); ----
+namespace Util { namespace Vector2f {
+	shared Vector2f rotate(Vector2f vec, float angle) {
+		float ang=((angle+Math::PI)%(Math::PI*2))-Math::PI; // Wraparound PI
+		return Vector2f((vec.x*Math::cos(ang)) - (vec.y*Math::sin(ang)), (vec.x*Math::sin(ang)) + (vec.y*Math::cos(ang)));
+	}
+} }
+
+// # Util::rotate(float ang, float rot); rotate by amount rotation.y/Math::PI ----
+namespace Util {
+	float rotate(float ang, float rot) {
+		return (((ang+Math::PI*rot)%Math::PI*2)-Math::PI)/Math::PI;
+	}
+}
 
 // # Util::FloatInterpolator@ ----
 // Number smoother
@@ -177,7 +191,9 @@ namespace Util {
 		string skin;
 		Model(string&in iPath, float&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") { super();
 			path=iPath; scale=iScale; pos=iPos; rotation=iRotation; skin=iSkin;
-			//generate();
+		}
+		Model(string&in iPath, Vector3f&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") { super();
+			path=iPath; scale=(iScale.x+iScale.y+iScale.z)/3; pos=iPos; rotation=iRotation; skin=iSkin;
 		}
 		void generate() { @texture = ModelImageGenerator::generate(path, scale, rotation, pos); } // , skin);
 	} }
