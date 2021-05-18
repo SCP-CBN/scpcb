@@ -72,7 +72,7 @@ void PlayerController::update(float yaw, float pitch, Input input, float timeSte
             // -------
 
             stand(timeStep); //inputs cancel each other out: we're standing still
-        } else if(!vNoclip) {
+        } else {
             noclip = false; // Also remove
             targetDir = targetDir.normalize();
             walk(targetDir, timeStep);

@@ -150,10 +150,12 @@ namespace UI {
 	}
 }
 
-// #### SECTION 4. Icon Handler ----
+// #### SECTION 4. Resource Handlers ----
 
 // # Utility Icons ----
 namespace Util {
+	// Primary purpose is to store resource data without actually loading the resource.
+	// Secondary purpose is to abstractify this resource data and generate instances of the resources without creating new copies.
 
 	// # Util::Icon@ ----
 	// Generic texture icon

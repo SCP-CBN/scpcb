@@ -52,15 +52,16 @@ string rootDir		= "SCPCB/";
 string rootDirScript	= rootDir + "Game/";
 
 external string rootDirAssets;
-
 external string rootDirLoadscreens;
 
 external string rootDirGFX;
 external string rootDirGFXItems;
+external string rootDirGFXProps;
 external string rootDirGFXMenu;
 
 external string rootDirSFX;
 external string rootDirCBR;
+external string rootDirCBRTextures;
 external string rootDirCBR_LCZ;
 external string rootDirCBR_HCZ;
 external string rootDirCBR_ETZ;

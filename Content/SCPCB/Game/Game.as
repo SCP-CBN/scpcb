@@ -156,40 +156,41 @@ namespace Game {
 			Item::startLoading();
 			break;
 		case 3:
-			LoadingMenu.setProgress(0.2f+(Environment::loadDone/Environment::loadMax)*0.3f);
-			if(Item::load()) { Item::finishLoading(); loadNext("Rooms"); }
+			LoadingMenu.setProgress(0.2f+(Environment::loadDone/Environment::loadMax)*0.2f);
+			if(Item::load()) { Item::finishLoading(); Prop::startLoading(); loadNext("Props"); }
 			else { Environment::loadDone++; }
 			break;
 		case 4:
-			LoadingMenu.setProgress(0.55f);
-			loadNext("Room Definitions");
-			Room::startLoading();
+			LoadingMenu.setProgress(0.4f+(Environment::loadDone/Environment::loadMax)*0.2f);
+			if(Prop::load()) { Prop::finishLoading(); Room::startLoading(); loadNext("Rooms"); }
+			else { Environment::loadDone++; }
 			break;
 		case 5:
-			LoadingMenu.setProgress(0.55f+(Environment::loadDone/Environment::loadMax)*0.3f);
+			LoadingMenu.setProgress(0.6f+(Environment::loadDone/Environment::loadMax)*0.2f);
 			Environment::loadState++; if(Room::load()) { Room::finishLoading(); loadNext("Game"); }
 			else { Environment::loadDone++; }
 			break;
 		case 6:
-			LoadingMenu.setProgress(0.9f);
+			LoadingMenu.setProgress(0.85f);
 			loadNext("Zones...");
 		//	@lcz = LightContainmentZone();
 		//	@test_shared_global = @lcz;
 			loadMessage="done!";
 			break;
 		case 7:
-			LoadingMenu.setProgress(0.95f);
+			LoadingMenu.setProgress(0.9f);
 			loadNext("AngelDebug");
 			if(DEBUGGING) { AngelDebug::load(); }
 			loadMessage="done!";
 			break;
 		case 8:
-			LoadingMenu.setProgress(1.f);
+			LoadingMenu.setProgress(0.95f);
 			loadNext("Starting up");
 			if(DEBUGGING) { AngelDebug::initialize(); }
 			@MainMenu=menu_Main();
 			Menu::Pause::load();
 			@ConsoleMenu=menu_Console();
+			LoadingMenu.setProgress(1.f);
 			break;
 		case 9:
 			loadNext("Finished!");
@@ -206,12 +207,13 @@ namespace Game {
 	}
 }
 
+
 // # Game::Model@ ----
 // A CModel mesh object.
 namespace Game { class Model {
 	CModel@ mesh;
 	Model(string&in cPath, float&in cScale=1.f, CMaterial@ cMaterial=null) { create(cPath,cScale,@cMaterial); }
-	Model(Item::Model@&in iMdl) { create(iMdl.path,iMdl.scale,@iMdl.material); }
+	Model(Util::Model@&in iMdl) { create(iMdl.path,iMdl.scale,@iMdl.material); }
 	void create(string&in cPath, float&in cScale=1.f, CMaterial@ mat=null) {
 		@mesh=CModel::create(cPath);
 		mesh.position=Vector3f(0,0,0);
@@ -241,7 +243,7 @@ namespace Game { class Model {
 namespace Game { namespace Model { class Picker : Game::Model {
 	Pickable@ _picker;
 	Picker(string cPath,float&in cScale=1.f, CMaterial@&in cMaterial=null) { super(cPath,cScale,@cMaterial); createPicker(); }
-	Picker(Item::Model@&in iMdl) { super(@iMdl); createPicker(); }
+	Picker(Util::Model@&in iMdl) { super(@iMdl); createPicker(); }
 	void createPicker() {
 		@_picker=Pickable();
 		_picker.position=position;
@@ -258,6 +260,31 @@ namespace Game { namespace Model { class Picker : Game::Model {
 	} }
 } } }
 
+
+// # Utility Models ----
+namespace Util {
+	// Primary purpose is to store resource data without actually loading the resource.
+	// Secondary purpose is to abstractify this resource data and generate instances of the resources without creating new copies.
+	// This is defined here instead of util because of the need for Game::Model@ instantiate(), unless that too is ported to Util.
+
+	// # Util::Model@ ----
+	abstract class Model {
+		string path;
+		string skin;
+		float scale;
+		bool pickable;
+		Texture@ texture; //keep-texture-alive;
+		CMaterial@ material;
+		Model(string iPath, float&in iScale=1.f, string&in iSkin="") { path=iPath; scale=iScale; skin=iSkin; }
+		void construct() {
+			if(skin!="") {
+				@texture=@Texture::get(skin);
+				@material=@CMaterial::create(@texture);
+			}
+		}
+		Game::Model@ instantiate() { return (pickable ? cast<Game::Model@>(Game::Model::Picker(@this)) : (Game::Model(@this))); }
+	}
+}
 
 // # Game::Room@ ----
 // A world matrix mesh
@@ -298,6 +325,7 @@ namespace Game { namespace World {
 	void updateAlways(uint32 tick, float interp) {
 		Item::updateAll();
 		Room::updateAll();
+		Prop::updateAll();
 	}
 	void render(float interp) {
 
@@ -305,6 +333,7 @@ namespace Game { namespace World {
 	void renderAlways(float interp) {
 		Item::renderAll();
 		Room::renderAll();
+		Prop::renderAll();
 	}
 } }
 

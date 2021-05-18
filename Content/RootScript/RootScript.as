@@ -29,9 +29,11 @@ shared string rootDirData	= "Data/";
 shared string rootDirGFX	= rootDirAssets + "GFX/";
 shared string rootDirLoadscreens = rootDirGFX + "Loadingscreens/";
 shared string rootDirGFXItems	= rootDirGFX + "Items/";
+shared string rootDirGFXProps	= rootDirGFX + "Props/";
 shared string rootDirGFXMenu	= rootDirGFX + "Menu/";
 
 shared string rootDirCBR	= rootDirAssets + "Map/";
+shared string rootDirCBRTextures = rootDirCBR + "Textures/";
 shared string rootDirCBR_LCZ	= rootDirCBR + "LightContainmentZone/";
 shared string rootDirCBR_HCZ	= rootDirCBR + "HeavyContainmentZone/";
 shared string rootDirCBR_ETZ	= rootDirCBR + "EntranceZone/";
