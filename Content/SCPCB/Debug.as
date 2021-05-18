@@ -75,6 +75,16 @@ void initialize() { // This is the first function that is called lol.
 	Item::spawn("Battery18v", Vector3f(-8.0, 5.0, 20.0));
 	Item::spawn("StrangeBattery", Vector3f(-4.0, 5.0, 20.0));
 
+	Item::spawn("keycard1", Vector3f(-20.0, 5.0, 40.0));
+	Item::spawn("keycard2", Vector3f(-20.0, 5.0, 50.0));
+	Item::spawn("keycard3", Vector3f(-20.0, 5.0, 60.0));
+	Item::spawn("keycard4", Vector3f(-20.0, 5.0, 70.0));
+	Item::spawn("keycard5", Vector3f(-30.0, 5.0, 40.0));
+	Item::spawn("keycard6", Vector3f(-30.0, 5.0, 50.0));
+	Item::spawn("playingcard1", Vector3f(-30.0, 5.0, 60.0));
+	Item::spawn("mastercard1", Vector3f(-30.0, 5.0, 70.0));
+
+
 
 
 	// The 173 model takes a long time to load so commented

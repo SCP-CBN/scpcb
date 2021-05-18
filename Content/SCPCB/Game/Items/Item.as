@@ -13,7 +13,6 @@ namespace Item { class Model {
 		if(skin!="") {
 			@texture=@Texture::get(skin);
 			@material=@CMaterial::create(@texture);
-			Debug::log("Made material: " + skin);
 		}
 	}
 	Game::Model@ instantiate() { return (pickable ? cast<Game::Model@>(Game::Model::Picker(@this)) : (Game::Model(@this))); }
@@ -49,6 +48,7 @@ namespace Item { abstract class Template : Item::TemplateInterface {
 		if(@model!=null) { model.pickable=(@pickSound != null && (@icon != null || @iconModel != null)); model.construct(); }
 		localName = Local::getTxt("Items."+name+".Name");
 		if(@iconModel!=null) { iconModel.generate(); }
+		if(@icon!=null) { icon.generate(); }
 		if(@icon==null && @iconModel!=null) { @icon=@iconModel; }
 		construct();
 	}

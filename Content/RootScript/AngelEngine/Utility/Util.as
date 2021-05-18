@@ -157,17 +157,18 @@ namespace Util {
 
 	// # Util::Icon@ ----
 	// Generic texture icon
-	shared class Icon { Texture@ texture;
+	shared class Icon {
+		string path;
+		Texture@ texture;
 		Icon() {};
-		Icon(string&in texPath) { @texture=Texture::get(texPath); };
+		Icon(string&in texPath) { path=texPath; };
 		Icon(Texture@&in tex) { @texture=@tex; }
-		void generate() {};
+		void generate() { @texture=@Texture::get(path); };
 	}
 
 	// # Util::Icon::Model@ ----
 	// IconModel
 	namespace Icon { shared class Model : Icon {
-		string path;
 		float scale;
 		Vector3f rotation;
 		Vector2f pos;
