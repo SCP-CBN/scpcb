@@ -53,7 +53,9 @@ namespace Util {
 
 // # AngelMath ----
 // Numeracy functions, definitions, libraries etc
-
+namespace Math {
+	shared float pi2f=Math::PI*2.f;
+}
 namespace Util {
 	shared float fpsFactor(float interp) { return Math::maxFloat(Math::minFloat(interp*70.f,5.f),0.2f); } // Original math
 }
@@ -78,9 +80,7 @@ namespace Util { namespace Vector3f {
 	}
 
 	shared Vector3f localToWorldPos(Vector3f&in origin, Vector3f&in originAng, Vector3f&in localPos) { return localToWorldPos(origin,originAng.y,localPos); }
-	shared Vector3f localToWorldPos(Vector3f&in origin, float&in originAng, Vector3f&in localPos) {
-		return Vector3f();
-	}
+	shared Vector3f localToWorldPos(Vector3f&in origin, float&in originAng, Vector3f&in localPos) { return origin + rotate(localPos,-originAng); }
 } }
 
 // # Util::rotate(float ang, float rot); rotate by amount rotation.y/Math::PI ----

@@ -31,7 +31,7 @@ namespace Prop { namespace Buttons {
 	abstract class Instance : Prop {
 		Instance(Prop::Template@ subTemplate) {super(@subTemplate);
 		}
-		Prop@ door;
+		Prop::Doors::Instance@ door;
 	}
 
 	// # Prop::Buttons::Spawner; ----
@@ -45,6 +45,7 @@ namespace Prop { namespace Button { Template@ thisTemplate=Template();
 	class Instance : Prop::Buttons::Instance { Instance() {super(@thisTemplate);}
 		void onPicked() {
 			Debug::log("onPicked -> Standard [Button]");
+			if(@door!=null) { door.toggle(); }
 		}
 	}
 	class Spawner : Prop::Buttons::Spawner { Spawner() { super(); } }

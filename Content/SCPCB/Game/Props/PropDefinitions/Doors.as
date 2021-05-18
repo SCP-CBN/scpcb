@@ -38,17 +38,18 @@ namespace Prop { namespace Doors {
 		float slideInset;
 		Vector3f position { get { return model.position; } set {
 			model.position=value;
-			updateDoorPositions();
+			updateButtonPositions();
 		} }
 		Vector3f rotation { get { return model.rotation; } set {
 			model.rotation=value;
 			doorInner.rotation=value+Vector3f(0,Math::PI,0);
 			doorOuter.rotation=value;
+			updateButtonPositions();
 		} }
 		void updateDoorPositions() {
 			float angle=-rotation.y;
 
-			float doorPct=1.f+Math::sin(accum);
+			float doorPct=1.f+Math::cos(accum);
 			Vector2f innerDoorSlide=Util::Vector2f::rotate(Vector2f(doorTemplate.slideSize*doorPct-0.5,-doorTemplate.slideInset),angle);
 			Vector2f outerDoorSlide=Util::Vector2f::rotate(Vector2f(-doorTemplate.slideSize*doorPct+0.5,doorTemplate.slideInset),angle);
 
@@ -59,16 +60,57 @@ namespace Prop { namespace Doors {
 			@doorTemplate=@subTemplate;
 			@doorInner=@subTemplate.doorInnerModel.instantiate();
 			@doorOuter=@subTemplate.doorOuterModel.instantiate();
+
+			@btnInner=Prop::Cast::Buttons(@Prop::spawn("button"));
+			@btnOuter=Prop::Cast::Buttons(@Prop::spawn("button"));
+			@btnInner.door=@this;
+			@btnOuter.door=@this;
 		}
-		array<Prop@> buttons;
+		Prop::Buttons::Instance@ btnInner;
+		Prop::Buttons::Instance@ btnOuter;
+		void updateButtonPositions() {
+			btnInner.position=Util::Vector3f::localToWorldPos(position,rotation,Vector3f(15.f,15.f,5.f));
+			btnOuter.position=Util::Vector3f::localToWorldPos(position,rotation,Vector3f(-15.f,15.f,-5.f));
+			btnInner.rotation=rotation+Vector3f(0,Math::PI,0);
+		}
+
+		array<Prop::Buttons::Instance@> buttons;
 		void render() {
 			model.render();
 			doorInner.render();
 			doorOuter.render();
 		}
-		float accum;
+		float accum=Math::PI;
+		bool animating;
+		bool isOpen=false;
+		void open() {
+			isOpen=true;
+			animating=true;
+		}
+		void close() {
+			isOpen=false;
+			animating=true;
+		}
+		void toggle() { if(!animating) { if(!isOpen) { open(); } else { close(); } } }
 		void update() {
-			accum+=Environment::interp*2;
+			if(animating) {
+				if(isOpen) {
+					if(accum < Math::PI2f) {
+						accum=Math::minFloat(accum+Environment::interp*2,Math::PI2f);
+					} else {
+						accum=0.f;
+						animating = false;
+					}
+				} else {
+					if(accum < Math::PI) {
+						accum=Math::minFloat(accum+Environment::interp*2,Math::PI);
+					} else {
+						accum=Math::PI;
+						animating=false;
+					}
+				}
+			}
+			// if(template.name=="door") { Debug::log(accum); } // relative to math.pi because math.sin.
 			//rotation=Vector3f(rotation.x,rotation.y+0.1,rotation.z);
 			updateDoorPositions();
 		}
