@@ -92,6 +92,8 @@ void initialize() { // This is the first function that is called lol.
 	Prop::spawn("buttonscanner",Vector3f(-20,5,-40));
 
 	Prop::spawn("door",Vector3f(20,5,40),Vector3f(0,Math::PI*0.125,0));
+	Prop::spawn("heavydoor",Vector3f(20,5,80),Vector3f(0,Math::PI*0.125,0));
+	Prop::spawn("containmentdoor",Vector3f(20,5,140),Vector3f(0,Math::PI*0.125,0));
 
 
 	// The 173 model takes a long time to load so commented

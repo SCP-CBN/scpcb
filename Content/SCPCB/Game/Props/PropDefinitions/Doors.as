@@ -12,15 +12,17 @@ namespace Prop { namespace Doors {
 		Template() { super();
 			@pickSound	= Prop::Sound(); // 2
 			@model		= Prop::Model(rootDirGFXProps + "Doors/DoorFrame.fbx", 0.1);
-			@doorInnerModel	= Prop::Model(rootDirGFXProps + "Doors/door.fbx",Vector3f(1.78,1.3,1.4));
-			@doorOuterModel	= Prop::Model(rootDirGFXProps + "Doors/door.fbx",Vector3f(1.78,1.3,1.4));
+			model.pickable	= false;
+			@doorInnerModel	= Prop::Model(rootDirGFXProps + "Doors/door.fbx",Vector3f(1.78,1.3,1.5));
+			@doorOuterModel	= Prop::Model(rootDirGFXProps + "Doors/door.fbx",Vector3f(1.78,1.3,1.5));
 			@iconModel	= Prop::Icon::Model(model.path,0.8,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
 		void registerDoor() {
 			name = doorClass;
 			iconModel.path=doorInnerModel.path;
 		}
-
+		float slideSize=8.85;
+		float slideInset=1.15;
 		string doorClass;
 		Util::Model@ doorInnerModel;
 		Util::Model@ doorOuterModel;
@@ -28,8 +30,11 @@ namespace Prop { namespace Doors {
 
 	// # Prop::Doors::Instance; ----
 	abstract class Instance : Prop {
+		Template@ doorTemplate;
 		Game::Model@ doorInner;
 		Game::Model@ doorOuter;
+		float slideSize;
+		float slideInset;
 		Vector3f position { get { return model.position; } set {
 			model.position=value;
 			updateDoorPositions();
@@ -40,17 +45,17 @@ namespace Prop { namespace Doors {
 			doorOuter.rotation=value;
 		} }
 		void updateDoorPositions() {
-			float angle=-rotation.y; // (((rotation.y+Math::PI*1.5)%Math::PI*2)-Math::PI)/Math::PI;
-			//Debug::log("Rotation: " + toString(angle*180));
+			float angle=-rotation.y;
 
 			float doorPct=1.f+Math::sin(accum);
-			Vector2f innerDoorSlide=Util::Vector2f::rotate(Vector2f(9*doorPct,-1.1),angle);
-			Vector2f outerDoorSlide=Util::Vector2f::rotate(Vector2f(-9*doorPct,1.1),angle);
+			Vector2f innerDoorSlide=Util::Vector2f::rotate(Vector2f(doorTemplate.slideSize*doorPct-0.05,-doorTemplate.slideInset),angle);
+			Vector2f outerDoorSlide=Util::Vector2f::rotate(Vector2f(-doorTemplate.slideSize*doorPct+0.05,doorTemplate.slideInset),angle);
 
 			doorInner.position=position+Vector3f(innerDoorSlide.x,0.25f,innerDoorSlide.y);
 			doorOuter.position=position+Vector3f(outerDoorSlide.x,0.25f,outerDoorSlide.y);
 		}
 		Instance(Prop::Doors::Template@ subTemplate) { super(@subTemplate);
+			@doorTemplate=@subTemplate;
 			@doorInner=@subTemplate.doorInnerModel.instantiate();
 			@doorOuter=@subTemplate.doorOuterModel.instantiate();
 		}
@@ -62,8 +67,8 @@ namespace Prop { namespace Doors {
 		}
 		float accum;
 		void update() {
-			accum+=Environment::interp*0.5;
-			//rotation=Vector3f(rotation.x,rotation.y+Environment::interp,rotation.z);
+			accum+=Environment::interp*2;
+			//rotation=Vector3f(rotation.x,rotation.y+0.1,rotation.z);
 			updateDoorPositions();
 		}
 	}
@@ -95,6 +100,9 @@ namespace Prop { namespace HeavyDoor { Template@ thisTemplate=Template();
 			//model.path = rootDirGFXProps + "Doors/" + doorFrameModel + ".fbx";
 			doorInnerModel.path = rootDirGFXProps + "Doors/heavydoor1.fbx";
 			doorOuterModel.path = rootDirGFXProps + "Doors/heavydoor2.fbx";
+			doorInnerModel.scale=Vector3f(0.1);
+			doorOuterModel.scale=Vector3f(0.1);
+			slideInset=0.f;
 			registerDoor();
 		}
 	}
@@ -102,15 +110,26 @@ namespace Prop { namespace HeavyDoor { Template@ thisTemplate=Template();
 
 
 namespace Prop { namespace ContainmentDoor { Template@ thisTemplate=Template();
-	class Instance : Prop::Doors::Instance { Instance() {super(@thisTemplate);} }
 	class Spawner : Prop::Doors::Spawner { Spawner() { super(); } }
 	class Template : Prop::Doors::Template { Prop@ instantiate() { return Instance(); }
 		Template() { super();
 			doorClass="containmentdoor";
 			model.path = rootDirGFXProps + "Doors/ContDoorFrame.fbx";
+			model.scale=Vector3f(10);
 			doorInnerModel.path = rootDirGFXProps + "Doors/ContDoorLeft.fbx";
 			doorOuterModel.path = rootDirGFXProps + "Doors/ContDoorRight.fbx";
+			doorInnerModel.scale=Vector3f(10);
+			doorOuterModel.scale=Vector3f(10);
+			slideInset=0.f;
+			slideSize=-16.f;
 			registerDoor();
 		}
+	}
+	class Instance : Prop::Doors::Instance { Instance() {super(@thisTemplate);}
+		Vector3f rotation { get { return model.rotation; } set {
+			model.rotation=value;
+			doorInner.rotation=value;
+			doorOuter.rotation=value;
+		} }
 	}
 } }
