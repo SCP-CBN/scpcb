@@ -51,6 +51,7 @@ namespace Game {
 		//Debug::log("Tick: " + toString(tick) + "," + toString(interp) + ", Real " + toString(Environment::tickRate) + ", Est " + toString(1/avgTickrate));
 		Timer::update(tick);
 		tickHook.call();
+		Game::Pickables::update(tick,interp);
 		Game::World::update(tick,interp);
 	}
 	void updateAlways(uint32 tick, float interp) {
@@ -254,6 +255,7 @@ namespace Game { class Model {
 		if(@material != null) { mesh.setMaterial(@material); }
 	}
 	~Model() { CModel::destroy(mesh); }
+	bool isPickable;
 	bool pickable;
 	Vector3f position { get { return mesh.position; } set { mesh.position = value; } }
 	Vector3f rotation { get { return mesh.rotation; } set { mesh.rotation = value; } }
@@ -268,11 +270,47 @@ namespace Game { class Model {
 } }
 
 
+// # Game::Pickables; (namespace) ----
+// Pickable manager
+
+namespace Game { namespace Pickables {
+	array<Game::Model::Picker@> activePickers;
+	void activate(Game::Model::Picker@&in picker) {
+		if(!picker._pickerActive) { // runOnce
+			picker._pickerActive=true;
+			Pickable::activatePickable(picker._picker);
+			activePickers.insertLast(@picker);
+		}
+	}
+	void deactivate(Game::Model::Picker@&in picker) {
+		if(picker._pickerActive) {
+			picker._pickerActive=false;
+			Pickable::deactivatePickable(picker._picker);
+			// Util::Array::removeByValue(activePickers,@picker);
+			for(int i=0; i<activePickers.length(); i++) { if(@activePickers[i]==@picker) { activePickers.removeAt(i); break; } }
+		}
+	}
+	void update(uint32&in tick, float&in interp) {
+		for(int i=0; i<activePickers.length(); i++) {
+			Game::Model::Picker@ picker=activePickers[i];
+			if(picker.picked) {
+				if(!picker.wasPicked) {
+					picker.wasPicked=true;
+					picker.onPicked();
+				}
+			} else if(picker.wasPicked) {
+				picker.wasPicked=false;
+			}
+		}
+	}
+} }
+
 // # Game::Model::Pickable@ ----
 // A world-model mesh object with a world picker.
-
 namespace Game { namespace Model { class Picker : Game::Model {
 	Pickable@ _picker;
+	bool _pickerActive;
+	Util::Function@ onPicked;
 	Picker(string cPath, float&in cScale=1.f, CMaterial@&in cMaterial=null) { super(cPath,Vector3f(cScale),@cMaterial); createPicker(); }
 	Picker(string cPath, Vector3f&in cScale, CMaterial@&in cMaterial=null) { super(cPath,cScale,@cMaterial); createPicker(); }
 	Picker(Util::Model@&in iMdl) { super(@iMdl); createPicker(); }
@@ -280,16 +318,21 @@ namespace Game { namespace Model { class Picker : Game::Model {
 		@_picker=Pickable();
 		_picker.position=position;
 		pickable=true;
+		isPickable=true;
+		@onPicked=@Util::noop;
 	}
 
-	~Picker() { CModel::destroy(mesh); pickable=false; }
+	~Picker() { CModel::destroy(mesh); Pickable::deactivatePickable(_picker); }
 	Vector3f position { get { return mesh.position; } set { mesh.position = value; _picker.position = value; } }
 	bool picked { get { return _picker.getPicked(); } }
+	bool wasPicked;
 	bool _pickable;
 	bool pickable { get { return _pickable; } set { _pickable=value;
-		if(value) { Pickable::activatePickable(_picker); }
-		else { Pickable::deactivatePickable(_picker); }
+		if(value) { Game::Pickables::activate(@this); }
+		else { Game::Pickables::deactivate(@this); }
 	} }
+
+
 } } }
 
 

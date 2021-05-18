@@ -28,7 +28,9 @@ namespace Prop { namespace Buttons {
 	}
 
 	// # Prop::Buttons::Instance; ----
-	abstract class Instance : Prop { Instance(Prop::Template@ subTemplate) {super(@subTemplate);}
+	abstract class Instance : Prop {
+		Instance(Prop::Template@ subTemplate) {super(@subTemplate);
+		}
 		Prop@ door;
 	}
 
@@ -40,7 +42,11 @@ namespace Prop { namespace Buttons {
 
 // # Sample Prop
 namespace Prop { namespace Button { Template@ thisTemplate=Template();
-	class Instance : Prop::Buttons::Instance { Instance() {super(@thisTemplate);} }
+	class Instance : Prop::Buttons::Instance { Instance() {super(@thisTemplate);}
+		void onPicked() {
+			Debug::log("onPicked -> Standard [Button]");
+		}
+	}
 	class Spawner : Prop::Buttons::Spawner { Spawner() { super(); } }
 	class Template : Prop::Buttons::Template { Prop@ instantiate() { return Instance(); }
 		Template() { super();
@@ -52,7 +58,11 @@ namespace Prop { namespace Button { Template@ thisTemplate=Template();
 } }
 
 namespace Prop { namespace ButtonCode { Template@ thisTemplate=Template();
-	class Instance : Prop::Buttons::Instance { Instance() {super(@thisTemplate);} }
+	class Instance : Prop::Buttons::Instance { Instance() {super(@thisTemplate);}
+		void onPicked() {
+			Debug::log("onPicked -> [ButtonCode]");
+		}
+	}
 	class Spawner : Prop::Buttons::Spawner { Spawner() { super(); } }
 	class Template : Prop::Buttons::Template { Prop@ instantiate() { return Instance(); }
 		Template() { super();
@@ -65,7 +75,11 @@ namespace Prop { namespace ButtonCode { Template@ thisTemplate=Template();
 
 
 namespace Prop { namespace ButtonElevator { Template@ thisTemplate=Template();
-	class Instance : Prop::Buttons::Instance { Instance() {super(@thisTemplate);} }
+	class Instance : Prop::Buttons::Instance { Instance() {super(@thisTemplate);}
+		void onPicked() {
+			Debug::log("onPicked -> [ButtonElevator]");
+		}
+	}
 	class Spawner : Prop::Buttons::Spawner { Spawner() { super(); } }
 	class Template : Prop::Buttons::Template { Prop@ instantiate() { return Instance(); }
 		Template() { super();
@@ -77,7 +91,11 @@ namespace Prop { namespace ButtonElevator { Template@ thisTemplate=Template();
 } }
 
 namespace Prop { namespace ButtonKeycard { Template@ thisTemplate=Template();
-	class Instance : Prop::Buttons::Instance { Instance() {super(@thisTemplate);} }
+	class Instance : Prop::Buttons::Instance { Instance() {super(@thisTemplate);}
+		void onPicked() {
+			Debug::log("onPicked -> [ButtonKeycard]");
+		}
+	}
 	class Spawner : Prop::Buttons::Spawner { Spawner() { super(); } }
 	class Template : Prop::Buttons::Template { Prop@ instantiate() { return Instance(); }
 		Template() { super();
@@ -89,7 +107,11 @@ namespace Prop { namespace ButtonKeycard { Template@ thisTemplate=Template();
 } }
 
 namespace Prop { namespace ButtonScanner { Template@ thisTemplate=Template();
-	class Instance : Prop::Buttons::Instance { Instance() {super(@thisTemplate);} }
+	class Instance : Prop::Buttons::Instance { Instance() {super(@thisTemplate);}
+		void onPicked() {
+			Debug::log("onPicked -> [ButtonScanner]");
+		}
+	}
 	class Spawner : Prop::Buttons::Spawner { Spawner() { super(); } }
 	class Template : Prop::Buttons::Template { Prop@ instantiate() { return Instance(); }
 		Template() { super();

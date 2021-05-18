@@ -86,7 +86,7 @@ abstract class Item {
 	string skin { get { return model.skin; } set { model.skin=value; } }
 	void render() { model.render(); }
 	void update() {}
-
+	void onPicked() {}
 }
 
 // # Item:: (Namespace) ----
@@ -121,6 +121,10 @@ namespace Item {
 		instance.rotation=rotation;
 		instances.insertLast(@instance);
 		instance.construct();
+		if(instance.model.isPickable) {
+			Game::Model::Picker@ picker=cast<Game::Model::Picker>(@instance.model);
+			@picker.onPicked=@Util::Function(instance.onPicked);
+		}
 		return @instance;
 	}
 	void updateAll() { for (int i=0; i<instances.length(); i++) { instances[i].update(); } }

@@ -25,7 +25,7 @@ PlayerController::PlayerController(float r, float chestHeight) {
     stamina = 1.f;
     
     noclip = false;
-    vNoclip = false;
+    vNoclip = true; // start noclipped
 }
 
 PlayerController::~PlayerController() {

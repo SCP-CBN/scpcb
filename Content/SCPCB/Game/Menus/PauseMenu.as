@@ -128,6 +128,7 @@ namespace Menu { namespace Pause { class Window : GUI {
 	void openToGUITest() { switchPage(); canvasGUITest.visible=true; }
 	void openToQuit() { visible=false; MainMenu.visible=true; } // change to Menu::Main::instance.visible=true;
 	void tpToZero() { Player::Controller.position=Vector3f(0,Player::height+5,0); unpause(); }
+
 	void toggleNoclip() { bool nclip=Player::Controller.noclip; Player::Controller.noclip=!nclip; btnNoclip.text="Noclip ("+ (!nclip ? "ON" : "OFF") +")"; unpause(); }
 
 	GUI@ canvasMain;
@@ -299,11 +300,12 @@ namespace Menu { namespace Pause { class Window : GUI {
 		auto@ canvasDebugScroll=GUIScrollPanel(@canvasDebug);
 		canvasDebugScroll.align=GUI::Align::Fill;
 
+		bool nclip=Player::Controller.noclip;
 		@btnNoclip = GUIButtonLabel(@canvasDebugScroll);
 		btnNoclip.align=GUI::Align::Top;
 		btnNoclip.margin={1,1,1,0};
 		btnNoclip.height=8;
-		btnNoclip.text="Noclip (OFF)";
+		btnNoclip.text="Noclip ("+ (nclip ? "ON" : "OFF") +")";
 		@btnNoclip.clickFunc=Util::Function(toggleNoclip);
 
 		auto@ btnTpToZero = GUIButtonLabel(@canvasDebugScroll);
