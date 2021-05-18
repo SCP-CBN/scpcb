@@ -210,20 +210,22 @@ namespace Game {
 // A CModel mesh object.
 namespace Game { class Model {
 	CModel@ mesh;
-	Model(string&in cPath, float&in cScale=1.f, string&in cSkin="") { create(cPath,cScale,cSkin); }
-	Model(Item::Model@&in iMdl) { create(iMdl.path,iMdl.scale,iMdl.skin); }
-	void create(string&in cPath, float&in cScale=1.f, string&in cSkin="") {
+	Model(string&in cPath, float&in cScale=1.f, CMaterial@ cMaterial=null) { create(cPath,cScale,@cMaterial); }
+	Model(Item::Model@&in iMdl) { create(iMdl.path,iMdl.scale,@iMdl.material); }
+	void create(string&in cPath, float&in cScale=1.f, CMaterial@ mat=null) {
 		@mesh=CModel::create(cPath);
 		mesh.position=Vector3f(0,0,0);
 		mesh.rotation=Vector3f(0,0,0);
 		mesh.scale=Vector3f(cScale);
-		skin=cSkin; //mesh.skin=cSkin;
+		@material=@mat;
+		if(@material != null) { mesh.setMaterial(@material); }
 	}
 	~Model() { CModel::destroy(mesh); }
 	bool pickable;
 	Vector3f position { get { return mesh.position; } set { mesh.position = value; } }
 	Vector3f rotation { get { return mesh.rotation; } set { mesh.rotation = value; } }
 	Vector3f scale { get { return mesh.scale; } set { mesh.scale = value; } }
+	CMaterial@ material;
 	string skin;
 	// string skin { get { return mesh.skin; } set { mesh.skin=value; } }
 	void render() { mesh.render(); }
@@ -238,8 +240,8 @@ namespace Game { class Model {
 
 namespace Game { namespace Model { class Picker : Game::Model {
 	Pickable@ _picker;
-	Picker(string cPath,float&in cScale=1.f, string&in cSkin="") { super(cPath,cScale,cSkin); createPicker(); }
-	Picker(Item::Model@&in iMdl) { super(iMdl); createPicker(); }
+	Picker(string cPath,float&in cScale=1.f, CMaterial@&in cMaterial=null) { super(cPath,cScale,@cMaterial); createPicker(); }
+	Picker(Item::Model@&in iMdl) { super(@iMdl); createPicker(); }
 	void createPicker() {
 		@_picker=Pickable();
 		_picker.position=position;

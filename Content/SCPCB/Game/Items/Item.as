@@ -4,9 +4,19 @@ namespace Item { class Model {
 	string path;
 	string skin;
 	float scale;
-	bool pickable;
+	bool pickable=true;
+	Texture@ texture; //keep-texture-alive;
+	CMaterial@ material;
+	
 	Model(string iPath, float&in iScale=1.f, string&in iSkin="") { path=iPath; scale=iScale; skin=iSkin; }
-	Game::Model@ instantiate() { return (pickable ? Game::Model(path,scale,skin) : Game::Model::Picker(path,scale,skin)); }
+	void construct() {
+		if(skin!="") {
+			@texture=@Texture::get(skin);
+			@material=@CMaterial::create(@texture);
+			Debug::log("Made material: " + skin);
+		}
+	}
+	Game::Model@ instantiate() { return (pickable ? cast<Game::Model@>(Game::Model::Picker(@this)) : (Game::Model(@this))); }
 } }
 
 // # Item::Sound@ ----
@@ -36,7 +46,7 @@ namespace Item { abstract class Template : Item::TemplateInterface {
 	Item@ instantiate() {return null;}
 	Template() { Item::templates.insertLast(@this); }
 	void internalConstruct() {
-		if(@model!=null) { model.pickable=(@pickSound != null && (@icon != null || @iconModel != null)); }
+		if(@model!=null) { model.pickable=(@pickSound != null && (@icon != null || @iconModel != null)); model.construct(); }
 		localName = Local::getTxt("Items."+name+".Name");
 		if(@iconModel!=null) { iconModel.generate(); }
 		if(@icon==null && @iconModel!=null) { @icon=@iconModel; }

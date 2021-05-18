@@ -140,7 +140,7 @@ namespace String {
 }
 
 
-// #### SECTION 3. Icon Handler ----
+// #### SECTION 3. Generic ----
 
 namespace UI {
 	shared void drawSquare(Rectanglef&in square, Color&in col=Color::White, Texture@&in tex=null, bool tileTexture=false) {
@@ -179,8 +179,6 @@ namespace Util {
 		void generate() { @texture = ModelImageGenerator::generate(path, scale, rotation, pos); } // , skin);
 	} }
 }
-
-
 
 // #### SECTION 5. Hook ----
 

@@ -34,7 +34,8 @@ int tick = 0;
 float time = 0.f;
 float blinkTimer = 10.f;
 Util::FloatInterpolator@ blinkInterpolator = Util::FloatInterpolator();
-//Texture@ tmpTex=@Texture::get();
+Texture@ tmpTex;
+CMaterial@ testerMat;
 
 void load() {
 	@testController=@Player::Controller;
@@ -43,7 +44,10 @@ void load() {
 
 void initialize() { // This is the first function that is called lol.
 	Debug::log("AngelDebug - Start Testing Area");
-
+	string testMatPath = rootDirGFXItems + "Battery/battery_18v";
+	@tmpTex=@Texture::get(testMatPath);
+	@testerMat = @CMaterial::create(@tmpTex);
+	Debug::log("Made a material");
 
 	Vector2f test = Vector2f(10.0, 10.0);
 	Vector2f test2 = Vector2f(15.0, 10.0);
@@ -82,8 +86,7 @@ void initialize() { // This is the first function that is called lol.
 	mdls.insertLast(@mdl); mdl.position=Vector3f(-15,0,i); i+=iAdd;
 	//int texID=mdl.createTexture(rootDirGFX + "Map/Textures/dirtymetal");
 	//mdl.setTexture(texID);
-
-
+	mdl.setMaterial(@testerMat);
 
 
 

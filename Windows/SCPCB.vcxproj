@@ -170,6 +170,7 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\INIDefinitions.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\InputDefinitions.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\LocalizationDefinitions.h" />
+    <ClInclude Include="..\Src\Scripting\NativeDefinitions\MaterialDefinitions.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\MathDefinitions.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\MementoDefinitions.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\ModelDefinitions.h" />
@@ -246,6 +247,7 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\INIDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\InputDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\LocalizationDefinitions.cpp" />
+    <ClCompile Include="..\Src\Scripting\NativeDefinitions\MaterialDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\MathDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\MementoDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\ModelDefinitions.cpp" />
