@@ -163,6 +163,7 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
     <ClInclude Include="..\Src\Scripting\AngelScriptAddons\scriptarray\scriptarray.h" />
     <ClInclude Include="..\Src\Scripting\CachedArgument.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\BillboardDefinitions.h" />
+    <ClInclude Include="..\Src\Scripting\NativeDefinitions\CBRDefinitions.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\CollisionDefinitions.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\ColorDefinitions.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\ConsoleDefinitions.h" />
@@ -240,6 +241,7 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
     <ClCompile Include="..\Src\Scripting\CachedArgument.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinition.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\BillboardDefinitions.cpp" />
+    <ClCompile Include="..\Src\Scripting\NativeDefinitions\CBRDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\CollisionDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\ColorDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\ConsoleDefinitions.cpp" />

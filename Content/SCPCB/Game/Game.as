@@ -173,7 +173,7 @@ namespace Game {
 			break;
 		case 5:
 			LoadingMenu.setProgress(0.6f+(Environment::loadDone/Environment::loadMax)*0.2f);
-			Environment::loadState++; if(Room::load()) { Room::finishLoading(); loadNext("Game"); }
+			if(Room::load()) { Room::finishLoading(); loadNext("Game"); }
 			else { Environment::loadDone++; }
 			break;
 		case 6:
@@ -343,6 +343,7 @@ namespace Game { namespace Model { class Picker : Game::Model {
 
 namespace Game { class Room {
 	RM2@ mesh;
+	Room() {}
 	Room(string&in cPath) { create(cPath); }
 	Room(Room::Model@&in iMdl) { create(iMdl.path); }
 	void create(string&in cPath) {
@@ -363,6 +364,32 @@ namespace Game { class Room {
 	}
 
 } }
+
+// # Game::RoomCBR@ ----
+// A world matrix mesh
+
+namespace Game { class RoomCBR : Room {
+	CBR@ meshcbr;
+	RoomCBR(string&in cPath) { super(); create(cPath); }
+	RoomCBR(Room::ModelCBR@&in iMdl) { create(iMdl.path); }
+	void create(string&in cPath) {
+		@meshcbr=CBR::load(cPath);
+	}
+	~RoomCBR() { CBR::delete(@meshcbr); }
+
+	void render(Matrix4x4f&in matrix) { meshcbr.render(matrix); }
+	array<Collision::Instance> getCollision() { return array<Collision::Instance>(meshcbr.collisionMeshCount()); }
+	void appendCollisionsToWorld(Matrix4x4f&in matrix) {
+		array<Collision::Instance> meshes=array<Collision::Instance>(meshcbr.collisionMeshCount());
+		for(int i=0; i<meshcbr.collisionMeshCount(); i++) {
+			Collision::Instance collider = Game::World::Collision.addInstance(meshcbr.getCollisionMesh(i),matrix);
+			Game::World::Collision.updateInstance(collider,matrix);
+		}
+	}
+
+} }
+
+
 
 
 // # Game::World --------

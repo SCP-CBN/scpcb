@@ -10,9 +10,17 @@ namespace Room { enum Type {
 // # Room::Model@ ----
 namespace Room { class Model {
 	string path;
+	Model() {}
 	Model(string&in iPath) { path=iPath; }
 	Game::Room@ instantiate() { return Game::Room(path); }
 } }
+
+// # Room::Model@ ----
+namespace Room { class ModelCBR : Model {
+	ModelCBR(string&in iPath) {super(); path=iPath; }
+	Game::Room@ instantiate() { return Game::RoomCBR(path); }
+} }
+
 
 // # Room::Sound@ ----
 namespace Room { class Sound {

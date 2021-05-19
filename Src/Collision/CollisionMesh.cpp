@@ -1,4 +1,5 @@
 #include "CollisionMesh.h"
+#include <Mesh/Mesh.h>
 #include <Math/AABBox.h>
 #include <Math/Plane.h>
 
@@ -6,7 +7,44 @@ using namespace PGE;
 
 CollisionMesh::CollisionMesh(std::vector<Vector3f> verts,std::vector<int> inds) {
     vertices = verts; indices = inds;
+    // Structure of verts:
+    //  [Vertex*] all of them.;
+    // Structure of indices:
+    // x+0 = vertex[x][0]
+    // x+1 = vertex[x][1]
+    // x+2 = vertex[x][2]
+    // To form triangles.
 }
+
+CollisionMesh::CollisionMesh(std::vector<Vector3f> verts, std::vector<Primitive> prims) {
+    int vertCount = (int)verts.size();
+    int primCount = (int)prims.size();
+
+    for (int i = 0; i < vertCount; i++) {
+        if (i >= (int)vertices.size()) {
+            vertices.push_back(verts[i]);
+        }
+        else {
+            vertices[i] = verts[i];
+        }
+    }
+
+    indices = std::vector<int>(primCount * 3);
+    for (int i = 0; i < primCount; i++) {
+        indices[(i * 3) + 0] = prims[i].a;
+        indices[(i * 3) + 1] = prims[i].b;
+        indices[(i * 3) + 2] = prims[i].c;
+    }
+
+    // Structure of verts:
+    //  [Vertex*] all of them.;
+    // Structure of indices:
+    // x+0 = vertex[x][0]
+    // x+1 = vertex[x][1]
+    // x+2 = vertex[x][2]
+    // To form triangles.
+}
+
 
 Collision CollisionMesh::checkCollision(Matrix4x4f matrix, Line3f line,float height,float radius,int& outTriangleIndex) const {
     Collision retVal;

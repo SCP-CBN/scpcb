@@ -27,6 +27,7 @@
 #include "../Scripting/NativeDefinitions/BillboardDefinitions.h"
 #include "../Scripting/NativeDefinitions/ModelDefinitions.h"
 #include "../Scripting/NativeDefinitions/RM2Definitions.h"
+#include "../Scripting/NativeDefinitions/CBRDefinitions.h"
 #include "../Scripting/NativeDefinitions/CollisionDefinitions.h"
 #include "../Scripting/NativeDefinitions/PickableDefinitions.h"
 #include "../Scripting/NativeDefinitions/PlayerControllerDefinitions.h"
@@ -59,6 +60,7 @@ ScriptWorld::ScriptWorld(World* world, GraphicsResources* gfxRes, Camera* camera
     nativeDefs.push_back(new MaterialDefinitions(manager, gfxRes));
     nativeDefs.push_back(new ModelDefinitions(manager, gfxRes));
     nativeDefs.push_back(new RM2Definitions(manager, gfxRes));
+    nativeDefs.push_back(new CBRDefinitions(manager, gfxRes));
     nativeDefs.push_back(new PickableDefinitions(manager, refCounterManager, pm));
     nativeDefs.push_back(new PlayerControllerDefinitions(manager, refCounterManager, camera));
     nativeDefs.push_back(new ReflectionDefinitions(manager));
