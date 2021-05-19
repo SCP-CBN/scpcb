@@ -62,9 +62,11 @@ external string rootDirGFXMenu;
 external string rootDirSFX;
 external string rootDirCBR;
 external string rootDirCBRTextures;
+external string rootDirCBR_SCP;
 external string rootDirCBR_LCZ;
 external string rootDirCBR_HCZ;
 external string rootDirCBR_ETZ;
+external string rootDirCBR_Objects;
 
 
 namespace Environment {

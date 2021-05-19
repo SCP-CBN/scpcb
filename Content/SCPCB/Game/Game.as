@@ -372,9 +372,7 @@ namespace Game { class RoomCBR : Room {
 	CBR@ meshcbr;
 	RoomCBR(string&in cPath) { super(); create(cPath); }
 	RoomCBR(Room::ModelCBR@&in iMdl) { create(iMdl.path); }
-	void create(string&in cPath) {
-		@meshcbr=CBR::load(cPath);
-	}
+	void create(string&in cPath) { @meshcbr=CBR::load(cPath); }
 	~RoomCBR() { CBR::delete(@meshcbr); }
 
 	void render(Matrix4x4f&in matrix) { meshcbr.render(matrix); }

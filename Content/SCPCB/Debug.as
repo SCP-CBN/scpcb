@@ -95,6 +95,16 @@ void initialize() { // This is the first function that is called lol.
 	Prop::spawn("heavydoor",Vector3f(20,5,80),Vector3f(0,Math::PI*0.125,0));
 	Prop::spawn("containmentdoor",Vector3f(20,5,140),Vector3f(0,Math::PI*0.125,0));
 
+	int perRow = 10;
+	int dist = 150;
+	Vector3f origin=Vector3f(100,0,100);
+	for(int i=0; i<Room::templates.length(); i++) {
+		int xpos = Math::floor( float(i)/float(perRow) );
+		int ypos = Math::floor( i%perRow );
+		Vector3f newpos = origin+Vector3f(xpos*dist,0,ypos*dist);
+		Room::spawn(Room::templates[i].name,newpos);
+	}
+
 
 	// The 173 model takes a long time to load so commented
 	int i=40;

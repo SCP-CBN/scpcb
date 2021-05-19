@@ -100,7 +100,13 @@ abstract class Room {
 		_worldMatrix = Matrix4x4f::constructWorldMat(position, scale, Vector3f(0.0, rotation, 0.0));
 	}
 	void updatePosition() {} // override
-	void render() { template.mesh.render(worldMatrix); }
+	float maxRenderDist=512^2;
+	void render() {
+		float dist = position.distanceSquared(Player::Controller.position);
+		if(dist <= maxRenderDist) {
+			template.mesh.render(worldMatrix);
+		}
+	}
 	void update() {
 	}
 
@@ -131,6 +137,8 @@ namespace Room {
 	}
 
 	Room@ spawn(const string&in name, const Vector3f&in position=Vector3f(), const float&in rotation=0) {
+		Debug::log("Trying to spawn room: " + name);
+
 		Room::Template@ template;
 		for(int i=0; i<templates.length(); i++) { if(templates[i].name==name) { @template=@templates[i]; break; } }
 		if(@template==null) { Debug::error("Room Spawn failed - Room Template not found: " + name); return null; }
@@ -139,6 +147,8 @@ namespace Room {
 		instance.rotation=rotation;
 		instances.insertLast(@instance);
 		instance.recalculateWorldMatrix();
+		Debug::log("Template: " + (@template==null ? "Null" : "Good"));
+		Debug::log("Mesh: " + (@template.mesh==null ? "Null" : "Good"));
 		template.mesh.appendCollisionsToWorld(instance.worldMatrix);
 		Debug::log("Spawned room : " + template.name);
 		instance.construct();

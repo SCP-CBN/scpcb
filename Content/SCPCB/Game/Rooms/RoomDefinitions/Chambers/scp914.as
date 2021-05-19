@@ -1,9 +1,9 @@
-namespace Room { namespace test914 { Template@ thisTemplate=Template();
+namespace Room { namespace scp914 { Template@ thisTemplate=Template();
 	class Template : Room::Template { Room@ instantiate() { return (Instance()); }
 		Template() { super();
 			name		= "scp914";
 			zone		= "LCZ";
-			@model		= Room::ModelCBR("Assets/CBR/test914.cbr");
+			@model		= Room::ModelCBR(rootDirCBR_SCP + name + "/" + name + ".cbr");
 		}
 	}
 
