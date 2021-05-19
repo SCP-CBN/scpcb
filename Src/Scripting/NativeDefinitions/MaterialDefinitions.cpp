@@ -1,4 +1,5 @@
 #include "MaterialDefinitions.h"
+
 #include <Mesh/Mesh.h>
 #include <Texture/Texture.h>
 #include <assimp/postprocess.h>
@@ -9,6 +10,7 @@
 MaterialDefinitions::MaterialDefinitions(ScriptManager* mgr, GraphicsResources* gr) {
     engine = mgr->getAngelScriptEngine();
     gfxRes = gr;
+
     shader = gr->getShader(PGE::FilePath::fromStr("SCPCB/GFX/Shaders/Model/"), true);
     modelMatrix = shader->getVertexShaderConstant("modelMatrix");
     PGE::Shader::Constant* colorConstant = shader->getFragmentShaderConstant("inColor");
