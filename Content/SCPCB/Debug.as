@@ -102,7 +102,7 @@ void initialize() { // This is the first function that is called lol.
 		int xpos = Math::floor( float(i)/float(perRow) );
 		int ypos = Math::floor( i%perRow );
 		Vector3f newpos = origin+Vector3f(xpos*dist,0,ypos*dist);
-		Room::spawn(Room::templates[i].name,newpos);
+	//	Room::spawn(Room::templates[i].name,newpos);
 	}
 
 
