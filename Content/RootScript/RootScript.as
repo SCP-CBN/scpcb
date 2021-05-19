@@ -29,12 +29,17 @@ shared string rootDirData	= "Data/";
 shared string rootDirGFX	= rootDirAssets + "GFX/";
 shared string rootDirLoadscreens = rootDirGFX + "Loadingscreens/";
 shared string rootDirGFXItems	= rootDirGFX + "Items/";
+shared string rootDirGFXProps	= rootDirGFX + "Props/";
 shared string rootDirGFXMenu	= rootDirGFX + "Menu/";
 
-shared string rootDirCBR	= rootDirAssets + "Map/";
+shared string rootDirCBR	= "Assets/CBR/";
+shared string rootDirCBRTextures = rootDirGFX + "Map/Textures/";
+
+shared string rootDirCBR_SCP	= "Assets/CBR/SCPs/";
 shared string rootDirCBR_LCZ	= rootDirCBR + "LightContainmentZone/";
 shared string rootDirCBR_HCZ	= rootDirCBR + "HeavyContainmentZone/";
 shared string rootDirCBR_ETZ	= rootDirCBR + "EntranceZone/";
+shared string rootDirCBR_Objects = rootDirCBR + "Objects/";
 
 shared string rootDirSFX	= rootDirAssets + "SFX/";
 

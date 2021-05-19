@@ -52,22 +52,26 @@ string rootDir		= "SCPCB/";
 string rootDirScript	= rootDir + "Game/";
 
 external string rootDirAssets;
-
 external string rootDirLoadscreens;
 
 external string rootDirGFX;
 external string rootDirGFXItems;
+external string rootDirGFXProps;
 external string rootDirGFXMenu;
 
 external string rootDirSFX;
 external string rootDirCBR;
+external string rootDirCBRTextures;
+external string rootDirCBR_SCP;
 external string rootDirCBR_LCZ;
 external string rootDirCBR_HCZ;
 external string rootDirCBR_ETZ;
+external string rootDirCBR_Objects;
 
 
 namespace Environment {
 	float fpsFactor; // todo
+	float interp; // todo
 }
 
 namespace Util { external float fpsFactor(float interp); }
@@ -88,6 +92,21 @@ namespace Util {
 
 // # util->AngelMath ----
 namespace Util { external class FloatInterpolator; } // Number smoothing
+namespace Util { namespace Vector2f {
+	external Vector2f rotate(Vector2f&in vec, float&in ang);
+} }
+namespace Math {
+	shared float pi2f=Math::PI*2.f;
+	shared float PI2f=Math::PI*2.f;
+}
+
+// Vector3f::rotate(Vec,angle);
+namespace Util { namespace Vector3f {
+	external Vector3f rotate(Vector3f&in vec, float&in angle);
+	external Vector3f rotate(Vector3f&in vec, Vector3f&in angle);
+	external Vector3f localToWorldPos(Vector3f&in origin, Vector3f&in originAng, Vector3f&in localPos);
+	external Vector3f localToWorldPos(Vector3f&in origin, float&in originAng, Vector3f&in localPos);
+} }
 
 // # util->AngelString ----
 external int String::findFirstChar(string&in str,string&in delim);

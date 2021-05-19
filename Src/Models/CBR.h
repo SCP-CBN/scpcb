@@ -6,7 +6,9 @@
 #include <Math/Matrix.h>
 #include <Shader/Shader.h>
 
+class CollisionMesh;
 class GraphicsResources;
+
 
 class CBR {
     private:
@@ -22,11 +24,17 @@ class CBR {
         PGE::Shader* shaderNormal;
         PGE::Shader::Constant* shaderNormalModelMatrixConstant;
 
+        std::vector<CollisionMesh*> collisionMeshes;
+
     public:
         CBR(GraphicsResources* gr, const PGE::String& filename);
         ~CBR();
 
         void render(const PGE::Matrix4x4f& modelMatrix);
+
+        const std::vector<CollisionMesh*>& getCollisionMeshes() const;
+        CollisionMesh* getCollisionMesh(int index) const;
+        int collisionMeshCount() const;
 };
 
 #endif // CBR_H_INCLUDED

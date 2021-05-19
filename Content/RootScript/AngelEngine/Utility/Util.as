@@ -53,11 +53,42 @@ namespace Util {
 
 // # AngelMath ----
 // Numeracy functions, definitions, libraries etc
-
+namespace Math {
+	shared float pi2f=Math::PI*2.f;
+}
 namespace Util {
 	shared float fpsFactor(float interp) { return Math::maxFloat(Math::minFloat(interp*70.f,5.f),0.2f); } // Original math
 }
 
+// # Util::Vector2f::rotate(vec,ang/Math::PI); ----
+namespace Util { namespace Vector2f {
+	shared Vector2f rotate(Vector2f&in vec, float&in angle) {
+		float ang=((angle+Math::PI)%(Math::PI*2))-Math::PI; // Wraparound PI
+		return Vector2f((vec.x*Math::cos(ang)) - (vec.y*Math::sin(ang)), (vec.x*Math::sin(ang)) + (vec.y*Math::cos(ang)));
+	}
+} }
+
+// # Util::Vector3f::rotate(vec,ang/Math::PI); ----
+namespace Util { namespace Vector3f {
+	shared Vector3f rotate(Vector3f&in vec, float&in angle) {
+		float ang=((angle+Math::PI)%(Math::PI*2))-Math::PI; // Wraparound PI
+		return Vector3f((vec.x*Math::cos(ang)) - (vec.z*Math::sin(ang)), vec.y, (vec.x*Math::sin(ang)) + (vec.z*Math::cos(ang)));
+	}
+	shared Vector3f rotate(Vector3f&in vec, Vector3f&in angle) {
+		float ang=((angle.y+Math::PI)%(Math::PI*2))-Math::PI; // Wraparound PI
+		return Vector3f((vec.x*Math::cos(ang)) - (vec.z*Math::sin(ang)), vec.y, (vec.x*Math::sin(ang)) + (vec.z*Math::cos(ang)));
+	}
+
+	shared Vector3f localToWorldPos(Vector3f&in origin, Vector3f&in originAng, Vector3f&in localPos) { return localToWorldPos(origin,originAng.y,localPos); }
+	shared Vector3f localToWorldPos(Vector3f&in origin, float&in originAng, Vector3f&in localPos) { return origin + rotate(localPos,-originAng); }
+} }
+
+// # Util::rotate(float ang, float rot); rotate by amount rotation.y/Math::PI ----
+namespace Util {
+	float rotate(float ang, float rot) {
+		return (((ang+Math::PI*rot)%Math::PI*2)-Math::PI)/Math::PI;
+	}
+}
 
 // # Util::FloatInterpolator@ ----
 // Number smoother
@@ -140,7 +171,7 @@ namespace String {
 }
 
 
-// #### SECTION 3. Icon Handler ----
+// #### SECTION 3. Generic ----
 
 namespace UI {
 	shared void drawSquare(Rectanglef&in square, Color&in col=Color::White, Texture@&in tex=null, bool tileTexture=false) {
@@ -150,37 +181,40 @@ namespace UI {
 	}
 }
 
-// #### SECTION 4. Icon Handler ----
+// #### SECTION 4. Resource Handlers ----
 
 // # Utility Icons ----
 namespace Util {
+	// Primary purpose is to store resource data without actually loading the resource.
+	// Secondary purpose is to abstractify this resource data and generate instances of the resources without creating new copies.
 
 	// # Util::Icon@ ----
 	// Generic texture icon
-	shared class Icon { Texture@ texture;
+	shared class Icon {
+		string path;
+		Texture@ texture;
 		Icon() {};
-		Icon(string&in texPath) { @texture=Texture::get(texPath); };
+		Icon(string&in texPath) { path=texPath; };
 		Icon(Texture@&in tex) { @texture=@tex; }
-		void generate() {};
+		void generate() { @texture=@Texture::get(path); };
 	}
 
 	// # Util::Icon::Model@ ----
 	// IconModel
 	namespace Icon { shared class Model : Icon {
-		string path;
 		float scale;
 		Vector3f rotation;
 		Vector2f pos;
 		string skin;
 		Model(string&in iPath, float&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") { super();
 			path=iPath; scale=iScale; pos=iPos; rotation=iRotation; skin=iSkin;
-			//generate();
+		}
+		Model(string&in iPath, Vector3f&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") { super();
+			path=iPath; scale=(iScale.x+iScale.y+iScale.z)/3; pos=iPos; rotation=iRotation; skin=iSkin;
 		}
 		void generate() { @texture = ModelImageGenerator::generate(path, scale, rotation, pos); } // , skin);
 	} }
 }
-
-
 
 // #### SECTION 5. Hook ----
 

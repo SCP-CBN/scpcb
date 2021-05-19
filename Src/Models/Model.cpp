@@ -37,6 +37,7 @@ Model::Model(Assimp::Importer* importer, GraphicsResources* gr, const PGE::Strin
         aiProcess_SortByPType |
         aiProcess_FindDegenerates
     );
+    thisScene = scene;
 
     PGE::String err = importer->GetErrorString();
     PGE_ASSERT(err.isEmpty(), "Failed to load model (err: " + err + ")");
@@ -57,8 +58,10 @@ Model::Model(Assimp::Importer* importer, GraphicsResources* gr, const PGE::Strin
 
     meshCount = scene->mNumMeshes;
     meshes = new PGE::Mesh*[meshCount];
+    originMaterials = new unsigned int[meshCount];
     for (unsigned int i = 0; i < meshCount; i++) {
         aiMesh* mesh = scene->mMeshes[i];
+        originMaterials[i] = mesh->mMaterialIndex;
 
         std::vector<PGE::Vertex> vertices;
         for (unsigned int j = 0; j < mesh->mNumVertices; j++) {
@@ -77,6 +80,7 @@ Model::Model(Assimp::Importer* importer, GraphicsResources* gr, const PGE::Strin
         meshes[i] = PGE::Mesh::create(gr->getGraphics(), PGE::Primitive::Type::TRIANGLE);
         meshes[i]->setGeometry((int)vertices.size(), vertices, (int)primitives.size(), primitives);
         meshes[i]->setMaterial(materials[mesh->mMaterialIndex]);
+
     }
 
     importer->FreeScene();
@@ -99,34 +103,31 @@ Model::~Model() {
     gfxRes->dropShader(shader);
 }
 
-void Model::render(const PGE::Matrix4x4f& modelMatrix, int matIdx) const {
+void Model::render(const PGE::Matrix4x4f& modelMatrix, PGE::Material* mat) const {
     this->modelMatrix->setValue(modelMatrix);
+    if (materialCount > 0) {
+        if (mat == nullptr) {
+            for (unsigned int i = 0; i < meshCount; i++) {
+                meshes[i]->setMaterial(materials[originMaterials[i]]);
+            }
+        } else {
+            for (unsigned int i = 0; i < meshCount; i++) {
+                meshes[i]->setMaterial(mat);
+            }
+        }
+    }
     for (unsigned int i = 0; i < meshCount; i++) {
-        meshes[i]->setMaterial(materials[matIdx]);
         meshes[i]->render();
     }
 }
 
-int Model::createTexture(const PGE::String& tex) {
-    if (materialCount <= 0) { return 0; }
-    PGE::Texture* texture = gfxRes->getTexture(tex);
-    int newid = sizeof(materials);
-    materials[newid] = new PGE::Material(shader, texture, true);
-    return newid;
-}
-
-
 ModelInstance::ModelInstance(Model* model) {
     this->model = model;
-    materialID = 0;
     modelMatrixNeedsRecalculation = false;
 }
 
-int ModelInstance::createTexture(const PGE::String& tex) {
-    return model->createTexture(tex);
-}
-void ModelInstance::setTexture(int tex) {
-    materialID = tex;
+void ModelInstance::setMaterial(PGE::Material* mat) {
+    mater = mat;
 }
 void ModelInstance::setPosition(const PGE::Vector3f& pos) {
     if (position != pos) {
@@ -170,5 +171,5 @@ void ModelInstance::render() {
         modelMatrix = PGE::Matrix4x4f::constructWorldMat(position, scale, rotation);
         modelMatrixNeedsRecalculation = false;
     }
-    model->render(modelMatrix,materialID);
+    model->render(modelMatrix,mater);
 }

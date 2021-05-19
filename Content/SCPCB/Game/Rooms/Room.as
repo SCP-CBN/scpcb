@@ -10,9 +10,17 @@ namespace Room { enum Type {
 // # Room::Model@ ----
 namespace Room { class Model {
 	string path;
+	Model() {}
 	Model(string&in iPath) { path=iPath; }
 	Game::Room@ instantiate() { return Game::Room(path); }
 } }
+
+// # Room::Model@ ----
+namespace Room { class ModelCBR : Model {
+	ModelCBR(string&in iPath) {super(); path=iPath; }
+	Game::Room@ instantiate() { return Game::RoomCBR(path); }
+} }
+
 
 // # Room::Sound@ ----
 namespace Room { class Sound {
@@ -27,6 +35,11 @@ namespace Room {
 	// Room::Icon@ ----
 	class Icon : Util::Icon { Icon() {super();} Icon(string&in texStr) {super(texStr);} Icon(Texture@&in tex) {super(@tex);} }
 
+	// Room::Icon::Model@ ----
+	namespace Icon { class Model : Util::Icon::Model {
+		Model(string&in iPath, float&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") {super(iPath,iScale,iRotation,iPos,iSkin);}
+		Model(string&in iPath, Vector3f&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") {super(iPath,iScale,iRotation,iPos,iSkin);}
+	} }
 }
 
 
@@ -36,6 +49,7 @@ namespace Room { abstract class Template : Room::TemplateInterface {
 	Room@ instantiate() {return null;}
 	Template() { Room::templates.insertLast(@this); }
 	void internalConstruct() {
+		Debug::log("Internal constructed " + name);
 		@mesh=model.instantiate();
 		construct();
 	}
@@ -70,6 +84,7 @@ abstract class Room {
 		//if(@template.model!=null) { @model=template.model.instantiate(); }
 	}
 	Room::Template@ template;
+	void construct() {} // override
 
 	Vector3f _position;
 	Vector3f position { get { return _position; } set { _position=value; recalculateWorldMatrix(); } }
@@ -81,12 +96,18 @@ abstract class Room {
 	Matrix4x4f _worldMatrix;
 	Matrix4x4f worldMatrix { get { return _worldMatrix; } }
 
-	void recalculateWorldMatrix() { doCalculateMatrix(); }
+	void recalculateWorldMatrix() { doCalculateMatrix(); updatePosition(); }
 	void doCalculateMatrix() {
-		_worldMatrix = Matrix4x4f::constructWorldMat(position, scale, Vector3f(0.0, Math::degToRad(rotation), 0.0));
+		_worldMatrix = Matrix4x4f::constructWorldMat(position, scale, Vector3f(0.0, rotation, 0.0));
 	}
-
-	void render() { template.mesh.render(worldMatrix); }
+	void updatePosition() {} // override
+	float maxRenderDist=512**2;
+	void render() {
+		float dist = position.distanceSquared(Player::Controller.position);
+		if(true) { //dist <= maxRenderDist) {
+			template.mesh.render(worldMatrix);
+		}
+	}
 	void update() {
 	}
 
@@ -105,7 +126,7 @@ namespace Room {
 		
 	}
 	bool load() {
-		if(Environment::loadDone>=templates.length()-1) { finishLoading(); return true; }
+		if(Environment::loadDone>templates.length()-1) { finishLoading(); return true; }
 		Room::Template @template=templates[Environment::loadDone];
 		Environment::loadMessage=template.zone + ":" + template.name;
 		template.internalConstruct();
@@ -117,6 +138,8 @@ namespace Room {
 	}
 
 	Room@ spawn(const string&in name, const Vector3f&in position=Vector3f(), const float&in rotation=0) {
+		Debug::log("Trying to spawn room: " + name);
+
 		Room::Template@ template;
 		for(int i=0; i<templates.length(); i++) { if(templates[i].name==name) { @template=@templates[i]; break; } }
 		if(@template==null) { Debug::error("Room Spawn failed - Room Template not found: " + name); return null; }
@@ -126,7 +149,7 @@ namespace Room {
 		instances.insertLast(@instance);
 		instance.recalculateWorldMatrix();
 		template.mesh.appendCollisionsToWorld(instance.worldMatrix);
-		Debug::log("Spawned room : " + template.name);
+		instance.construct();
 		return @instance;
 	}
 	void updateAll() { for (int i=0; i<instances.length(); i++) { instances[i].update(); } }

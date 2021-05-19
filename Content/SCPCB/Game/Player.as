@@ -21,8 +21,8 @@
 
 namespace Player {
 	PlayerController@ Controller;
-	float height=30.f/2; //15.f;
-	float radius=5;
+	float height=25.f/2.f;
+	float radius=5.f;
 
 	float stamina;
 	float maxStamina=100.f;

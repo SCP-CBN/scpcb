@@ -9,7 +9,7 @@
 
 
 constexpr float WALK_SPEED_MAX = 18.0f;
-constexpr float SPRINT_SPEED_MAX = 42.0f;
+constexpr float SPRINT_SPEED_MAX = 42.0f*5.f; // need to move faster to view rooms
 constexpr float WALK_SPEED_SMOOTHING_FACTOR = 0.9f;
 constexpr float STAMINA_RECOVERY_RATE = 0.2f;
 
@@ -25,7 +25,7 @@ PlayerController::PlayerController(float r, float chestHeight) {
     stamina = 1.f;
     
     noclip = false;
-    vNoclip = false;
+    vNoclip = true; // start noclipped
 }
 
 PlayerController::~PlayerController() {
@@ -72,7 +72,7 @@ void PlayerController::update(float yaw, float pitch, Input input, float timeSte
             // -------
 
             stand(timeStep); //inputs cancel each other out: we're standing still
-        } else if(!vNoclip) {
+        } else {
             noclip = false; // Also remove
             targetDir = targetDir.normalize();
             walk(targetDir, timeStep);

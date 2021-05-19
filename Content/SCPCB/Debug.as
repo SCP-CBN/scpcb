@@ -34,7 +34,8 @@ int tick = 0;
 float time = 0.f;
 float blinkTimer = 10.f;
 Util::FloatInterpolator@ blinkInterpolator = Util::FloatInterpolator();
-//Texture@ tmpTex=@Texture::get();
+Texture@ tmpTex;
+CMaterial@ testerMat;
 
 void load() {
 	@testController=@Player::Controller;
@@ -43,7 +44,10 @@ void load() {
 
 void initialize() { // This is the first function that is called lol.
 	Debug::log("AngelDebug - Start Testing Area");
-
+	string testMatPath = rootDirGFXItems + "Battery/battery_18v";
+	@tmpTex=@Texture::get(testMatPath);
+	@testerMat = @CMaterial::create(@tmpTex);
+	Debug::log("Made a material");
 
 	Vector2f test = Vector2f(10.0, 10.0);
 	Vector2f test2 = Vector2f(15.0, 10.0);
@@ -71,6 +75,35 @@ void initialize() { // This is the first function that is called lol.
 	Item::spawn("Battery18v", Vector3f(-8.0, 5.0, 20.0));
 	Item::spawn("StrangeBattery", Vector3f(-4.0, 5.0, 20.0));
 
+	Item::spawn("keycard1", Vector3f(-20.0, 5.0, 40.0));
+	Item::spawn("keycard2", Vector3f(-20.0, 5.0, 50.0));
+	Item::spawn("keycard3", Vector3f(-20.0, 5.0, 60.0));
+	Item::spawn("keycard4", Vector3f(-20.0, 5.0, 70.0));
+	Item::spawn("keycard5", Vector3f(-30.0, 5.0, 40.0));
+	Item::spawn("keycard6", Vector3f(-30.0, 5.0, 50.0));
+	Item::spawn("playingcard1", Vector3f(-30.0, 5.0, 60.0));
+	Item::spawn("mastercard1", Vector3f(-30.0, 5.0, 70.0));
+
+
+	Prop::spawn("button",Vector3f(-20,5,-20));
+	Prop::spawn("buttoncode",Vector3f(-20,5,-25));
+	Prop::spawn("buttonelevator",Vector3f(-20,5,-30));
+	Prop::spawn("buttonkeycard",Vector3f(-20,5,-35));
+	Prop::spawn("buttonscanner",Vector3f(-20,5,-40));
+
+	Prop::spawn("door",Vector3f(20,5,40),Vector3f(0,Math::PI*0.125,0));
+	Prop::spawn("heavydoor",Vector3f(20,5,80),Vector3f(0,Math::PI*0.125,0));
+	Prop::spawn("containmentdoor",Vector3f(20,5,140),Vector3f(0,Math::PI*0.125,0));
+
+	int perRow = 10;
+	int dist = 300;
+	Vector3f origin=Vector3f(300,0,300);
+	for(int i=0; i<Room::templates.length(); i++) {
+		int xpos = Math::floor( float(i)/float(perRow) );
+		int ypos = Math::floor( i%perRow );
+		Vector3f newpos = origin+Vector3f(xpos*dist,0,ypos*dist);
+	//	Room::spawn(Room::templates[i].name,newpos);
+	}
 
 
 	// The 173 model takes a long time to load so commented
@@ -82,8 +115,7 @@ void initialize() { // This is the first function that is called lol.
 	mdls.insertLast(@mdl); mdl.position=Vector3f(-15,0,i); i+=iAdd;
 	//int texID=mdl.createTexture(rootDirGFX + "Map/Textures/dirtymetal");
 	//mdl.setTexture(texID);
-
-
+	mdl.setMaterial(@testerMat);
 
 
 

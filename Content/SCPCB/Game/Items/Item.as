@@ -1,12 +1,8 @@
 
 // # Item::Model@ ----
-namespace Item { class Model {
-	string path;
-	string skin;
-	float scale;
-	bool pickable;
-	Model(string iPath, float&in iScale=1.f, string&in iSkin="") { path=iPath; scale=iScale; skin=iSkin; }
-	Game::Model@ instantiate() { return (pickable ? Game::Model(path,scale,skin) : Game::Model::Picker(path,scale,skin)); }
+namespace Item { class Model : Util::Model {
+	Model(string iPath, float&in iScale=1.f, string&in iSkin="") { super(iPath,Vector3f(iScale),iSkin); pickable=true; }
+	Model(string iPath, Vector3f&in iScale, string&in iSkin="") { super(iPath,iScale,iSkin); pickable=true; }
 } }
 
 // # Item::Sound@ ----
@@ -25,6 +21,7 @@ namespace Item {
 	// Item::Icon::Model@ ----
 	namespace Icon { class Model : Util::Icon::Model {
 		Model(string&in iPath, float&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") {super(iPath,iScale,iRotation,iPos,iSkin);}
+		Model(string&in iPath, Vector3f&in iScale, Vector3f&in iRotation, Vector2f&in iPos, string&in iSkin="") {super(iPath,iScale,iRotation,iPos,iSkin);}
 	} }
 }
 
@@ -36,9 +33,10 @@ namespace Item { abstract class Template : Item::TemplateInterface {
 	Item@ instantiate() {return null;}
 	Template() { Item::templates.insertLast(@this); }
 	void internalConstruct() {
-		if(@model!=null) { model.pickable=(@pickSound != null && (@icon != null || @iconModel != null)); }
+		if(@model!=null) { model.pickable=(@pickSound != null && (@icon != null || @iconModel != null)); model.construct(); }
 		localName = Local::getTxt("Items."+name+".Name");
 		if(@iconModel!=null) { iconModel.generate(); }
+		if(@icon!=null) { icon.generate(); }
 		if(@icon==null && @iconModel!=null) { @icon=@iconModel; }
 		construct();
 	}
@@ -76,6 +74,7 @@ abstract class Item {
 		if(@template.model!=null) { @model=template.model.instantiate(); }
 		
 	}
+	void construct() {} // override
 	Item::Template@ template;
 	Item::Icon@ iconInventory; // Must be calculated per item, i.e empty clipboard. Does not need to be saved.
 
@@ -87,7 +86,7 @@ abstract class Item {
 	string skin { get { return model.skin; } set { model.skin=value; } }
 	void render() { model.render(); }
 	void update() {}
-
+	void onPicked() {}
 }
 
 // # Item:: (Namespace) ----
@@ -103,7 +102,7 @@ namespace Item {
 		if(ModelImageGenerator::getInitialized()) { ModelImageGenerator::deinitialize(); }
 	}
 	bool load() {
-		if(Environment::loadDone>=templates.length()-1) { finishLoading(); return true; }
+		if(Environment::loadDone>templates.length()-1) { finishLoading(); return true; }
 		Item::Template @template=templates[Environment::loadDone];
 		Environment::loadMessage=template.name;
 		if(!ModelImageGenerator::getInitialized()) { ModelImageGenerator::initialize(256); }
@@ -121,6 +120,11 @@ namespace Item {
 		instance.position=position;
 		instance.rotation=rotation;
 		instances.insertLast(@instance);
+		instance.construct();
+		if(instance.model.isPickable) {
+			Game::Model::Picker@ picker=cast<Game::Model::Picker>(@instance.model);
+			@picker.onPicked=@Util::Function(instance.onPicked);
+		}
 		return @instance;
 	}
 	void updateAll() { for (int i=0; i<instances.length(); i++) { instances[i].update(); } }

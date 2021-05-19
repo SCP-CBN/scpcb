@@ -83,6 +83,7 @@ class World {
         PGE::Vector2f gameMousePos;
         PGE::Vector2f menuMousePos;
         void applyCameraMouseMovement(PGE::Vector2f mousePos);
+        float camInterp = 0.f;
 
 
     public:

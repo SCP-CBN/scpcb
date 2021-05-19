@@ -4,7 +4,7 @@ namespace Item { namespace FirstAid { Template@ thisTemplate=Template();
 		Template() { super();
 			name		= "FirstAid"; // "bat"
 			@pickSound	= Item::Sound(); // 1
-			@model		= Item::Model(rootDirGFXItems + "FirstAid/firstaid.fbx",0.5,rootDirGFXItems + "FirstAid/firstaid.jpg");
+			@model		= Item::Model(rootDirGFXItems + "FirstAid/firstaid.fbx",0.5,rootDirGFXItems + "FirstAid/firstaid");
 			@icon		= Item::Icon(rootDirGFXItems + "FirstAid/inv_firstaid.jpg");
 			@iconModel	= Item::Icon::Model(model.path,0.1,Vector3f(-2.3,-0.3,0.2),Vector2f(0,0.05));
 		}
@@ -26,7 +26,7 @@ namespace Item { namespace SmallFirstAid { Template@ thisTemplate=Template();
 		Template() { super();
 			name		= "SmallFirstAid"; // "firstaid"
 			@pickSound	= Item::Sound(); // 1
-			@model		= Item::Model(rootDirGFXItems + "FirstAid/firstaid.fbx",0.3,rootDirGFXItems + "FirstAid/firstaid.jpg");
+			@model		= Item::Model(rootDirGFXItems + "FirstAid/firstaid.fbx",0.3,rootDirGFXItems + "FirstAid/firstaid");
 			@icon		= Item::Icon(rootDirGFXItems + "FirstAid/inv_firstaid.jpg");
 			@iconModel	= Item::Icon::Model(model.path,0.07,Vector3f(-2.3,-0.3,0.2),Vector2f(0,0.05));
 		}
@@ -50,7 +50,7 @@ namespace Item { namespace BlueFirstAid { Template@ thisTemplate=Template();
 		Template() { super();
 			name		= "BlueFirstAid"; // "bluefirstaid"
 			@pickSound	= Item::Sound(); // 1
-			@model		= Item::Model(rootDirGFXItems + "FirstAid/firstaid.fbx",0.5,rootDirGFXItems + "FirstAid/firstaid_blue.jpg");
+			@model		= Item::Model(rootDirGFXItems + "FirstAid/firstaid.fbx",0.5,rootDirGFXItems + "FirstAid/firstaid_blue");
 			@icon		= Item::Icon(rootDirGFXItems + "FirstAid/inv_firstaid_blue.jpg");
 			@iconModel	= Item::Icon::Model(model.path,0.1,Vector3f(-2.3,-0.3,0.2),Vector2f(0,0.05));
 		}

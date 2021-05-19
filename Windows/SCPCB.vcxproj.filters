@@ -200,6 +200,12 @@
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\INIDefinitions.cpp">
       <Filter>Scripting\NativeDefinitions</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Scripting\NativeDefinitions\MaterialDefinitions.cpp">
+      <Filter>Scripting\NativeDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Scripting\NativeDefinitions\CBRDefinitions.cpp">
+      <Filter>Scripting\NativeDefinitions</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -396,6 +402,12 @@
       <Filter>Scripting\NativeDefinitions</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\ReflectionDefinitions.h">
+      <Filter>Scripting\NativeDefinitions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Scripting\NativeDefinitions\MaterialDefinitions.h">
+      <Filter>Scripting\NativeDefinitions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Scripting\NativeDefinitions\CBRDefinitions.h">
       <Filter>Scripting\NativeDefinitions</Filter>
     </ClInclude>
   </ItemGroup>

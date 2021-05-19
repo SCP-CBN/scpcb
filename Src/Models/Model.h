@@ -17,6 +17,7 @@ class Model {
         PGE::Mesh** meshes;
         unsigned int meshCount;
 
+        unsigned int* originMaterials;
         PGE::Material** materials;
         unsigned int materialCount;
 
@@ -25,14 +26,15 @@ class Model {
         PGE::Shader::Constant* modelMatrix;
 
         Model(); // We don't want this.
+
+        const aiScene* thisScene;
+
         
     public:
         Model(Assimp::Importer* importer, GraphicsResources* gr, const PGE::String& filename);
         ~Model();
 
-        int createTexture(const PGE::String& tex);
-
-        void render(const PGE::Matrix4x4f& modelMatrix, int matIdx=0) const;
+        void render(const PGE::Matrix4x4f& modelMatrix, PGE::Material* mat) const;
 };
 
 class ModelInstance {
@@ -47,6 +49,8 @@ class ModelInstance {
         PGE::Vector3f scale = PGE::Vector3f::ONE;
 
         int materialID = 0;
+        PGE::Material* mater = nullptr;
+
 
     public:
         ModelInstance(Model* model);
@@ -55,8 +59,7 @@ class ModelInstance {
         void setRotation(const PGE::Vector3f& rot);
         void setScale(const PGE::Vector3f& scl);
 
-        int createTexture(const PGE::String& tex);
-        void setTexture(int tex);
+        void setMaterial(PGE::Material* mat);
 
         const PGE::Vector3f& getPosition() const;
         const PGE::Vector3f& getRotation() const;

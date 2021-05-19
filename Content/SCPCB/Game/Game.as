@@ -46,13 +46,16 @@ namespace Game {
 	// Inputs are updated before each tick update
 	// Is not called while Environment::paused==true.
 	void update(uint32 tick, float interp) { // tick++;
+		Environment::interp=interp;
 		Environment::fpsFactor=Util::fpsFactor(interp);
 		//Debug::log("Tick: " + toString(tick) + "," + toString(interp) + ", Real " + toString(Environment::tickRate) + ", Est " + toString(1/avgTickrate));
 		Timer::update(tick);
 		tickHook.call();
+		Game::Pickables::update(tick,interp);
 		Game::World::update(tick,interp);
 	}
 	void updateAlways(uint32 tick, float interp) {
+		Environment::interp=interp;
 		Environment::fpsFactor=Util::fpsFactor(interp);
 		updateMenuState(tick,interp);
 		Game::World::updateAlways(tick,interp);
@@ -66,17 +69,20 @@ namespace Game {
 		__UPDATE_PLAYERCONTROLLER_TEST_TODO_REMOVE(Player::Controller, Input::getDown(), deltaCtrl );
 	}
 	void render(float interp) {
+		Environment::interp=interp;
 		Environment::fpsFactor=Util::fpsFactor(interp);
 		if(DEBUGGING) { AngelDebug::render(interp); }
 		Game::World::render(interp);
 	}
 	void renderMenu(float interp) {
+		Environment::interp=interp;
 		Environment::fpsFactor=Util::fpsFactor(interp);
 		//Debug::log("Render: " + toString(interp) + ", Real " + toString(Environment::frameRate) + ", Est " + toString(1/avgFramerate));
 		if(DEBUGGING) { AngelDebug::renderMenu(interp); }
 		//Game::World::renderMenu(interp);
 	}
 	void renderAlways(float interp) {
+		Environment::interp=interp;
 		Environment::fpsFactor=Util::fpsFactor(interp);
 		Game::World::renderAlways(interp);
 	}
@@ -156,40 +162,42 @@ namespace Game {
 			Item::startLoading();
 			break;
 		case 3:
-			LoadingMenu.setProgress(0.2f+(Environment::loadDone/Environment::loadMax)*0.3f);
-			if(Item::load()) { Item::finishLoading(); loadNext("Rooms"); }
+			LoadingMenu.setProgress(0.2f+(Environment::loadDone/Environment::loadMax)*0.2f);
+			if(Item::load()) { Item::finishLoading(); Prop::startLoading(); loadNext("Props"); }
 			else { Environment::loadDone++; }
 			break;
 		case 4:
-			LoadingMenu.setProgress(0.55f);
-			loadNext("Room Definitions");
-			Room::startLoading();
+			LoadingMenu.setProgress(0.4f+(Environment::loadDone/Environment::loadMax)*0.2f);
+			if(Prop::load()) { Prop::finishLoading(); Room::startLoading(); loadNext("Rooms"); }
+			else { Environment::loadDone++; }
 			break;
 		case 5:
-			LoadingMenu.setProgress(0.55f+(Environment::loadDone/Environment::loadMax)*0.3f);
-			Environment::loadState++; if(Room::load()) { Room::finishLoading(); loadNext("Game"); }
+			LoadingMenu.setProgress(0.6f+(Environment::loadDone/Environment::loadMax)*0.2f);
+			if(Environment::loadDone >= 10) { loadNext("SKIP LOADING TOO MANY ROOMS"); } // it takes a while
+			else if(Room::load()) { Room::finishLoading(); loadNext("Game"); }
 			else { Environment::loadDone++; }
 			break;
 		case 6:
-			LoadingMenu.setProgress(0.9f);
+			LoadingMenu.setProgress(0.85f);
 			loadNext("Zones...");
 		//	@lcz = LightContainmentZone();
 		//	@test_shared_global = @lcz;
 			loadMessage="done!";
 			break;
 		case 7:
-			LoadingMenu.setProgress(0.95f);
+			LoadingMenu.setProgress(0.9f);
 			loadNext("AngelDebug");
 			if(DEBUGGING) { AngelDebug::load(); }
 			loadMessage="done!";
 			break;
 		case 8:
-			LoadingMenu.setProgress(1.f);
+			LoadingMenu.setProgress(0.95f);
 			loadNext("Starting up");
 			if(DEBUGGING) { AngelDebug::initialize(); }
 			@MainMenu=menu_Main();
 			Menu::Pause::load();
 			@ConsoleMenu=menu_Console();
+			LoadingMenu.setProgress(1.f);
 			break;
 		case 9:
 			loadNext("Finished!");
@@ -206,24 +214,54 @@ namespace Game {
 	}
 }
 
+// # Utility Models ----
+namespace Util {
+	// Primary purpose is to store resource data without actually loading the resource.
+	// Secondary purpose is to abstractify this resource data and generate instances of the resources without creating new copies.
+	// This is defined here instead of util because of the need for Game::Model@ instantiate(), unless that too is ported to Util.
+
+	// # Util::Model@ ----
+	abstract class Model {
+		string path;
+		string skin;
+		Vector3f scale;
+		bool pickable;
+		Texture@ texture; //keep-texture-alive;
+		CMaterial@ material;
+		Model(string iPath, float&in iScale=1.f, string&in iSkin="") { path=iPath; scale=Vector3f(iScale); skin=iSkin; }
+		Model(string iPath, Vector3f&in iScale, string&in iSkin="") { path=iPath; scale=iScale; skin=iSkin; }
+		void construct() {
+			if(skin!="") {
+				@texture=@Texture::get(skin);
+				@material=@CMaterial::create(@texture);
+			}
+		}
+		Game::Model@ instantiate() { return (pickable ? cast<Game::Model@>(Game::Model::Picker(@this)) : (Game::Model(@this))); }
+	}
+}
+
 // # Game::Model@ ----
 // A CModel mesh object.
 namespace Game { class Model {
 	CModel@ mesh;
-	Model(string&in cPath, float&in cScale=1.f, string&in cSkin="") { create(cPath,cScale,cSkin); }
-	Model(Item::Model@&in iMdl) { create(iMdl.path,iMdl.scale,iMdl.skin); }
-	void create(string&in cPath, float&in cScale=1.f, string&in cSkin="") {
+	Model(string&in cPath, float&in cScale=1.f, CMaterial@ cMaterial=null) { create(cPath,Vector3f(cScale),@cMaterial); }
+	Model(string&in cPath, Vector3f&in cScale, CMaterial@ cMaterial=null) { create(cPath,cScale,@cMaterial); }
+	Model(Util::Model@&in iMdl) { create(iMdl.path,iMdl.scale,@iMdl.material); }
+	void create(string&in cPath, Vector3f&in cScale=Vector3f(1.f), CMaterial@ mat=null) {
 		@mesh=CModel::create(cPath);
 		mesh.position=Vector3f(0,0,0);
 		mesh.rotation=Vector3f(0,0,0);
-		mesh.scale=Vector3f(cScale);
-		skin=cSkin; //mesh.skin=cSkin;
+		mesh.scale=cScale;
+		@material=@mat;
+		if(@material != null) { mesh.setMaterial(@material); }
 	}
 	~Model() { CModel::destroy(mesh); }
+	bool isPickable;
 	bool pickable;
 	Vector3f position { get { return mesh.position; } set { mesh.position = value; } }
 	Vector3f rotation { get { return mesh.rotation; } set { mesh.rotation = value; } }
 	Vector3f scale { get { return mesh.scale; } set { mesh.scale = value; } }
+	CMaterial@ material;
 	string skin;
 	// string skin { get { return mesh.skin; } set { mesh.skin=value; } }
 	void render() { mesh.render(); }
@@ -233,28 +271,72 @@ namespace Game { class Model {
 } }
 
 
+// # Game::Pickables; (namespace) ----
+// Pickable manager
+
+namespace Game { namespace Pickables {
+	array<Game::Model::Picker@> activePickers;
+	void activate(Game::Model::Picker@&in picker) {
+		if(!picker._pickerActive) { // runOnce
+			picker._pickerActive=true;
+			Pickable::activatePickable(picker._picker);
+			activePickers.insertLast(@picker);
+		}
+	}
+	void deactivate(Game::Model::Picker@&in picker) {
+		if(picker._pickerActive) {
+			picker._pickerActive=false;
+			Pickable::deactivatePickable(picker._picker);
+			// Util::Array::removeByValue(activePickers,@picker);
+			for(int i=0; i<activePickers.length(); i++) { if(@activePickers[i]==@picker) { activePickers.removeAt(i); break; } }
+		}
+	}
+	void update(uint32&in tick, float&in interp) {
+		for(int i=0; i<activePickers.length(); i++) {
+			Game::Model::Picker@ picker=activePickers[i];
+			if(picker.picked) {
+				if(!picker.wasPicked) {
+					picker.wasPicked=true;
+					picker.onPicked();
+				}
+			} else if(picker.wasPicked) {
+				picker.wasPicked=false;
+			}
+		}
+	}
+} }
+
 // # Game::Model::Pickable@ ----
 // A world-model mesh object with a world picker.
-
 namespace Game { namespace Model { class Picker : Game::Model {
 	Pickable@ _picker;
-	Picker(string cPath,float&in cScale=1.f, string&in cSkin="") { super(cPath,cScale,cSkin); createPicker(); }
-	Picker(Item::Model@&in iMdl) { super(iMdl); createPicker(); }
+	bool _pickerActive;
+	Util::Function@ onPicked;
+	Picker(string cPath, float&in cScale=1.f, CMaterial@&in cMaterial=null) { super(cPath,Vector3f(cScale),@cMaterial); createPicker(); }
+	Picker(string cPath, Vector3f&in cScale, CMaterial@&in cMaterial=null) { super(cPath,cScale,@cMaterial); createPicker(); }
+	Picker(Util::Model@&in iMdl) { super(@iMdl); createPicker(); }
 	void createPicker() {
 		@_picker=Pickable();
 		_picker.position=position;
 		pickable=true;
+		isPickable=true;
+		@onPicked=@Util::noop;
 	}
 
-	~Picker() { CModel::destroy(mesh); pickable=false; }
+	~Picker() { CModel::destroy(mesh); Pickable::deactivatePickable(_picker); }
 	Vector3f position { get { return mesh.position; } set { mesh.position = value; _picker.position = value; } }
 	bool picked { get { return _picker.getPicked(); } }
+	bool wasPicked;
 	bool _pickable;
 	bool pickable { get { return _pickable; } set { _pickable=value;
-		if(value) { Pickable::activatePickable(_picker); }
-		else { Pickable::deactivatePickable(_picker); }
+		if(value) { Game::Pickables::activate(@this); }
+		else { Game::Pickables::deactivate(@this); }
 	} }
+
+
 } } }
+
+
 
 
 // # Game::Room@ ----
@@ -262,6 +344,7 @@ namespace Game { namespace Model { class Picker : Game::Model {
 
 namespace Game { class Room {
 	RM2@ mesh;
+	Room() {}
 	Room(string&in cPath) { create(cPath); }
 	Room(Room::Model@&in iMdl) { create(iMdl.path); }
 	void create(string&in cPath) {
@@ -283,6 +366,30 @@ namespace Game { class Room {
 
 } }
 
+// # Game::RoomCBR@ ----
+// A world matrix mesh
+
+namespace Game { class RoomCBR : Room {
+	CBR@ meshcbr;
+	RoomCBR(string&in cPath) { super(); create(cPath); }
+	RoomCBR(Room::ModelCBR@&in iMdl) { create(iMdl.path); }
+	void create(string&in cPath) { @meshcbr=CBR::load(cPath); }
+	~RoomCBR() { CBR::delete(@meshcbr); }
+
+	void render(Matrix4x4f&in matrix) { meshcbr.render(matrix); }
+	array<Collision::Instance> getCollision() { return array<Collision::Instance>(meshcbr.collisionMeshCount()); }
+	void appendCollisionsToWorld(Matrix4x4f&in matrix) {
+		array<Collision::Instance> meshes=array<Collision::Instance>(meshcbr.collisionMeshCount());
+		for(int i=0; i<meshcbr.collisionMeshCount(); i++) {
+			Collision::Instance collider = Game::World::Collision.addInstance(meshcbr.getCollisionMesh(i),matrix);
+			Game::World::Collision.updateInstance(collider,matrix);
+		}
+	}
+
+} }
+
+
+
 
 // # Game::World --------
 namespace Game { namespace World {
@@ -296,6 +403,7 @@ namespace Game { namespace World {
 	void updateAlways(uint32 tick, float interp) {
 		Item::updateAll();
 		Room::updateAll();
+		Prop::updateAll();
 	}
 	void render(float interp) {
 
@@ -303,6 +411,7 @@ namespace Game { namespace World {
 	void renderAlways(float interp) {
 		Item::renderAll();
 		Room::renderAll();
+		Prop::renderAll();
 	}
 } }
 

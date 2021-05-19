@@ -197,19 +197,12 @@ void World::applyCameraMouseMovement(PGE::Vector2f mousePos) {
     PGE::Vector2f addAngle =(mousePos - screenCenter) * (config->sensitivity->value / 30000.f);
     camera->addAngle(addAngle.x, addAngle.y);
     io->setMousePosition(screenCenter);
-    camera->update();
+    //camera->update();
     pickMng->update();
 }
 
 // Lifecycle - Frames Per Second
 void World::startFrame(float interpolation) {
-    graphics->update();
-    graphics->resetRenderTarget();
-    graphics->clear(PGE::Color(1.f, 0.f, 1.f));
-
-    camera->updateDrawTransform(1.f);
-    gfxRes->setCameraUniforms(camera);
-
     if (loading) {
         graphics->setDepthTest(false);
         scripting->updateLoadFrame(interpolation);
@@ -218,10 +211,23 @@ void World::startFrame(float interpolation) {
         return;
     }
 
+    graphics->update();
+    graphics->resetRenderTarget();
+    graphics->clear(PGE::Color(1.f, 0.f, 1.f));
+
+     // 1.f works alrighty.
+
+    camera->update();
     pickMng->render();
 
     scripting->updateEveryFrame(interpolation);
-    if (!paused) { scripting->updateFrame(interpolation); }
+    if (!paused) {
+        scripting->updateFrame(interpolation);
+        camera->updateDrawTransform(1.f);
+    } else {
+        camera->updateDrawTransform(1.f);
+    }
+    gfxRes->setCameraUniforms(camera);
 
     graphics->setDepthTest(false);
     scripting->updateMenuFrame(interpolation);
