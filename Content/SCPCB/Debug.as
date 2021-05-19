@@ -96,8 +96,8 @@ void initialize() { // This is the first function that is called lol.
 	Prop::spawn("containmentdoor",Vector3f(20,5,140),Vector3f(0,Math::PI*0.125,0));
 
 	int perRow = 10;
-	int dist = 150;
-	Vector3f origin=Vector3f(100,0,100);
+	int dist = 300;
+	Vector3f origin=Vector3f(300,0,300);
 	for(int i=0; i<Room::templates.length(); i++) {
 		int xpos = Math::floor( float(i)/float(perRow) );
 		int ypos = Math::floor( i%perRow );

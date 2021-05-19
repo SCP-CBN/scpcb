@@ -49,6 +49,7 @@ namespace Room { abstract class Template : Room::TemplateInterface {
 	Room@ instantiate() {return null;}
 	Template() { Room::templates.insertLast(@this); }
 	void internalConstruct() {
+		Debug::log("Internal constructed " + name);
 		@mesh=model.instantiate();
 		construct();
 	}
@@ -100,10 +101,10 @@ abstract class Room {
 		_worldMatrix = Matrix4x4f::constructWorldMat(position, scale, Vector3f(0.0, rotation, 0.0));
 	}
 	void updatePosition() {} // override
-	float maxRenderDist=512^2;
+	float maxRenderDist=512**2;
 	void render() {
 		float dist = position.distanceSquared(Player::Controller.position);
-		if(dist <= maxRenderDist) {
+		if(true) { //dist <= maxRenderDist) {
 			template.mesh.render(worldMatrix);
 		}
 	}
@@ -125,7 +126,7 @@ namespace Room {
 		
 	}
 	bool load() {
-		if(Environment::loadDone>=templates.length()-1) { finishLoading(); return true; }
+		if(Environment::loadDone>templates.length()-1) { finishLoading(); return true; }
 		Room::Template @template=templates[Environment::loadDone];
 		Environment::loadMessage=template.zone + ":" + template.name;
 		template.internalConstruct();
@@ -147,10 +148,7 @@ namespace Room {
 		instance.rotation=rotation;
 		instances.insertLast(@instance);
 		instance.recalculateWorldMatrix();
-		Debug::log("Template: " + (@template==null ? "Null" : "Good"));
-		Debug::log("Mesh: " + (@template.mesh==null ? "Null" : "Good"));
 		template.mesh.appendCollisionsToWorld(instance.worldMatrix);
-		Debug::log("Spawned room : " + template.name);
 		instance.construct();
 		return @instance;
 	}

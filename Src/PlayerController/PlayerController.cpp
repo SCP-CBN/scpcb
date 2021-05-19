@@ -9,7 +9,7 @@
 
 
 constexpr float WALK_SPEED_MAX = 18.0f;
-constexpr float SPRINT_SPEED_MAX = 42.0f;
+constexpr float SPRINT_SPEED_MAX = 42.0f*5.f; // need to move faster to view rooms
 constexpr float WALK_SPEED_SMOOTHING_FACTOR = 0.9f;
 constexpr float STAMINA_RECOVERY_RATE = 0.2f;
 

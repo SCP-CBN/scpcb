@@ -102,7 +102,7 @@ namespace Item {
 		if(ModelImageGenerator::getInitialized()) { ModelImageGenerator::deinitialize(); }
 	}
 	bool load() {
-		if(Environment::loadDone>=templates.length()-1) { finishLoading(); return true; }
+		if(Environment::loadDone>templates.length()-1) { finishLoading(); return true; }
 		Item::Template @template=templates[Environment::loadDone];
 		Environment::loadMessage=template.name;
 		if(!ModelImageGenerator::getInitialized()) { ModelImageGenerator::initialize(256); }
