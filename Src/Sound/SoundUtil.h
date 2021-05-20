@@ -10,12 +10,12 @@
 
 class SoundData : public PGE::Resource<PGE::byte*> {
 	public:
-		SoundData(const PGE::FilePath& file, ALuint* data);
+		SoundData(const PGE::FilePath& file);
 		~SoundData();
 };
 
 namespace SoundHelper {
-	PGE::Sound* load(const PGE::FilePath& file);
+	//PGE::Sound* load(const PGE::FilePath& file);
 }
 
 #endif // SOUND_UTIL_H_DEFINED

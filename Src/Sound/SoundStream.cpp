@@ -7,26 +7,15 @@
 
 #include "PGESound.h"
 
-#include <al.h>
-#include <alc.h>
 
 
 using namespace PGE;
 
-ALCdevice* device;
 
 SoundStream::SoundStream() {
     printf("HELLO FROM NEW SOUND STREAM\n");
 }
 
-void loadWAVfile(PGE::String fpath, ALenum &format, ALvoid* &data, ALsizei &size, ALsizei &freq, ALboolean &loop) {
-
-}
-
-ALuint* sound_load_ogg(const char* path) {
-    ALuint* sound;
-    Ogg
-}
 
 void SoundStream::playTestTone() {
     printf("HELLO FROM TEST TONE\n");
@@ -34,6 +23,7 @@ void SoundStream::playTestTone() {
     PGE::FilePath fpath = PGE::FilePath::fromStr(filename);
     printf("Sound Path: %s\n", fpath.cstr());
 
+    /*
     const char* defname = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
     printf("DEFAULT DEVICE: %s\n", defname);
 
@@ -41,7 +31,6 @@ void SoundStream::playTestTone() {
     ALCcontext* context = alcCreateContext(device, NULL);
     alcMakeContextCurrent(context);
 
-    /*
     struct stat statbuf;
 
     //PGE_ASSERT(openALDevice != nullptr, "Failed to start device");
@@ -58,7 +47,7 @@ void SoundStream::playTestTone() {
     alSourcei(source, AL_LOOPING, AL_FALSE);
 
     ALvoid* data;
-    */
+
 
 
     ALuint source;
@@ -83,11 +72,11 @@ void SoundStream::playTestTone() {
 
     alSourcePlay(source);
     printf("PLAYED SOUND\n");
-
+        */
 }
 
 SoundStream::~SoundStream() {
-    alcCloseDevice(device);
+   //alcCloseDevice(device);
 }
 
 /*

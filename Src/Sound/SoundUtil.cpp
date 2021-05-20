@@ -1,10 +1,7 @@
 #include "SoundUtil.h"
 
 
-#include <al.h>
-#include <alc.h>
-
-SoundData::SoundData(const PGE::FilePath& file, ALuint* data) {
+SoundData::SoundData(const PGE::FilePath& file) {
 
 }
 
@@ -12,8 +9,8 @@ SoundData::~SoundData() {
 	
 }
 
-PGE::Sound* SoundHelper::load(const PGE::FilePath& file) {
-	std::ifstream stream(file.cstr(), std::ifstream::binary | std::ifstream::in);
+//PGE::Sound* SoundHelper::load(const PGE::FilePath& file) {
+/*	std::ifstream stream(file.cstr(), std::ifstream::binary | std::ifstream::in);
 	int startPos = stream.tellg();
 	ALuint* data;
 	char c;
@@ -22,5 +19,6 @@ PGE::Sound* SoundHelper::load(const PGE::FilePath& file) {
 	}
 
 	SoundData data = SoundData(file, data);
-	return PGE::Sound::load(file, data);
-}
+	return PGE::Sound::load(file, data);*/
+//	return nullptr;
+//}

@@ -5,8 +5,7 @@
 
 #include "PGESound.h"
 
-#include <al.h>
-#include <alc.h>
+
 
 namespace PGE {
 class SoundStream {

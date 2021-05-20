@@ -12,7 +12,7 @@
 #include "Sound.h"
 #include "PGESound.h"
 #include "SoundStream.h"
-#include "SoundHelper.h"
+#include "SoundUtil.h"
 
 
 class ResourcePackManager;
@@ -34,8 +34,8 @@ private:
         PGE::Sound* sound;
         int refCount;
     };
-    std::unordered_map<PGE::Texture*, TextureEntry*> soundToSounds;
-    std::unordered_map<PGE::String::Key, TextureEntry*> pathToSounds;
+    std::unordered_map<PGE::Sound*, SoundEntry*> soundToSounds;
+    std::unordered_map<PGE::String::Key, SoundEntry*> pathToSounds;
 
     Assimp::Importer* soundImporter;
 

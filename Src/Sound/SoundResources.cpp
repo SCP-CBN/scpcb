@@ -3,7 +3,7 @@
 #include "SoundResources.h"
 #include "SoundLayer.h"
 #include "Sound.h"
-#include "SoundHelper.h"
+
 
 #include "../Utils/ResourcePackManager.h"
 #include "../Save/Config.h"
@@ -35,7 +35,7 @@ PGE::Sound* SoundResources::getSound(const PGE::String& filename) {
 
     SoundEntry* newSound = new SoundEntry();
     newSound->refCount = 1;
-    newSound->sound = SoundHelper::load(path);
+    //newSound->sound = SoundHelper::load(path);
     newSound->name = filename;
     pathToSounds.emplace(filename, newSound);
     soundToSounds.emplace(newSound->sound, newSound);

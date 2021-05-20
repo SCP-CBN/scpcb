@@ -7,8 +7,6 @@
 #include "Sound.h"
 #include "SoundStream.h"
 
-#include <al.h>
-#include <alc.h>
 
 namespace PGE {
 

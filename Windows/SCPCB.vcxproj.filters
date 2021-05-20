@@ -218,13 +218,13 @@
     <ClCompile Include="..\Src\Sound\SoundStream.cpp">
       <Filter>Sound</Filter>
     </ClCompile>
-    <ClCompile Include="..\Src\Sound\OAL.cpp">
-      <Filter>Sound</Filter>
-    </ClCompile>
     <ClCompile Include="..\Src\Sound\PGESound.cpp">
       <Filter>Sound</Filter>
     </ClCompile>
     <ClCompile Include="..\Src\Sound\Sound.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Sound\SoundUtil.cpp">
       <Filter>Sound</Filter>
     </ClCompile>
   </ItemGroup>
@@ -446,10 +446,10 @@
     <ClInclude Include="..\Src\Sound\SoundStream.h">
       <Filter>Sound</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Sound\OAL.h">
+    <ClInclude Include="..\Src\Sound\PGESound.h">
       <Filter>Sound</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Sound\PGESound.h">
+    <ClInclude Include="..\Src\Sound\SoundUtil.h">
       <Filter>Sound</Filter>
     </ClInclude>
   </ItemGroup>
