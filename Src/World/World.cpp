@@ -5,6 +5,9 @@
 #include <Color/Color.h>
 #include <filesystem>
 
+#include "../../Engine/Libraries/SDL2/include/sdl.h"
+#include "../../Engine/Libraries/SDL2/include/sdl_audio.h"
+
 #include "Timing.h"
 #include "Pickable.h"
 #include "ScriptWorld.h"
@@ -12,6 +15,7 @@
 #include "../Graphics/GraphicsResources.h"
 #include "../Graphics/DebugGraphics.h"
 #include "../Models/CBR.h"
+#include "../Sound/SoundResources.h"
 #include "../Save/Config.h"
 #include "../Input/KeyBinds.h"
 #include "../Input/Input.h"
@@ -44,6 +48,8 @@ World::World() {
     timing = new Timing(60, 60);
 
     gfxRes = new GraphicsResources(graphics, config);
+
+    sndRes = new SoundResources(config);
 
 
     // Fonts

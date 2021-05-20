@@ -206,6 +206,27 @@
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\CBRDefinitions.cpp">
       <Filter>Scripting\NativeDefinitions</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Sound\SoundDefinitions.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Sound\SoundLayer.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Sound\SoundResources.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Sound\SoundStream.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Sound\OAL.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Sound\PGESound.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Sound\Sound.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -410,6 +431,27 @@
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\CBRDefinitions.h">
       <Filter>Scripting\NativeDefinitions</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Sound\Sound.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Sound\SoundDefinitions.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Sound\SoundLayer.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Sound\SoundResources.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Sound\SoundStream.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Sound\OAL.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Sound\PGESound.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SCPCB.rc" />
@@ -456,6 +498,9 @@
     </Filter>
     <Filter Include="Serialize">
       <UniqueIdentifier>{6627f51a-c0fb-4ca8-899e-021571bdf075}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sound">
+      <UniqueIdentifier>{7a3108aa-3100-45c1-b126-864b2176aaa7}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
