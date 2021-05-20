@@ -3,7 +3,7 @@
 #include "SoundResources.h"
 #include "SoundLayer.h"
 #include "Sound.h"
-
+#include "SoundHelper.h"
 
 #include "../Utils/ResourcePackManager.h"
 #include "../Save/Config.h"
@@ -17,16 +17,53 @@
 
 
 SoundResources::SoundResources(Config* con) {
-    printf("HELLO FROM SOUNDRESOURCES CONSTRUCTOR\n");
-    PGE::SoundStream* x = new PGE::SoundStream();
-    x->playTestTone();
 
 }
 SoundResources::~SoundResources() {
-    printf("HELLO FROM SOUNDRESOURCES DECONSTRUCTOR");
 }
-DebugSound::DebugSound() {
+
+
+PGE::Sound* SoundResources::getSound(const PGE::String& filename) {
+    auto find = pathToSounds.find(filename);
+    if (find != pathToSounds.end()) {
+        find->second->refCount++;
+        return find->second->sound;
+    }
+
+    PGE::FilePath path = rpm->getHighestModPath(filename);
+    if (!path.exists()) { return nullptr; }
+
+    SoundEntry* newSound = new SoundEntry();
+    newSound->refCount = 1;
+    newSound->sound = SoundHelper::load(path);
+    newSound->name = filename;
+    pathToSounds.emplace(filename, newSound);
+    soundToSounds.emplace(newSound->sound, newSound);
+    return newSound->sound;
 }
+
+void SoundResources::dropSound(PGE::Sound* sound) {
+    auto find = soundToSounds.find(sound);
+    if (find != soundToSounds.end()) {
+        SoundEntry* soundEntry = find->second;
+        soundEntry->refCount--;
+        if (soundEntry->refCount <= 0) {
+            delete sound;
+            pathToSounds.erase(soundEntry->name);
+            soundToSounds.erase(find);
+            delete soundEntry;
+        }
+    } else {
+        delete sound;
+    }
+}
+
+
+
+
+
+
+DebugSound::DebugSound() {}
 DebugSound::~DebugSound() {}
 DebugSound* SoundResources::getDebugSound() const { return debugSound; }
 
@@ -86,20 +123,5 @@ SoundInstance* SoundResources::getSoundInstance(const PGE::String& filename) {
 */
 
 /*
-void SoundResources::dropSoundInstance(SoundInstance* mi) {
-    auto find = modelToModels.find(mi->getModel());
-    if (find != modelToModels.end()) {
-        ModelEntry* model = find->second;
-        model->refCount--;
-        if (model->refCount <= 0) {
-            delete model->model;
-            pathToModels.erase(model->filename);
-            modelToModels.erase(find);
-            delete model;
-        }
-    }
-}
-
-
 
 */

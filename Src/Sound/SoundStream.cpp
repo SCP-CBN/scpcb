@@ -23,6 +23,11 @@ void loadWAVfile(PGE::String fpath, ALenum &format, ALvoid* &data, ALsizei &size
 
 }
 
+ALuint* sound_load_ogg(const char* path) {
+    ALuint* sound;
+    Ogg
+}
+
 void SoundStream::playTestTone() {
     printf("HELLO FROM TEST TONE\n");
     PGE::String filename = "SCBCP/Content/SFX/SCPs/914/Refining.ogg";

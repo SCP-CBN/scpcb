@@ -1,0 +1,9 @@
+#include <Misc/FilePath.h>
+using namespace PGE;
+
+    engine->RegisterObjectBehaviour("Vector2f", asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(vector2fConstructor), asCALL_CDECL_OBJLAST);
+    engine->RegisterObjectBehaviour("Vector2f", asBEHAVE_CONSTRUCT, "void f(float s)", asFUNCTION(vector2fConstructorSingle), asCALL_CDECL_OBJLAST);
+    engine->RegisterObjectBehaviour("Vector2f", asBEHAVE_CONSTRUCT, "void f(float x, float y)", asFUNCTION(vector2fConstructorParametrized), asCALL_CDECL_OBJLAST);
+    engine->RegisterObjectBehaviour("Vector2f", asBEHAVE_DESTRUCT, "void f()", asFUNCTION(vector2fDestructor), asCALL_CDECL_OBJLAST);
+    engine->RegisterObjectProperty("Vector2f", "float x", asOFFSET(PGE::Vector2f, x));
+    engine->RegisterObjectProperty("Vector2f", "float y", asOFFSET(PGE::Vector2f, y));
