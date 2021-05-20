@@ -77,7 +77,7 @@
       <EnableModules>false</EnableModules>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>%(AdditionalDependencies);$(Platform)/$(Configuration)/Engine.lib;../Libraries/freetype-2.10.1/objs/$(Platform)/$(Configuration)/freetype.lib;../Libraries/assimp-4.1.0/VS2017/assimp/$(Platform)/$(Configuration)/assimp.lib;../Libraries/tinyxml2-7.1.0/tinyxml2/x64/Debug-Lib/tinyxml2.lib;../Libraries/angelscript-2.34.0/angelscript/lib/angelscript64d.lib</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies);$(Platform)/$(Configuration)/Engine.lib;../Libraries/freetype-2.10.1/objs/$(Platform)/$(Configuration)/freetype.lib;../Libraries/assimp-4.1.0/VS2017/assimp/$(Platform)/$(Configuration)/assimp.lib;../Libraries/tinyxml2-7.1.0/tinyxml2/x64/Debug-Lib/tinyxml2.lib;$(Platform)/$(Configuration)/libogg.lib;$(Platform)/$(Configuration)/libvorbis.lib;$(Platform)/$(Configuration)/libvorbisfile.lib;../Libraries/angelscript-2.34.0/angelscript/lib/angelscript64d.lib</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
@@ -125,7 +125,7 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>%(AdditionalDependencies);$(Platform)/$(Configuration)/Engine.lib;../Libraries/freetype-2.10.1/objs/$(Platform)/$(Configuration)/freetype.lib;../Libraries/assimp-4.1.0/VS2017/assimp/$(Platform)/$(Configuration)/assimp.lib;../Libraries/tinyxml2-7.1.0/tinyxml2/x64/Debug-Lib/tinyxml2.lib;../Libraries/angelscript-2.34.0/angelscript/lib/angelscript64.lib</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies);$(Platform)/$(Configuration)/Engine.lib;../Libraries/freetype-2.10.1/objs/$(Platform)/$(Configuration)/freetype.lib;../Libraries/assimp-4.1.0/VS2017/assimp/$(Platform)/$(Configuration)/assimp.lib;../Libraries/tinyxml2-7.1.0/tinyxml2/x64/Debug-Lib/tinyxml2.lib;$(Platform)/$(Configuration)/libogg.lib;$(Platform)/$(Configuration)/libvorbis.lib;$(Platform)/$(Configuration)/libvorbisfile.lib;../Libraries/angelscript-2.34.0/angelscript/lib/angelscript64.lib</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>

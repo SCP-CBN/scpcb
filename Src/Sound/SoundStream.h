@@ -7,7 +7,6 @@
 
 
 
-namespace PGE {
 class SoundStream {
 private:
 
@@ -19,6 +18,5 @@ public:
     void playFile(PGE::String filename);
 
 };
-}
 
 #endif // SOUNDSTREAM_H_INCLUDED

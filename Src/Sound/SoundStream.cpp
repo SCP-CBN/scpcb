@@ -7,23 +7,93 @@
 
 #include "PGESound.h"
 
+#include <../../Engine/Libraries/SDL2/include/SDL_audio.h>
+#include <../../Engine/Libraries/SDL2/include/SDL.h>
 
+#include <fstream>
+#include <map>
+#include <ogg/ogg.h>
+#include <vorbis/codec.h>
+//#include <vorbis/vorbisenc.h>
+#include <vorbis/vorbisfile.h>
 
-using namespace PGE;
-
+class OggStream
+{
+    int mSerial;
+    ogg_stream_state mState;
+    int mPacketCount;
+};
+typedef std::vector<int, OggStream*> StreamMap;
 
 SoundStream::SoundStream() {
     printf("HELLO FROM NEW SOUND STREAM\n");
 }
 
+SDL_AudioDeviceID dev;
+SDL_AudioSpec baseChannel;
 
+
+ogg_int16_t convbuffer[4096]; /* take 8k out of the data segment, not the stack */
+int convsize = 4096;
 void SoundStream::playTestTone() {
     printf("HELLO FROM TEST TONE\n");
-    PGE::String filename = "SCBCP/Content/SFX/SCPs/914/Refining.ogg";
+    PGE::String filename = "C:/Users/Pyro/source/repos/scpcb/Content/SCPCB/SFX/SCP/914/Refining.ogg";
     PGE::FilePath fpath = PGE::FilePath::fromStr(filename);
-    printf("Sound Path: %s\n", fpath.cstr());
+    printf("Sound Path: %s\n", filename.cstr());
+
+    SDL_Init(SDL_INIT_AUDIO);
+    SDL_memset(&baseChannel, 0, sizeof(baseChannel));
+    baseChannel.freq = 44100;
+    baseChannel.format = AUDIO_S16SYS;
+    baseChannel.samples = 1024;
+    baseChannel.callback = NULL;
+
+
+    printf("Loading file : %s\n", filename.cstr());
+    OggVorbis_File vorbf;
+    ov_fopen(filename.cstr(), &vorbf);
+    int numSamples = ov_pcm_total(&vorbf, -1);
+    int numStreams = ov_streams(&vorbf);
+    int runtime = ov_time_total(&vorbf, -1);
+    int bitRate = ov_info(&vorbf, 0)->rate;
+
+    SDL_AudioSpec channel;
+    channel.freq = 44100;
+    channel.size = 1024;
+    channel.format = AUDIO_S16SYS;
+    channel.channels = 1;
+    channel.samples = 1024;
+    channel.callback = NULL;
+
+    dev = SDL_OpenAudioDevice(NULL, 0, &channel, NULL, 0);
+
+    int strm = 0; // new int(numStreams);
+    ogg_int64_t pcmlength = ov_pcm_total(&vorbf, -1);
+    char* buf;
+    buf = new char[4096]; // malloc(pcmlength * 2);
+
+    int iter = 0;
+    while (1) {
+        iter++; if (iter >= 1000000) { break; }
+        int bytes_read = ov_read(&vorbf,buf, 4096, 0, 2, 1, &strm);
+        if (bytes_read <= 0) { break; }
+        for (int w = 0; w < bytes_read; w++) {
+            SDL_QueueAudio(dev, &buf[w], 1);
+        }
+        buf = new char[4096];
+    }
+
+
+    SDL_PauseAudioDevice(dev, 0);
+    ov_clear(&vorbf);
 
     /*
+    * 
+    *     for (int i = 0; i < channel.size; i++) {
+        int16_t sample = 16; // data.at(i);
+        const int sample_size = sizeof(sample);
+        SDL_QueueAudio(dev, &sample, sample_size);
+    }
     const char* defname = alcGetString(NULL, ALC_DEFAULT_DEVICE_SPECIFIER);
     printf("DEFAULT DEVICE: %s\n", defname);
 

@@ -1,23 +1,14 @@
 // the Sound Resources object is similar to GraphicsResources and handles sound layers.
 
 #include "SoundResources.h"
-#include "SoundLayer.h"
-#include "Sound.h"
 
 
-#include "../Utils/ResourcePackManager.h"
-#include "../Save/Config.h"
+class SoundStream;
 
-#include <String/String.h>
-#include <String/Key.h>
-
-
-#include "PGESound.h"
-#include "SoundStream.h"
-
-
+SoundStream* x;
 SoundResources::SoundResources(Config* con) {
-
+    x = new SoundStream();
+    x->playTestTone();
 }
 SoundResources::~SoundResources() {
 }
