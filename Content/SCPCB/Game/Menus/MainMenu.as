@@ -86,7 +86,7 @@ class menu_Main : GUI {
 	version.alignHorizontal=GUI::Align::Left;
 	version.alignVertical=GUI::Align::Bottom;
 	version.text="v1.4.0 Beta";
-	version.fontScale=1;
+	version.fontScale=0.1;
 
 	@rnjesus=Random();
 	//@rngLerp;

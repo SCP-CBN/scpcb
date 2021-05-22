@@ -45,14 +45,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>.\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\obj\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>../Engine/Include;../Libraries/freetype-2.10.1/include;../Libraries/angelscript-2.34.0/angelscript/include;../Libraries/angelscript-2.34.0/add_on;../Libraries/tinyxml2-7.1.0;../Libraries/assimp-4.1.0/include;$(IncludePath)</IncludePath>
+    <IncludePath>../Engine/Include;../Libraries/freetype-2.10.1/include;../Libraries/angelscript-2.34.0/angelscript/include;../Libraries/angelscript-2.34.0/add_on;../Libraries/tinyxml2-7.1.0;../Libraries/libvorbis-1.3.7/include;../Libraries/libogg-1.3.4/include;../Libraries/assimp-4.1.0/include;$(IncludePath)</IncludePath>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>.\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\obj\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>../Engine/Include;../Libraries/freetype-2.10.1/include;../Libraries/angelscript-2.34.0/angelscript/include;../Libraries/angelscript-2.34.0/add_on;../Libraries/tinyxml2-7.1.0;../Libraries/assimp-4.1.0/include;../Libraries/stb_image;$(IncludePath)</IncludePath>
+    <IncludePath>../Engine/Include;../Libraries/freetype-2.10.1/include;../Libraries/angelscript-2.34.0/angelscript/include;../Libraries/angelscript-2.34.0/add_on;../Libraries/tinyxml2-7.1.0;../Libraries/libvorbis-1.3.7/include;../Libraries/libogg-1.3.4/include;../Libraries/assimp-4.1.0/include;../Libraries/stb_image;$(IncludePath)</IncludePath>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
@@ -66,9 +66,8 @@
       <AssemblerListingLocation>.\obj\$(Platform)\$(Configuration)\</AssemblerListingLocation>
       <ObjectFileName>.\obj\$(Platform)\$(Configuration)\</ObjectFileName>
       <ProgramDataBaseFileName>.\obj\$(Platform)\$(Configuration)\</ProgramDataBaseFileName>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>VR_API_PUBLIC;OPENVR_BUILD_STATIC;_MBCS;STB_IMAGE_IMPLEMENTATION;STBI_WINDOWS_UTF8;STBI_FAILURE_USERMSG;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>VR_API_PUBLIC;OPENVR_BUILD_STATIC;_MBCS;STB_IMAGE_IMPLEMENTATION;STBI_WINDOWS_UTF8;STBI_FAILURE_USERMSG;AL_LIBTYPE_STATIC;DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <FloatingPointModel>Fast</FloatingPointModel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
@@ -78,8 +77,9 @@
       <EnableModules>false</EnableModules>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>%(AdditionalDependencies);$(Platform)/$(Configuration)/Engine.lib;../Libraries/freetype-2.10.1/objs/$(Platform)/$(Configuration)/freetype.lib;../Libraries/assimp-4.1.0/VS2017/assimp/$(Platform)/$(Configuration)/assimp.lib;../Libraries/tinyxml2-7.1.0/tinyxml2/x64/Debug-Lib/tinyxml2.lib;../Libraries/angelscript-2.34.0/angelscript/lib/angelscript64d.lib</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies);$(Platform)/$(Configuration)/Engine.lib;../Libraries/freetype-2.10.1/objs/$(Platform)/$(Configuration)/freetype.lib;../Libraries/assimp-4.1.0/VS2017/assimp/$(Platform)/$(Configuration)/assimp.lib;../Libraries/tinyxml2-7.1.0/tinyxml2/x64/Debug-Lib/tinyxml2.lib;$(Platform)/$(Configuration)/libogg.lib;$(Platform)/$(Configuration)/libvorbis.lib;$(Platform)/$(Configuration)/libvorbisfile.lib;../Libraries/angelscript-2.34.0/angelscript/lib/angelscript64d.lib</AdditionalDependencies>
       <SubSystem>Console</SubSystem>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <CustomBuildStep>
       <Command>
@@ -109,14 +109,13 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>
-      </AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AssemblerListingLocation>.\obj\$(Platform)\$(Configuration)\</AssemblerListingLocation>
       <ObjectFileName>.\obj\$(Platform)\$(Configuration)\</ObjectFileName>
       <ProgramDataBaseFileName>.\obj\$(Platform)\$(Configuration)\</ProgramDataBaseFileName>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <FloatingPointModel>Fast</FloatingPointModel>
-      <PreprocessorDefinitions>VR_API_PUBLIC;OPENVR_BUILD_STATIC;_MBCS;STB_IMAGE_IMPLEMENTATION;STBI_WINDOWS_UTF8;STBI_FAILURE_USERMSG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>VR_API_PUBLIC;OPENVR_BUILD_STATIC;_MBCS;STB_IMAGE_IMPLEMENTATION;STBI_WINDOWS_UTF8;STBI_FAILURE_USERMSG;AL_LIBTYPE_STATIC;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <EnforceTypeConversionRules>true</EnforceTypeConversionRules>
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
@@ -126,8 +125,9 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>%(AdditionalDependencies);$(Platform)/$(Configuration)/Engine.lib;../Libraries/freetype-2.10.1/objs/$(Platform)/$(Configuration)/freetype.lib;../Libraries/assimp-4.1.0/VS2017/assimp/$(Platform)/$(Configuration)/assimp.lib;../Libraries/tinyxml2-7.1.0/tinyxml2/x64/Debug-Lib/tinyxml2.lib;../Libraries/angelscript-2.34.0/angelscript/lib/angelscript64.lib</AdditionalDependencies>
+      <AdditionalDependencies>%(AdditionalDependencies);$(Platform)/$(Configuration)/Engine.lib;../Libraries/freetype-2.10.1/objs/$(Platform)/$(Configuration)/freetype.lib;../Libraries/assimp-4.1.0/VS2017/assimp/$(Platform)/$(Configuration)/assimp.lib;../Libraries/tinyxml2-7.1.0/tinyxml2/x64/Debug-Lib/tinyxml2.lib;$(Platform)/$(Configuration)/libogg.lib;$(Platform)/$(Configuration)/libvorbis.lib;$(Platform)/$(Configuration)/libvorbisfile.lib;../Libraries/angelscript-2.34.0/angelscript/lib/angelscript64.lib</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
       <Command>xcopy /d /s /y "$(ProjectDir)..\Content\*" "$(TargetDir)"
@@ -198,6 +198,13 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
     <ClInclude Include="..\Src\Serialize\IntProperty.h" />
     <ClInclude Include="..\Src\Serialize\ScriptSerializer.h" />
     <ClInclude Include="..\Src\Serialize\XMLProperty.h" />
+    <ClInclude Include="..\Src\Sound\PGESound.h" />
+    <ClInclude Include="..\Src\Sound\Sound.h" />
+    <ClInclude Include="..\Src\Sound\SoundDefinitions.h" />
+    <ClInclude Include="..\Src\Sound\SoundLayer.h" />
+    <ClInclude Include="..\Src\Sound\SoundResources.h" />
+    <ClInclude Include="..\Src\Sound\SoundStream.h" />
+    <ClInclude Include="..\Src\Sound\SoundUtil.h" />
     <ClInclude Include="..\Src\Utils\INI.h" />
     <ClInclude Include="..\Src\Utils\ResourcePackManager.h" />
     <ClInclude Include="..\Src\Utils\LocalizationManager.h" />
@@ -276,6 +283,13 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
     <ClCompile Include="..\Src\Serialize\IntProperty.cpp" />
     <ClCompile Include="..\Src\Serialize\ScriptSerializer.cpp" />
     <ClCompile Include="..\Src\Serialize\XMLProperty.cpp" />
+    <ClCompile Include="..\Src\Sound\PGESound.cpp" />
+    <ClCompile Include="..\Src\Sound\Sound.cpp" />
+    <ClCompile Include="..\Src\Sound\SoundDefinitions.cpp" />
+    <ClCompile Include="..\Src\Sound\SoundLayer.cpp" />
+    <ClCompile Include="..\Src\Sound\SoundResources.cpp" />
+    <ClCompile Include="..\Src\Sound\SoundStream.cpp" />
+    <ClCompile Include="..\Src\Sound\SoundUtil.cpp" />
     <ClCompile Include="..\Src\Utils\INI.cpp" />
     <ClCompile Include="..\Src\Utils\ResourcePackManager.cpp" />
     <ClCompile Include="..\Src\Utils\LocalizationManager.cpp" />

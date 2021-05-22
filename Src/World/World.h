@@ -22,6 +22,7 @@ class BillboardManager;
 class PickableManager;
 class ScriptWorld;
 class UIMesh;
+class SoundResources;
 
 class World {
     private:
@@ -56,6 +57,7 @@ class World {
         LocalizationManager* locMng;
         PickableManager* pickMng;
         BillboardManager* billMng;
+        SoundResources* sndRes;
 
         // Private ScriptWorld
         ScriptWorld* scripting;

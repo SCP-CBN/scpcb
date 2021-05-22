@@ -43,13 +43,13 @@ namespace GUI { namespace Skin {
 
 		shared Font@ font = Font::large;
 		shared const Color fontColor = Color::White;
-		shared const float fontScale = 2;
+		shared const float fontScale = 0.2;
 	}
 
 	namespace Label {
 		shared Font@ font = Font::large;
 		shared const Color fontColor = Color::White;
-		shared const float fontScale = 2;
+		shared const float fontScale = 0.2;
 	}
 
 	namespace ScrollBar {
@@ -80,6 +80,12 @@ namespace GUI { namespace Skin {
 	}
 	namespace ScrollPanel {
 
+
+	}
+
+	namespace TextEntry {
+		shared Font@ font = Font::large;
+		shared float fontScale = 0.25;
 
 	}
 		

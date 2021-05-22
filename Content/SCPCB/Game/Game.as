@@ -173,7 +173,7 @@ namespace Game {
 			break;
 		case 5:
 			LoadingMenu.setProgress(0.6f+(Environment::loadDone/Environment::loadMax)*0.2f);
-			if(Environment::loadDone >= 10) { loadNext("SKIP LOADING TOO MANY ROOMS"); } // it takes a while
+			if(Environment::loadDone >= 4) { loadNext("SKIP LOADING TOO MANY ROOMS"); } // it takes a while
 			else if(Room::load()) { Room::finishLoading(); loadNext("Game"); }
 			else { Environment::loadDone++; }
 			break;

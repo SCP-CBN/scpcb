@@ -109,10 +109,20 @@ namespace Util { namespace Vector3f {
 } }
 
 // # util->AngelString ----
-external int String::findFirstChar(string&in str,string&in delim);
-external string String::substr(string&in str, int&in start, int&in end);
-external array<string> String::explode(string&in str, string&in delim);
-external string String::implode(array<string>&in words, string&in delim);
+namespace String {
+	external int findFirstChar(string&in str,string&in delim);
+	external string substr(string&in str, int&in start, int&in end);
+	external array<string> explode(string&in str, string&in delim);
+	external string implode(array<string>&in words, string&in delim);
+	external string appendAt(string&in str, int&in at, string&in with);
+	external string subtractAt(string&in str, int&in at, int&in amt);
+	external array<int> findCharsBetweenPoints(Font@&in font, float&in fontScale, string&in msg, float&in startPos, float&in endPos);
+	external int findCharFromChar(Font@&in font, float&in fontScale, string&in msg, int&in start, float&in endPos);
+	external int findCharFromPoint(Font@&in font, float&in fontScale, string&in msg, float&in point);
+	external float substrWidth(Font@&in font, float&in fontScale, string&in msg, int&in char, int&in start=0);
+
+	external class Glitch;
+}
 
 // # util->AngelUI ----
 external void UI::drawSquare(Rectanglef&in square, Color&in col=Color::White, Texture@&in tex=null, bool tileTexture=false);

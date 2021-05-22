@@ -1,2 +1,0 @@
-rock2's texture was missing, i think it was originally rockmoss.
-Well, this will be its texture now.
