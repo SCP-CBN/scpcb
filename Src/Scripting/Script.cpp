@@ -17,9 +17,9 @@ Script::Script(const PGE::FilePath& fn) {
     char* readBuf = new char[1024];
 
     std::ifstream inFile;
-    inFile.open(fileName.cstr(), std::ios_base::in);
+    inFile.open(fileName.cstr());
 
-    PGE_ASSERT(inFile.good(), "Could not find script: \"" + fileName.str() + "\"");
+    PGE_ASSERT(inFile.is_open(), "Could not find script: \"" + fileName.str() + "\"");
 
     bool reachedEndOfFile = inFile.eof();
     while (!reachedEndOfFile) {

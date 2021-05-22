@@ -13,7 +13,7 @@ INIFile::INIFile(const PGE::FilePath& filename) {
 
     std::ifstream file(name.cstr());
 
-    if (file.good()) {
+    if (file.is_open()) {
         PGE::String currLine;
         while (!file.eof()) {
             std::string cppStr;

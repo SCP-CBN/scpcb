@@ -5,7 +5,6 @@ The original game's source code can be found here: https://github.com/Regalis11/
 The game is based on the works of the [SCP Foundation community][scp-wiki].
 
 # Requirements:
-* [OpenAL SDK][openal].
 
 Windows:
 * [Visual Studio 2019][vs2019].
