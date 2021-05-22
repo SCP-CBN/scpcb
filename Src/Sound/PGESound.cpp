@@ -1,6 +1,3 @@
-// I couldn't get OpenAL to link to both the engine and SCPCB at the same time.
-// You're welcome to try and fix that.
-
 // The PGE objects are simple data containers for their referenced material
 #include "PGESound.h"
 

@@ -5,9 +5,6 @@
 #include <Color/Color.h>
 #include <filesystem>
 
-#include "../../Engine/Libraries/SDL2/include/sdl.h"
-#include "../../Engine/Libraries/SDL2/include/sdl_audio.h"
-
 #include "Timing.h"
 #include "Pickable.h"
 #include "ScriptWorld.h"
