@@ -24,6 +24,7 @@ namespace Menu { void pause() {
 namespace Menu { namespace Pause { class InfoPanel : GUI {
 	InfoPanel(GUI@&in parent) { super(@parent,"Menu::Pause::InfoPanel");
 		height=8;
+		visible=false;
 
 		GUILabel@ difficulty=GUILabel(@this);
 		difficulty.align=GUI::Align::Top;

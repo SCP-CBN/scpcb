@@ -9,28 +9,28 @@ class menu_Console : GUI {
 		height=GUI::resolution.y*0.4;
 		visible=false;
 
-
 		GUIPanel@ textPanel=GUIPanel(@this);
 		textPanel.align=GUI::Align::Bottom;
-		textPanel.height=7;
+		textPanel.height=6;
 		textPanel.margin={1,0,1,0.25};
 		@textPanel.texture=@GUI::Skin::menuwhite;
 
-		GUIPanel@ textPanelFG=GUIPanel(@textPanel);
-		textPanelFG.align=GUI::Align::Left;
-		textPanelFG.width=20;
-		textPanelFG.margin={1,0.25,0.0625,0.125};
-		@textPanelFG.texture=@GUI::Skin::menublack;
+		GUIPanel@ textCmdPanelFG=GUIPanel(@textPanel);
+		textCmdPanelFG.align=GUI::Align::Left;
+		textCmdPanelFG.width=18;
+		textCmdPanelFG.margin={1,0.125,0.0625,0.125};
+		@textCmdPanelFG.texture=@GUI::Skin::menublack;
 
-		GUILabel@ textEntryLabel=GUILabel(@textPanelFG);
-		textEntryLabel.align=GUI::Align::Fill;
-		textEntryLabel.text="Command:";
-		textEntryLabel.fontScale=0.125;
-		textEntryLabel.fontColor=Color::White;
+		GUILabel@ textCmdLabel=GUILabel(@textCmdPanelFG);
+		textCmdLabel.align=GUI::Align::Fill;
+		textCmdLabel.text="Command:";
+		textCmdLabel.fontScale=0.125;
+		textCmdLabel.fontColor=Color::White;
 
 		GUIPanel@ textEntryFG=GUIPanel(@textPanel);
 		textEntryFG.align=GUI::Align::Fill;
-		textEntryFG.margin={0.0625,0.25,0.25,0.25};
+		textEntryFG.height=5;
+		textEntryFG.margin={0.0625,0.125,0.25,0.25};
 		@textEntryFG.texture=@GUI::Skin::menublack;
 		
 		GUITextEntry@ textEntry=GUITextEntry(@textEntryFG);
@@ -38,8 +38,8 @@ class menu_Console : GUI {
 		textEntry.fontColor=Color::White;
 		textEntry.margin={1,1,4,1};
 		textEntry.text="help";
+		textEntry.height=4;
 		@textEntry.inputFunc=GUI::TextEnteredFunc(onTextEntered);
-
 
 
 		GUIPanel@ outputPanelBG=GUIPanel(@this);
@@ -72,6 +72,8 @@ class menu_Console : GUI {
 		canvas.reverse=true;
 		canvas.scrollBottom();
 
+
+
 	}
 
 	void doLayout() {
@@ -85,7 +87,7 @@ class menu_Console : GUI {
 	}
 
 	void onTextEntered(string&in input) {
-		Debug::log("Got text entry: " + input);
+		Debug::log("Console Menu Got text entry: " + input);
 		GUILabelBox@ lbl=GUILabelBox(@canvas);
 		lbl.align=GUI::Align::Bottom;
 		lbl.alignHorizontal=GUI::Align::Left;
@@ -100,6 +102,7 @@ class menu_Console : GUI {
 	void open() {
 		visible=true;
 		Environment::paused=true;
+		invalidateLayout();
 	}
 
 	void unpause() {

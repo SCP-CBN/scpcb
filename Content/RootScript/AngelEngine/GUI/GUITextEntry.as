@@ -35,8 +35,8 @@ shared class GUITextEntry : GUIClickable {
 	// Default text
 	bool clearOnClick;
 	string _defaultText="Enter text...";
-	string defaultText { get { return _defaultText; } set { _defaultText=value; clearOnClick=true; text=value; } }
-
+	string defaultText { get { return _defaultText; } set { _defaultText=value; doDefaultText(); } }
+	void doDefaultText() { clearOnClick=true; text=defaultText; }
 	GUI::Align alignVertical { get { return label.alignVertical; } set { label.alignVertical=value; } }
 	GUI::Align alignHorizontal { get { return label.alignHorizontal; } set { label.alignHorizontal=value; } }
 
@@ -75,7 +75,7 @@ shared class GUITextEntry : GUIClickable {
 	int carrot=-1;
 
 	string fetchSelectedText() {
-		if(text=="" || clearOnClick || text.length()==0 || selected[0]==selected[1]) { return ""; }
+		if(clearOnClick || text.length()==0 || selected[0]==selected[1]) { return ""; }
 		return String::substr(text,selected[0]+1,selected[1]);
 	}
 	void updateCarrot() { if(carrot==-1) { carrotPos=0; } else { carrotPos=String::substrWidth(font,fontScale,text,-1,carrot); } }
@@ -93,7 +93,7 @@ shared class GUITextEntry : GUIClickable {
 
 	void doClick() { GUI::startTextEntering(@this); onStartTextEntering(); }
 	void onStartTextEntering() {}
-	void onStopTextEntering() { if(text=="") { clearOnClick=true; text=defaultText; } }
+	void onStopTextEntering() { if(text.length()==0) { clearOnClick=true; text=defaultText; } }
 	void stopClick() { selectCharacters(); }
 	void startClick(Vector2f mpos) {
 		if(clearOnClick) { text=""; carrot=-1; clearOnClick=false; }
@@ -135,7 +135,7 @@ shared class GUITextEntry : GUIClickable {
 	void keyboardDoDelete(bool del) { if(!del && selected[1]==selected[0]) { selected={Math::maxInt(carrot-1,-1),carrot}; } deleteSelected(); }
 	void keyboardDoSelectAll() { float mlen=text.length(); selected={-1,mlen-1}; carrot=selected[1]; updateCarrot(); }
 	void keyboardDoCopy(bool cut) { Input::setClipboardText(fetchSelectedText()); }
-	void keyboardDoPaste() { string chr=Input::getClipboardText(); if(chr!="") { keyboardDoTextInput(chr); } }
+	void keyboardDoPaste() { string chr=Input::getClipboardText(); if(chr.length()>0) { keyboardDoTextInput(chr); } }
 
 	void keyboardDoUndo() { mementoMgr.execute(text,carrot,true); }
 	void keyboardDoRedo() { mementoMgr.execute(text,carrot,false); }
@@ -143,6 +143,7 @@ shared class GUITextEntry : GUIClickable {
 	void keyboardEscape() {
 		GUI::stopTextEntering();
 		onStopTextEntering();
+		if(text.length()==0) { doDefaultText(); }
 	}
 	void keyboardDoMouse1(int clicks) {
 		Vector2f mpos=GUI::mouse();
@@ -161,7 +162,7 @@ shared class GUITextEntry : GUIClickable {
 		updateCarrot();
 
 	}
-	void keyboardDoEnter() { if(@inputFunc!=null) { inputFunc(text); } text=""; }
+	void keyboardDoEnter() { if(@inputFunc!=null) { inputFunc(text); } text=""; carrot=-1; selected={-1,-1}; updateCarrot(); }
 
 	void kbDebug() {
 		Debug::log("Selected: " + toString(selected[0]) + ", " + toString(selected[1]) + ", with carrot: " + toString(carrot) + ", and label: " + text );
@@ -172,7 +173,7 @@ shared class GUITextEntry : GUIClickable {
 		if(Input::Escape::isHit()) { keyboardEscape(); return; }
 		if(pressed) { selectCharacters(); return; }
 		string append=Input::getTextInput();
-		if(append!="") { keyboardDoTextInput(append); }
+		if(append.length()!=0) { keyboardDoTextInput(append); }
 
 		if(Input::selectAllIsHit()) { keyboardDoSelectAll(); }
 		else if(Input::LeftArrow::isHit() || Input::RightArrow::isHit()) { keyboardDoArrow(Input::RightArrow::isHit()); }
@@ -185,12 +186,11 @@ shared class GUITextEntry : GUIClickable {
 		//else if(Input::Mouse2::isHit()) { keyboardDoMouse2(); } //Input::Mouse2::getClickCount()
 		else if(Input::Enter::isHit()) { keyboardDoEnter(); }
 
-		kbDebug();
+		//kbDebug();
 	}
 
 	// Rendering
 	void paint() {
-		if(Environment::loading) { return; }
 		if(@GUI::textEntryFocus==@this) {
 			UI::setTextureless();
 
