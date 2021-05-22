@@ -67,8 +67,39 @@ namespace Menu { namespace Pause { class SpawnRoomButton : GUIButtonLabel {
 	}
 } } }
 
+// # Menu::Pause::SpawnItemButton (GUI class) ----
+namespace Menu { namespace Pause { class SpawnItemButton : GUIButton {
+	Item::Template@ template;
+	GUIPanel@ icon;
+	SpawnItemButton(GUI@ parent, Item::Template@ itm) { super(@parent, "Menu::Pause::SpawnItemButton");
+		@template=@itm;
+		@icon=GUIPanel(@this);
+		icon.align=GUI::Align::Fill;
+		icon.margin={0.125,0.125,0.125,0.125};
+		@icon.texture=@template.icon.texture;
+	}
+	void doClick() {
+		Item::spawn(template.name, Player::Controller.position+Vector3f(10,0,0));
+		instance.unpause();
+	}
+} } }
 
-
+// # Menu::Pause::SpawnPropButton (GUI class) ----
+namespace Menu { namespace Pause { class SpawnPropButton : GUIButton {
+	Prop::Template@ template;
+	GUIPanel@ icon;
+	SpawnPropButton(GUI@ parent, Prop::Template@ itm) { super(@parent, "Menu::Pause::SpawnPropButton");
+		@template=@itm;
+		@icon=GUIPanel(@this);
+		icon.align=GUI::Align::Fill;
+		icon.margin={0.125,0.125,0.125,0.125};
+		@icon.texture=@template.icon.texture;
+	}
+	void doClick() {
+		Prop::spawn(template.name, Player::Controller.position+Vector3f(10,0,0));
+		instance.unpause();
+	}
+} } }
 
 // # Menu::Pause::Window@ (main class) ----
 namespace Menu { namespace Pause { class Window : GUI {
@@ -99,6 +130,7 @@ namespace Menu { namespace Pause { class Window : GUI {
 		constructIconEditor();
 		constructItemSpawner();
 		constructRoomSpawner();
+		constructPropSpawner();
 		constructGUITest();
 
 
@@ -126,6 +158,7 @@ namespace Menu { namespace Pause { class Window : GUI {
 	void openToIconEditor() { switchPage(); canvasIconEditor.visible=true; }
 	void openToItemSpawner() { switchPage(); canvasItemSpawner.visible=true; }
 	void openToRoomSpawner() { switchPage(); canvasRoomSpawner.visible=true; }
+	void openToPropSpawner() { switchPage(); canvasPropSpawner.visible=true; }
 	void openToGUITest() { switchPage(); canvasGUITest.visible=true; }
 	void openToQuit() { visible=false; MainMenu.visible=true; } // change to Menu::Main::instance.visible=true;
 	void tpToZero() { Player::Controller.position=Vector3f(0,Player::height+5,0); unpause(); }
@@ -242,11 +275,62 @@ namespace Menu { namespace Pause { class Window : GUI {
 		auto@ btnBack = GUIButtonLabel(@canvasItemSpawner);
 		btnBack.align=GUI::Align::Bottom;
 		btnBack.margin={1,1,1,1};
-		btnBack.height=8;
+		btnBack.height=6;
 		btnBack.text="Back";
-		@btnBack.clickFunc=Util::Function(openToCheats);
+		@btnBack.clickFunc=Util::Function(openToDebug);
+
+		auto@ panelOfButtons=GUIScrollPanel(@canvasItemSpawner);
+		panelOfButtons.align=GUI::Align::Fill;
+
+		GUI@ topPanel;
+		for(int i=0; i<Item::templates.length(); i++) {
+			if(i%5==0) {
+				@topPanel = GUI(@panelOfButtons);
+				topPanel.align=GUI::Align::Top;
+				topPanel.height=9;
+				topPanel.margin={0.5,0.5,0.5,0.25};
+			}
+			auto@ btn = SpawnItemButton(@topPanel, @Item::templates[i]);
+			btn.align=GUI::Align::Left;
+			btn.margin={0.25,0.25,0.25,0.25};
+			btn.width=7.5;
+			//btnRoom.label.fontScale=0.1;
+		}
+
 	}
 
+
+	GUI@ canvasPropSpawner;
+	void constructPropSpawner() {
+		@canvasPropSpawner=GUI(@canvas);
+		canvasPropSpawner.align=GUI::Align::Fill;
+
+		auto@ btnBack = GUIButtonLabel(@canvasPropSpawner);
+		btnBack.align=GUI::Align::Bottom;
+		btnBack.margin={1,1,1,1};
+		btnBack.height=9;
+		btnBack.text="Back";
+		@btnBack.clickFunc=Util::Function(openToDebug);
+
+		auto@ panelOfButtons=GUIScrollPanel(@canvasPropSpawner);
+		panelOfButtons.align=GUI::Align::Fill;
+
+		GUI@ topPanel;
+		for(int i=0; i<Prop::templates.length(); i++) {
+			if(i%4==0) {
+				@topPanel = GUI(@panelOfButtons);
+				topPanel.align=GUI::Align::Top;
+				topPanel.height=9;
+				topPanel.margin={0.5,0.5,0.5,0.25};
+			}
+			auto@ btn = SpawnPropButton(@topPanel, @Prop::templates[i]);
+			btn.align=GUI::Align::Left;
+			btn.margin={0.25,0.25,0.25,0.25};
+			btn.width=8;
+			//btnRoom.label.fontScale=0.1;
+		}
+
+	}
 
 	GUI@ canvasGUITest;
 	void constructGUITest() {
@@ -320,15 +404,22 @@ namespace Menu { namespace Pause { class Window : GUI {
 		btnItemSpawner.align=GUI::Align::Top;
 		btnItemSpawner.margin={1,1,1,0};
 		btnItemSpawner.height=8;
-		btnItemSpawner.text="Item Spawn Menu";
+		btnItemSpawner.text="Spawn Items";
 		@btnItemSpawner.clickFunc=Util::Function(openToItemSpawner);
 
 		auto@ btnRoomSpawner = GUIButtonLabel(@canvasDebugScroll);
 		btnRoomSpawner.align=GUI::Align::Top;
 		btnRoomSpawner.margin={1,1,1,0};
 		btnRoomSpawner.height=8;
-		btnRoomSpawner.text="RoomSpawner Menu";
+		btnRoomSpawner.text="Spawn Rooms";
 		@btnRoomSpawner.clickFunc=Util::Function(openToRoomSpawner);
+
+		auto@ btnPropSpawner = GUIButtonLabel(@canvasDebugScroll);
+		btnPropSpawner.align=GUI::Align::Top;
+		btnPropSpawner.margin={1,1,1,0};
+		btnPropSpawner.height=8;
+		btnPropSpawner.text="Spawn Props";
+		@btnPropSpawner.clickFunc=Util::Function(openToPropSpawner);
 
 		auto@ btnIconEditor = GUIButtonLabel(@canvasDebugScroll);
 		btnIconEditor.align=GUI::Align::Top;

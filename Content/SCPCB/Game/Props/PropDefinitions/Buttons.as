@@ -17,7 +17,7 @@ namespace Prop { namespace Buttons {
 			@pickSound	= Prop::Sound(); // 2
 			@model		= Prop::Model(rootDirGFXProps + "Buttons/error.fbx", 1.f);
 			model.pickable	= true;
-			@iconModel	= Prop::Icon::Model(model.path,0.8,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
+			@iconModel	= Prop::Icon::Model(model.path,0.2,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
 		void registerButton() {
 			name = buttonClass;

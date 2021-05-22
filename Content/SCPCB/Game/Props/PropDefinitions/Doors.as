@@ -15,7 +15,7 @@ namespace Prop { namespace Doors {
 			model.pickable	= false;
 			@doorInnerModel	= Prop::Model(rootDirGFXProps + "Doors/door.fbx",Vector3f(1.8,1.3,1.5));
 			@doorOuterModel	= Prop::Model(rootDirGFXProps + "Doors/door.fbx",Vector3f(1.8,1.3,1.5));
-			@iconModel	= Prop::Icon::Model(model.path,0.8,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
+			@iconModel	= Prop::Icon::Model(doorInnerModel.path,0.2,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
 		void registerDoor() {
 			name = doorClass;
