@@ -197,6 +197,36 @@
     <ClCompile Include="..\Src\Serialize\XMLProperty.cpp">
       <Filter>Serialize</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Scripting\NativeDefinitions\INIDefinitions.cpp">
+      <Filter>Scripting\NativeDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Scripting\NativeDefinitions\MaterialDefinitions.cpp">
+      <Filter>Scripting\NativeDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Scripting\NativeDefinitions\CBRDefinitions.cpp">
+      <Filter>Scripting\NativeDefinitions</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Sound\SoundStream.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Sound\SoundUtil.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Sound\PGESound.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Sound\Sound.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Sound\SoundDefinitions.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Sound\SoundLayer.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Src\Sound\SoundResources.cpp">
+      <Filter>Sound</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -389,6 +419,39 @@
     <ClInclude Include="..\Src\Serialize\XMLProperty.h">
       <Filter>Serialize</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Scripting\NativeDefinitions\INIDefinitions.h">
+      <Filter>Scripting\NativeDefinitions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Scripting\NativeDefinitions\ReflectionDefinitions.h">
+      <Filter>Scripting\NativeDefinitions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Scripting\NativeDefinitions\MaterialDefinitions.h">
+      <Filter>Scripting\NativeDefinitions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Scripting\NativeDefinitions\CBRDefinitions.h">
+      <Filter>Scripting\NativeDefinitions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Sound\SoundResources.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Sound\SoundStream.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Sound\SoundUtil.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Sound\PGESound.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Sound\Sound.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Sound\SoundDefinitions.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Sound\SoundLayer.h">
+      <Filter>Sound</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SCPCB.rc" />
@@ -435,6 +498,9 @@
     </Filter>
     <Filter Include="Serialize">
       <UniqueIdentifier>{6627f51a-c0fb-4ca8-899e-021571bdf075}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Sound">
+      <UniqueIdentifier>{66e7ffcc-2f84-4602-be63-1aada8de9bba}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

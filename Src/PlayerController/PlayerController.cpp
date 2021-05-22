@@ -2,24 +2,30 @@
 
 #include <Math/Math.h>
 #include <Math/Plane.h>
+#include <Math/Math.h>
 
 #include "../Collision/Collider.h"
 #include "../World/Pickable.h"
 
+
 constexpr float WALK_SPEED_MAX = 18.0f;
-constexpr float SPRINT_SPEED_MAX = 42.0f;
+constexpr float SPRINT_SPEED_MAX = 42.0f*5.f; // need to move faster to view rooms
 constexpr float WALK_SPEED_SMOOTHING_FACTOR = 0.9f;
 constexpr float STAMINA_RECOVERY_RATE = 0.2f;
 
-PlayerController::PlayerController(float r, float camHeight) {
-    collider = new Collider(r, camHeight);
-
+PlayerController::PlayerController(float r, float chestHeight) {
+    collider = new Collider(r, chestHeight);
+    eyeHeight = chestHeight;
     position = PGE::Vector3f::ZERO;
+
     camAnimState = 0.f;
     currWalkSpeed = 0.f;
+
+    
     stamina = 1.f;
     
     noclip = false;
+    vNoclip = true; // start noclipped
 }
 
 PlayerController::~PlayerController() {
@@ -46,20 +52,22 @@ void PlayerController::update(float yaw, float pitch, Input input, float timeSte
 
         PGE::Vector2f targetDir = PGE::Vector2f::ZERO;
         if ((input & Input::FORWARD) != Input::NONE) {
-            targetDir = targetDir + PGE::Vector2f(sinAngle, cosAngle);
+
+            targetDir = targetDir+PGE::Vector2f(sinAngle, cosAngle);
         }
         if ((input & Input::BACKWARD) != Input::NONE) {
-            targetDir = targetDir + PGE::Vector2f(-sinAngle, -cosAngle);
+            targetDir = targetDir+PGE::Vector2f(-sinAngle, -cosAngle);
         }
         if ((input & Input::LEFT) != Input::NONE) {
-            targetDir = targetDir + PGE::Vector2f(-cosAngle, sinAngle);
+            targetDir = targetDir+PGE::Vector2f(-cosAngle, sinAngle);
         }
         if ((input & Input::RIGHT) != Input::NONE) {
-            targetDir = targetDir + PGE::Vector2f(cosAngle, -sinAngle);
+            targetDir = targetDir+PGE::Vector2f(cosAngle, -sinAngle);
         }
         if (targetDir.lengthSquared() < 0.01f) {
             //TODO: remove
-            position = position + PGE::Vector3f(0.f, 60.f, 0.f) * timeStep;
+            position = position+(PGE::Vector3f(0.f, 60.f, 0.f) * timeStep);
+
             noclip = true;
             // -------
 
@@ -74,7 +82,7 @@ void PlayerController::update(float yaw, float pitch, Input input, float timeSte
             }
         }
     }
-    if (!noclip) {
+    if (!noclip && !vNoclip) {
         position = collider->applyGravity(position, currWalkSpeed, timeStep);
     } else {
         collider->resetGravity();
@@ -98,5 +106,10 @@ void PlayerController::stand(float timeStep) {
 }
 
 void PlayerController::walk(PGE::Vector2f dir, float timeStep) {
-    position = collider->tryMove(position, position + PGE::Vector3f(dir.x * currWalkSpeed, 0.f, dir.y * currWalkSpeed) * timeStep);
+
+    if (vNoclip) { position += PGE::Vector3f(dir.x * currWalkSpeed, 0.f, dir.y * currWalkSpeed) * timeStep; }
+    else {
+        position = collider->tryMove(position, position + PGE::Vector3f(dir.x * currWalkSpeed, 0.f, dir.y * currWalkSpeed) * timeStep);
+    }
+
 }

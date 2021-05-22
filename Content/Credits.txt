@@ -1,4 +1,4 @@
-*********************************************************
+﻿*********************************************************
 
 A big thank you to everyone who's supported the project during these years
 - it would have	never gotten to where it is now without your help.
@@ -170,6 +170,9 @@ Contributors
 
     Pylcrafte
         Textures, dared question Regalis' font choices.
+
+    Pyro-Fire
+        Programming.
 
     Reilly Grindle ("Mirocaine")
         Modelling.
