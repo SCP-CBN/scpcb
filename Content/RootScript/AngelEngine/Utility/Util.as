@@ -130,6 +130,93 @@ namespace String {
 		return "todo";
 	}
 
+
+	shared string appendAt(string&in str, int&in at, string&in append) {
+		if(at==-1) { return append + str; }
+		else if(at>=str.length()-1) { return str + append; }
+		return substr(str,0,at) + append + substr(str,at+1,str.length()-1);
+	}
+	shared string subtractAt(string&in str, int&in at, int&in amt) {
+		if(str=="") { return ""; }
+		else if(at==-1) { return substr(str,at+amt+1,str.length()-1); }
+		else if(at>=str.length()-1) { return str; }
+		else if(at+amt>=str.length()-1) { return substr(str,0,at); }
+		return substr(str,0,at) + substr(str,at+amt+1, str.length()-1);
+	}
+
+	// returns {before_first_char,on_first_char}
+	// i.e, selecting char[0] means {-1,0}. selecting last char means {mlen-1,mlen}.
+	// no chars, but selected start of string is {-1,-1}. no chars, but selected end of string is {mlen,mlen}.
+	shared array<int> findCharsBetweenPoints(Font@&in font, float&in fontScale, string&in msg, float&in startPos, float&in endPos) {
+		// fuck text selection
+		float minPos=Math::minFloat(startPos,endPos);
+		float maxPos=Math::maxFloat(startPos,endPos);
+		float len=0.f;
+		float ladd;
+		int mlen=msg.length();
+		array<int> ret={-1,mlen-1};
+		if(mlen==0) { return ret; }
+		for(int i=0; i<mlen; i++) {
+			ladd=font.stringWidth(msg[i],fontScale);
+			if( minPos <= (len+(ladd/2)) ) { ret[0]=i-1; break; }
+			ret[0]=i;
+			len+=ladd;
+		}
+		for(int i=ret[0]+1; i<mlen; i++) {
+			ladd=font.stringWidth(msg[i],fontScale);
+			if( maxPos <= (len+(ladd/2)) ) { ret[1]=i-1; break; }
+			ret[1]=i;
+			len+=ladd;
+		}
+		return ret;
+	}
+
+
+
+	shared int findCharFromChar(Font@&in font, float&in fontScale, string&in msg, int&in start, float&in endPos) {
+		float len=0.f;
+		float ladd;
+		int mlen=msg.length();
+		if(mlen==0) { return start; }
+		if(start==mlen-1) { len=font.stringWidth(msg,fontScale); }
+		else if(start>-1) { len=font.stringWidth(substr(msg,start,mlen-1),fontScale); }
+		if(endPos <= len) {
+			if(start==-1) { return start; }
+			for(int i=start; i>-1; i--) {
+				ladd=font.stringWidth(msg[i],fontScale);
+				if(endPos >= (len-(ladd/2)) ) { return i; }
+				len-=ladd;
+			}
+			return -1;
+		} else {
+			if(start==mlen) { return start; }
+			for(int i=start; i<mlen; i++) {
+				ladd=font.stringWidth(msg[i],fontScale);
+				if(endPos <= (len+(ladd/2)) ) { return i; }
+				len+=ladd;
+			}
+			return mlen-1;
+		}
+		return -1;
+	}
+	shared int findCharFromPoint(Font@&in font, float&in fontScale, string&in msg, float&in point) {
+		float len=0.f;
+		float ladd;
+		int mlen=msg.length();
+		for(int i=0; i<mlen; i++) {
+			ladd=font.stringWidth(msg[i],fontScale);
+			if( point <= (len+ (ladd/2)) ) { return i-1; }
+			len+=ladd;
+		}
+		return mlen-1;
+	}
+	shared float substrWidth(Font@&in font, float&in fontScale, string&in msg, int&in start, int&in end) {
+		if(msg.length()==0) { return 0; }
+		return font.stringWidth(substr(msg, start+1, end),fontScale);
+	}
+
+
+
 	shared class Glitch {
 		string orig;
 		string lastText;

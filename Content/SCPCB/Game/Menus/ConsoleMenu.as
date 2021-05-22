@@ -25,7 +25,7 @@ class menu_Console : GUI {
 		GUILabel@ textEntryLabel=GUILabel(@textPanelFG);
 		textEntryLabel.align=GUI::Align::Fill;
 		textEntryLabel.text="Command:";
-		textEntryLabel.fontScale=1.25;
+		textEntryLabel.fontScale=0.125;
 		textEntryLabel.fontColor=Color::White;
 
 		GUIPanel@ textEntryFG=GUIPanel(@textPanel);
@@ -37,7 +37,7 @@ class menu_Console : GUI {
 		textEntry.align=GUI::Align::Fill;
 		textEntry.fontColor=Color::White;
 		textEntry.margin={1,1,4,1};
-		textEntry.setText("help");
+		textEntry.text="help";
 		@textEntry.inputFunc=GUI::TextEnteredFunc(onTextEntered);
 
 
@@ -62,7 +62,7 @@ class menu_Console : GUI {
 		header.align=GUI::Align::Fill;
 		header.alignVertical=GUI::Align::Center;
 		header.height=4;
-		header.fontScale=1;
+		header.fontScale=0.1;
 		header.fontColor=Color::Black;
 		header.text="CONSOLE MENU";
 
@@ -89,7 +89,7 @@ class menu_Console : GUI {
 		GUILabelBox@ lbl=GUILabelBox(@canvas);
 		lbl.align=GUI::Align::Bottom;
 		lbl.alignHorizontal=GUI::Align::Left;
-		lbl.fontScale=2;
+		lbl.fontScale=0.2;
 		lbl.height=4;
 		lbl.text=input;
 		if(canvas._children.length()>=40) { canvas.removeChildAt(40); }

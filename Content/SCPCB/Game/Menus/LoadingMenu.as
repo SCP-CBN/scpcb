@@ -167,7 +167,7 @@ class menu_Loading : GUI {
 		loadpct.alignHorizontal=GUI::Align::Center;
 		loadpct.alignVertical=GUI::Align::Center;
 		loadpct.text="LOADING - 69 %";
-		loadpct.fontScale=1;
+		loadpct.fontScale=0.1;
 		loadpct.height=5;
 		loadpct.margin={8,8,8,1};
 
@@ -190,7 +190,7 @@ class menu_Loading : GUI {
 		loadTitle.alignHorizontal=GUI::Align::Center;
 		loadTitle.alignVertical=GUI::Align::Center;
 		loadTitle.text="LoadTitle";
-		loadTitle.fontScale=4;
+		loadTitle.fontScale=0.4;
 		loadTitle.height=2.5;
 		loadTitle.margin={8,12,8,1};
 
@@ -199,7 +199,7 @@ class menu_Loading : GUI {
 		loadText.alignHorizontal=GUI::Align::Center;
 		loadText.alignVertical=GUI::Align::Top;
 		loadText.text="LoadText";
-		loadText.fontScale=1;
+		loadText.fontScale=0.1;
 		loadText.height=4;
 		loadText.margin={8,1,8,0};
 
@@ -221,7 +221,7 @@ class menu_Loading : GUI {
 	int loadedDone;
 	void setProgress(float amt) {
 		loadbar.amount=amt;
-		loadpct.text="LOADING - " + toString(Math::floor((amt*100+0.5))) + " %";
+		loadpct.text="LOADING - " + toString(Math::floor((amt*100.f)+0.5)) + " %";
 		loadpct.layoutPhrase();
 	}
 	void update() {
@@ -247,7 +247,7 @@ class menu_Loading : GUI {
 					lbl.alignHorizontal=GUI::Align::Left;
 					lbl.alignVertical=GUI::Align::Top;
 					lbl.text=debugLoadStrings[i];
-					lbl.fontScale=1;
+					lbl.fontScale=0.1;
 					lbl.height=2;
 					lbl.margin={0.25,0.25,0.25,0.25};
 				}

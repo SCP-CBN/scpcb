@@ -6,162 +6,143 @@
 
 shared Font@ tempFont=Font::large;
 
-shared class GUICharacter : GUIClickable {
-	// A single character.
-	// Yes, I know.
-	// But it works with little to no effort.
-	// Hard to argue with results.
-
-	Color fontColor=Color::White;
-	Color fontColorSelected=Color::Green;
-
-	bool textSelected;
-	string text { get { return label.text; } set { label.text=value; } }
-	GUILabel@ label;
-	GUICharacter(GUI@&in parent, string vcls="GUICharacter") { super(@parent,vcls);
-		align=GUI::Align::Left;
-		width=4;
-
-		@label=GUILabel(@this);
-		label.align=GUI::Align::Fill;
-		label.alignVertical = GUI::Align::Center;
-		label.margin={0.1,0.1,0.1,0.1};
-		label.text="B";
-		label.fontScale=2;
-		@label.font=@tempFont;
-	}
-
-	void stopClick() {
-		GUITextEntry@ par=parentTextEntry();
-		par.stopCharClick(@this);
-	}
-	void startClick(Vector2f mpos) {
-		GUITextEntry@ par=parentTextEntry();
-		par.startCharClick(@this);
-	}
-
-	void updateClickable() {
-
-	}
-
-	void paint() {
-		if(textSelected) {
-			label.fontColor=fontColorSelected;
-		} else {
-			label.fontColor=fontColor;
-		}
-	}
-
-	GUITextEntry@ parentTextEntry() { return cast<GUITextEntry@>(_parent); }
-}
 
 shared class GUITextEntry : GUIClickable {
+
+	GUILabel@ label;
 
 	// Apple only
 	// Basically shift+arrow key after a drag or multi-click on macOS has different behavior than on Windows.
 	// On macOS after a select drag or multi-click select the first shift+arrow combo you hit determines which side of the selection you're manipulating.
 	// So this boolean determines when exactly to trigger that behavior because other types of highlighting/text-modifying don't do that.
-	bool appleSelectionInsanityMode = false;
+	private bool appleSelectionInsanityMode = false;
 
-	Vector2f mselectStart;
-	int charLimit = 2147483647; // Memento thing.
-	array<string> prevStrings;
-	array<GUICharacter@> selected;
-	int Carrot=-1;
+	// Memento manager
+	// onSet() 
+	// .push(0, text, false, true);
+	// .push(0, newvalue, true, true);
+	// 
+	//
+	private MementoManager@ mementoMgr;
+	private int charLimit = 2147483647;
+	private int mementoMaxSize = 1048576;
 
-	GUI::TextEnteredFunc@ inputFunc;
+	// # Font
+	Font@ font { get { return @label.font; } set { @label.font=@value; } }
+	Color fontColor { get { return label.fontColor; } set { label.fontColor=value; } }
+	float fontScale { get { return label.fontScale; } set { label.fontScale=value; } }
 
-	string text { get { return getText(); } set { setText(value); } }
-	void setText(string txt) { while(_children.length()>0) { _children.removeLast(); } Carrot=-1; keyboardDoTextInput(txt); }
-	string getText() { return fetchText(); }
+	// Default text
+	bool clearOnClick;
+	string _defaultText="Enter text...";
+	string defaultText { get { return _defaultText; } set { _defaultText=value; clearOnClick=true; text=value; } }
 
-	Color _fontColor=Color::White;
-	Color fontColor { get { return _fontColor; } set { setFontColor(value); } }
-	void setFontColor(Color&in col) { _fontColor=col; for(int i=0; i<_children.length(); i++) { cast<GUICharacter@>(_children[i]).fontColor=col; } }
+	GUI::Align alignVertical { get { return label.alignVertical; } set { label.alignVertical=value; } }
+	GUI::Align alignHorizontal { get { return label.alignHorizontal; } set { label.alignHorizontal=value; } }
 
-
-	GUITextEntry(string vcls="GUITextEntry") { super(vcls); Carrot=-1; }
+	// # Constructor
 	GUITextEntry(GUI@&in parent, string vcls="GUITextEntry") { super(@parent,vcls);
+        	@mementoMgr = MementoManager::create(mementoMaxSize);
+		clearOnClick=true;
+		@label=GUILabel(@this);
+		label.align=GUI::Align::Fill;
+		alignVertical=GUI::Align::Center;
+		alignHorizontal=GUI::Align::Left;
+		@font=@GUI::Skin::TextEntry::font;
+		fontScale=GUI::Skin::TextEntry::fontScale;
+		text=defaultText;
 		appleSelectionInsanityMode = (Environment::Platform::active == Environment::Platform::Apple);
 	}
 	~GUITextEntry() {
+        	MementoManager::destroy(mementoMgr);
 	}
 
-	string fetchSelectedText() { string chr=""; for(int i=0; i<_children.length(); i++) {
-		if(cast<GUICharacter@>(_children[i]).textSelected) { chr=chr+cast<GUICharacter@>(_children[i]).text; } } return chr;
-	}
-	string fetchText() { string chr=""; for(int i=0; i<_children.length(); i++) { chr=chr+cast<GUICharacter@>(_children[i]).text; } return chr; }
 
-	void paint() {
-		if(@GUI::textEntryFocus==@this) {
-			Vector2f carrotPos;
-			if(Carrot>=0) {
-				GUICharacter@ child = cast<GUICharacter@>(_children[Carrot]);
-				if(@child!=null) { carrotPos=child.label.paintPos+Vector2f(child.label.textSize.x-1,0)-GUI::center; }
-			} else {
-				carrotPos=paintPos-GUI::center;
-			}
-			UI::setTextureless();
-			UI::setColor(Color::White);
-			tempFont.draw("|", carrotPos, 0.3f, 0.f, Color::White);
-		}
-	}
+	// # Text handling and selection
+	GUI::TextEnteredFunc@ inputFunc;
+	string text { get { return (clearOnClick ? ("") : label.text); } set {
+		string newval=value;
+		if(value.length()>=charLimit) { newval=String::substr(value,0,charLimit); }
+		mementoMgr.push(0,(clearOnClick ? ("") : label.text),false,true);
+		mementoMgr.push(0,(clearOnClick ? ("") : newval), true, true);
+		label.text=newval;
+	} }
 
+	array<int> selected = array<int>(2);
+	int iselectStart;
+	float mselectStart;
+	float carrotPos;
+	int carrot=-1;
+
+	string fetchSelectedText() {
+		if(text=="" || clearOnClick || text.length()==0 || selected[0]==selected[1]) { return ""; }
+		return String::substr(text,selected[0]+1,selected[1]);
+	}
+	void updateCarrot() { if(carrot==-1) { carrotPos=0; } else { carrotPos=String::substrWidth(font,fontScale,text,-1,carrot); } }
+
+
+	// # Clicking and character selection
 	void selectCharacters() {
-		if(_children.length()<=0) { return; }
-		Vector2f mpos=GUI::mouse();
-		if(mselectStart.distance(mpos)<1) { return; }
-
-		selected={};
-		float selMin=Math::minFloat(mselectStart.x,mpos.x);
-		float selMax=Math::maxFloat(mselectStart.x,mpos.x);
-
-		for(int i=0; i<_children.length(); i++) {
-			GUICharacter@ child = cast<GUICharacter@>(_children[i]);
-			Vector2f cpos = child.paintPos+(child.paintSize/2);
-			if(cpos.x>=selMin&&cpos.x<=selMax) {
-				selected.insertLast(@child);
-				child.textSelected=true;
-				Carrot=i;
-			} else { child.textSelected=false; }
-		}
+		float relMouse = (GUI::mouse().x-label.paintPos.x);
+		selected = String::findCharsBetweenPoints(font,fontScale,text,mselectStart,relMouse);
+		carrot = (mselectStart < relMouse ? selected[1] : selected[0]);
+		iselectStart=carrot;
+		updateCarrot();
 	}
-	void doClick() { GUI::startTextEntering(@this); }
-	void stopCharClick(GUICharacter@&in child) { selectCharacters(); }
-	void startCharClick(GUICharacter@&in child) { selected={}; if(_children.length()==0) { return; } mselectStart=child.paintPos+(child.paintSize/2); Carrot=findChild(@child); }
 
-	void addChild(GUI@&in child) { hasChild=true; Carrot++; _children.insertAt(Carrot,@child); onChildAdded(@child); invalidateLayout(); }
-	void removeChild(GUI@&in x) { Debug::error("Warning: TextEntry tried to remove child with GUI element"); }
-	void removeChild() {
-		if(Carrot<0 || _children.length()==0) { return; }
-		GUI@ child=@_children[Carrot];
-		_children.removeAt(Carrot); Carrot--;
-		hasChild=(_children.length()>0); invalidateLayout(); onChildRemoved(@child);
+
+	void doClick() { GUI::startTextEntering(@this); onStartTextEntering(); }
+	void onStartTextEntering() {}
+	void onStopTextEntering() { if(text=="") { clearOnClick=true; text=defaultText; } }
+	void stopClick() { selectCharacters(); }
+	void startClick(Vector2f mpos) {
+		if(clearOnClick) { text=""; carrot=-1; clearOnClick=false; }
+		mselectStart=(mpos.x-label.paintPos.x);
+		iselectStart=String::findCharFromPoint(font,fontScale,text,mselectStart);
+		selectCharacters();
 	}
+
+	// # Keyboard functions
 	bool shiftDown() { return Input::anyShiftDown(); }
 	bool shortcutDown() { return Input::anyShortcutDown(); }
-	void deleteSelected() { for(int i=_children.length()-1; i>-1; i--) { if(cast<GUICharacter@>(_children[i]).textSelected) { Carrot=i; removeChild(); } } selected={}; }
-	void deselectAll() { for(int i=0; i<_children.length(); i++) { cast<GUICharacter@>(_children[i]).textSelected=false; } }
-	void selectRight() { for(int i=Carrot; i<_children.length(); i++) { cast<GUICharacter@>(_children[i]).textSelected=true; } }
-	void selectLeft() { for(int i=Carrot; i>-1; i--) { cast<GUICharacter@>(_children[i]).textSelected=true; } }
+	void deleteSelected() {
+		int sublen=(selected[1]-selected[0]);
+		text=String::subtractAt(text,selected[0],sublen);
+		mementoMgr.push(carrot,String::substr(text,carrot-sublen,sublen), false, true);
+		carrot=Math::maxInt(carrot-sublen,-1);
+		selected={carrot,carrot};
+		updateCarrot();
+	}
+	void deselectAll() { selected={carrot,carrot}; }
+	void selectRight() { selected={carrot,text.length()-1}; carrot=selected[1]; }
+	void selectLeft() { selected={-1,carrot}; carrot=selected[0]; }
 	void keyboardDoArrow(bool right) {
-		if (Input::anyShiftDown()) {
+		if (Input::anyShortcutDown() && Input::anyShiftDown()) {
 			if(right) { selectRight(); } else { selectLeft(); }
 		} else if (Input::anyShortcutDown()) {
-			if(right) { Carrot=_children.length()-1; } else { Carrot=-1; }
+			if(right) { carrot=text.length()-1; } else { carrot=-1; }
+			selected={carrot,carrot};
+		} else {
+			if(right) { carrot=Math::minInt(carrot+1,text.length()-1); }
+			else { carrot=Math::maxInt(carrot-1,-1); }
+			if(!Input::anyShiftDown()) { selected={carrot,carrot}; } else {
+				if(right) { if(carrot>selected[1]) { selected[1]=carrot; } else { selected[0]=carrot; } }
+				else { if(carrot<selected[0]) { selected[0]=carrot; } else { selected[1]=carrot; } }
+			}
 		}
-
+		updateCarrot();
 	}
-	void keyboardDoDelete(bool del) { if(selected.length()>0) { deleteSelected(); } else if(!del) { removeChild(); } }
-	void keyboardDoSelectAll() { Carrot=_children.length()-1; for(int i=0; i<_children.length(); i++) { cast<GUICharacter@>(_children[i]).textSelected=true; } }
-	void keyboardDoCopy(bool cut) { if(selected.length()>0) { Input::setClipboardText(fetchSelectedText()); } }
+	void keyboardDoDelete(bool del) { if(!del && selected[1]==selected[0]) { selected={Math::maxInt(carrot-1,-1),carrot}; } deleteSelected(); }
+	void keyboardDoSelectAll() { float mlen=text.length(); selected={-1,mlen-1}; carrot=selected[1]; updateCarrot(); }
+	void keyboardDoCopy(bool cut) { Input::setClipboardText(fetchSelectedText()); }
 	void keyboardDoPaste() { string chr=Input::getClipboardText(); if(chr!="") { keyboardDoTextInput(chr); } }
 
-	void keyboardDoUndo() {} // Maybe another time.
-	void keyboardDoRedo() {} // Maybe another time.
+	void keyboardDoUndo() { mementoMgr.execute(text,carrot,true); }
+	void keyboardDoRedo() { mementoMgr.execute(text,carrot,false); }
 
 	void keyboardEscape() {
 		GUI::stopTextEntering();
+		onStopTextEntering();
 	}
 	void keyboardDoMouse1(int clicks) {
 		Vector2f mpos=GUI::mouse();
@@ -171,17 +152,22 @@ shared class GUITextEntry : GUIClickable {
 		Vector2f mpos=GUI::mouse();
 		if(!GUI::pointInSquare(mpos,paintPos,paintSize)) { keyboardEscape(); return; }
 	}
-	void keyboardDoTextInput(string append) {
-		keyboardDoDelete(true);
-		for(int i=0; i<append.length(); i++) {
-			GUICharacter@ char=GUICharacter(@this);
-			char.align=GUI::Align::Left;
-			char.text=append[i];
-			char.fontColor=_fontColor;
-		}
+	void keyboardDoTextInput(string&in append) {
+		if(selected[0]!=selected[1]) { keyboardDoDelete(true); }
+		text=String::appendAt(text,carrot,append);
+		mementoMgr.push(carrot,append,true,true);
+		carrot+=append.length();
+		selected={carrot,carrot};
+		updateCarrot();
+
 	}
 	void keyboardDoEnter() { if(@inputFunc!=null) { inputFunc(text); } text=""; }
 
+	void kbDebug() {
+		Debug::log("Selected: " + toString(selected[0]) + ", " + toString(selected[1]) + ", with carrot: " + toString(carrot) + ", and label: " + text );
+	}
+
+	// Keyboard input hook
 	void updateTextEntering() {
 		if(Input::Escape::isHit()) { keyboardEscape(); return; }
 		if(pressed) { selectCharacters(); return; }
@@ -198,6 +184,25 @@ shared class GUITextEntry : GUIClickable {
 		else if(Input::Mouse1::isHit()) { keyboardDoMouse1(Input::Mouse1::getClickCount()); }
 		//else if(Input::Mouse2::isHit()) { keyboardDoMouse2(); } //Input::Mouse2::getClickCount()
 		else if(Input::Enter::isHit()) { keyboardDoEnter(); }
+
+		kbDebug();
 	}
 
+	// Rendering
+	void paint() {
+		if(Environment::loading) { return; }
+		if(@GUI::textEntryFocus==@this) {
+			UI::setTextureless();
+
+			if(selected[1]!=selected[0]) {
+				float highlightStart=String::substrWidth(font,fontScale,text,-1,selected[0]);
+				float highlightEnd=highlightStart+String::substrWidth(font,fontScale,text,selected[0],selected[1]);
+				UI::setColor(Color::Green);
+				UI::addRect(Rectanglef(label.textPos+Vector2f(highlightStart,0),label.textPos+Vector2f(highlightEnd,label.textSize.y)));
+			}
+			Vector2f caretPos=Vector2f(label.textPos.x+carrotPos-0.05,label.textPos.y);
+			UI::setColor(Color::White);
+			UI::addRect(Rectanglef(caretPos,Vector2f(caretPos.x+0.1,label.textPos.y+label.textSize.y)));
+		}
+	}
 }

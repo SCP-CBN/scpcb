@@ -9,7 +9,7 @@ shared class GUILabel : GUI {
 	// # Skin
 	Font@ font=GUI::Skin::Label::font;
 	Color fontColor=GUI::Skin::Label::fontColor;
-	float fontScale=GUI::Skin::Label::fontScale*GUI::aspectScale;
+	float fontScale=GUI::Skin::Label::fontScale;
 	Texture@ fontTexture;
 	bool fontTiledTexture;
 
@@ -29,7 +29,7 @@ shared class GUILabel : GUI {
 	// # Layout
 	void internalDoLayout() {
 		textPos=paintPos;
-		textSize=Vector2f(font.stringWidth(text,fontScale*GUI::aspectScale), font.getHeight(fontScale*GUI::aspectScale) );
+		textSize=Vector2f(font.stringWidth(text,fontScale), font.getHeight(fontScale) );
 		layoutPhrase();
 		textPos-=GUI::center;
 	}
@@ -69,7 +69,7 @@ shared class GUILabel : GUI {
 	void paint() {
 		UI::setTextureless(); //if(@fontTexture==null) { UI::setTextureless(); } else { UI::setTextured(@fontTexture,fontTiledTexture); }
 		UI::setColor(fontColor);
-		font.draw(text, textPos, fontScale*GUI::aspectScale, textRotation, fontColor);
+		font.draw(text, textPos, fontScale, textRotation, fontColor);
 	}
 
 	bool glitched;
@@ -93,7 +93,7 @@ shared class GUILabelBox : GUI {
 	// # Skin
 	Font@ font=GUI::Skin::Label::font;
 	Color fontColor=GUI::Skin::Label::fontColor;
-	float fontScale=GUI::Skin::Label::fontScale*GUI::aspectScale;
+	float fontScale=GUI::Skin::Label::fontScale;
 
 	// # Text GUI::Align
 	GUI::Align alignHorizontal=GUI::Align::Center; // GUI::Align of the textbox within the parent labelbox
@@ -124,7 +124,7 @@ shared class GUILabelBox : GUI {
 		removeChildren();
 
 		array<string> words=String::explode(_text," ");
-		float fontSize=fontScale*GUI::aspectScale;
+		float fontSize=fontScale;
 		float fontHeight=font.getHeight(fontSize);
 		string phrase="";
 

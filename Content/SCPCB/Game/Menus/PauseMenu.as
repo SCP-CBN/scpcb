@@ -30,7 +30,7 @@ namespace Menu { namespace Pause { class InfoPanel : GUI {
 		difficulty.height=2.5;
 		difficulty.margin={0,0.02,0,0.02};
 		difficulty.text="Difficulty: Keter";
-		difficulty.fontScale=1;
+		difficulty.fontScale=0.1;
 		difficulty.alignHorizontal=GUI::Align::Left;
 
 		GUILabel@ savefile=GUILabel(@this);
@@ -38,7 +38,7 @@ namespace Menu { namespace Pause { class InfoPanel : GUI {
 		savefile.height=2.5;
 		savefile.margin={0,0.02,0,0.02};
 		savefile.text="savefile: 100% Keter NMG speedrun";
-		savefile.fontScale=1;
+		savefile.fontScale=0.1;
 		savefile.alignHorizontal=GUI::Align::Left;
 
 		GUILabel@ seednum=GUILabel(@this);
@@ -46,7 +46,7 @@ namespace Menu { namespace Pause { class InfoPanel : GUI {
 		seednum.height=2.5;
 		seednum.margin={0,0.02,0,0.02};
 		seednum.text="Seed: 133769";
-		seednum.fontScale=1;
+		seednum.fontScale=0.1;
 		seednum.alignHorizontal=GUI::Align::Left;
 	}
 } } }
@@ -83,7 +83,7 @@ namespace Menu { namespace Pause { class Window : GUI {
 		header.text="PAUSED";
 		header.align=GUI::Align::Top;
 		header.height=GUI::resolution.y*0.07;
-		header.fontScale=3;
+		header.fontScale=0.3;
 		header.margin={4,GUI::resolution.y*0.035,4,1};
 
 		@canvas=GUI(@this);
@@ -202,7 +202,7 @@ namespace Menu { namespace Pause { class Window : GUI {
 			btnRoom.align=GUI::Align::Top;
 			btnRoom.margin={1,1,1,0};
 			btnRoom.height=8;
-			//btnRoom.label.fontScale=1;
+			//btnRoom.label.fontScale=0.1;
 		}
 	}
 
@@ -265,11 +265,11 @@ namespace Menu { namespace Pause { class Window : GUI {
 		testentryPanel.margin={1,1,1,0};
 		testentryPanel.height=8;
 
-		GUITextEntry@ testEntry=GUITextEntry(@canvasGUITest);
+		GUITextEntry@ testEntry=GUITextEntry(@testentryPanel);
 		testEntry.align=GUI::Align::Fill;
 		testEntry.margin={1,1,1,0};
 		testEntry.height=4;
-		testEntry.setText("testy");
+		testEntry.defaultText="testy";
 
 
 		auto@ scrollTest=GUIScrollPanel(@canvasGUITest);
