@@ -5,7 +5,7 @@ namespace Item { namespace Battery9v { Template@ thisTemplate=Template();
 			name		= "Battery9v"; // "bat"
 			@pickSound	= Item::Sound(); // 1
 			@model		= Item::Model(rootDirGFXItems + "Battery/battery.fbx",0.08,rootDirGFXItems + "Battery/battery");
-			@icon		= Item::Icon(rootDirGFXItems + "Battery/inv_battery.jpg");
+			@icon		= Item::Icon(rootDirGFXItems + "Battery/inv_battery");
 			@iconModel	= Item::Icon::Model(model.path,model.scale,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
 	}
@@ -28,7 +28,7 @@ namespace Item { namespace Battery18v { Template@ thisTemplate=Template();
 			name		= "Battery18v"; // "18vbat"
 			@pickSound	= Item::Sound(); // 1
 			@model		= Item::Model(rootDirGFXItems + "Battery/battery.fbx",0.12,rootDirGFXItems + "Battery/battery_18v");
-			@icon		= Item::Icon(rootDirGFXItems + "Battery/inv_battery_18v.jpg");
+			@icon		= Item::Icon(rootDirGFXItems + "Battery/inv_battery_18v");
 			@iconModel	= Item::Icon::Model(model.path,model.scale,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
 	}
@@ -52,7 +52,7 @@ namespace Item { namespace StrangeBattery { Template@ thisTemplate=Template();
 			name		= "StrangeBattery"; // "killbat"
 			@pickSound	= Item::Sound(); // 1
 			@model		= Item::Model(rootDirGFXItems + "Battery/battery.fbx",0.12,rootDirGFXItems + "Battery/battery_strange");
-			@icon		= Item::Icon(rootDirGFXItems + "Battery/inv_battery_strange.jpg");
+			@icon		= Item::Icon(rootDirGFXItems + "Battery/inv_battery_strange");
 			@iconModel	= Item::Icon::Model(model.path,model.scale,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
 	}

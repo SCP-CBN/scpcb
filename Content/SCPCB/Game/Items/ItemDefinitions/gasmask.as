@@ -6,7 +6,7 @@ namespace Item { namespace Gasmask { Template@ thisTemplate=Template();
 			name		= "Gasmask"; // "gasmask"
 			@pickSound	= Item::Sound(); // 2
 			@model		= Item::Model(rootDirGFXItems + name + "/" + name + ".fbx", 0.2);
-			@icon		= Item::Icon(rootDirGFXItems + name + "/inv_" + name + ".jpg");
+			@icon		= Item::Icon(rootDirGFXItems + name + "/inv_" + name);
 			@iconModel	= Item::Icon::Model(model.path,0.08,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
 	}

@@ -5,7 +5,7 @@ namespace Item { namespace Cup { Template@ thisTemplate=Template();
 			name		= "Cup"; // "cup"
 			@pickSound	= Item::Sound(); // 2
 			@model		= Item::Model(rootDirGFXItems + name + "/" + name + ".fbx",0.4);
-			@icon		= Item::Icon(rootDirGFXItems + name + "/" + "inv_" + name + ".jpg");
+			@icon		= Item::Icon(rootDirGFXItems + name + "/" + "inv_" + name);
 			@iconModel	= Item::Icon::Model(model.path,model.scale,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
 		array<Liquid@> liquids;
@@ -73,7 +73,7 @@ namespace Item { namespace EmptyCup { Template@ thisTemplate=Template();
 			name		= "EmptyCup"; // "emptycup"
 			@pickSound	= Item::Sound(); // 2
 			@model		= Item::Model(rootDirGFXItems + "Cup/Cup.fbx",0.4);
-			@icon		= Item::Icon(rootDirGFXItems + "Cup/inv_cup.jpg");
+			@icon		= Item::Icon(rootDirGFXItems + "Cup/inv_cup");
 			@iconModel	= Item::Icon::Model(model.path,model.scale,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
 	}

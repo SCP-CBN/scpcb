@@ -13,7 +13,7 @@ namespace Item { namespace Keycard {
 		Template() { super();
 			@pickSound	= Item::Sound(); // 2
 			@model		= Item::Model(rootDirGFXItems + "Keycards/keycard.fbx", 0.005);
-			@icon		= Item::Icon(rootDirGFXItems + "Keycards/keycard/inv_keycard1.jpg");
+			@icon		= Item::Icon(rootDirGFXItems + "Keycards/keycard/inv_keycard1");
 			@iconModel	= Item::Icon::Model(model.path,0.08,Vector3f(2.3,2.7,0),Vector2f(0,0.2));
 		}
 		void registerKeycard() {

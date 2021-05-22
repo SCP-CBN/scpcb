@@ -2,7 +2,6 @@
 
 #include <set>
 #include <fstream>
-#include <sys/stat.h>
 
 #include <Misc/BinaryReader.h>
 
