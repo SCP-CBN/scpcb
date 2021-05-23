@@ -1,22 +1,35 @@
 // # RootScript
 // angelscript platform
 
+shared string rootDirAssets	= "SCPCB/";
+shared string rootDirGFX	= rootDirAssets + "GFX/";
+shared string rootDirLoadscreens = rootDirGFX + "Loadingscreens/";
+shared string rootDirGFXMenu	= rootDirGFX + "Menu/";
+
 GUI::Panel@ testPanel;
 
 void renderMenu(float interp) {
-	GUI::render(interp);
+	GUI::runRender(interp);
+
+	testPanel.performRecursiveLayout(interp);
 }
 void tickMenu(float interp) {
-	GUI::tick(0);
+	GUI::runTick(0);
 }
+
+// Menu objects are temporarily placed in the RootScript folder.
+// They should really be moved to SCPCB, as they are game related files.
 
 void main() {
 	GUI::initialize();
 	@testPanel=GUI::Panel();
-	GUI::Panel@ a = GUI::Panel(@testPanel);
-	a.align=GUI::Align::TOP;
-	a.height=5;
-	a.color=Color::Blue;
+	GUI::Panel@ abcd = GUI::Panel(@testPanel);
+	abcd.align=GUI::Align::TOP;
+	abcd.height=5;
+	abcd.color=Color::Blue;
+
+
+
 	GUI::Panel@ b = GUI::Panel(@testPanel);
 	b.align=GUI::Align::LEFT;
 	b.width=5;
@@ -29,7 +42,14 @@ void main() {
 	d.align=GUI::Align::BOTTOM;
 	d.height=5;
 	d.color=Color::Orange;
+	GUI::Button@ testbtn = GUI::Button(@c);
+	testbtn.align=GUI::Align::FILL;
+	testbtn.margin={4,8,12,16};
 
+	GUI::Label@ testmsg = GUI::Label(@abcd);
+	testmsg.align=GUI::Align::FILL;
+	testmsg.alignText=GUI::Align::CENTER;
+	testmsg.text="Cheese";
 
 	GUI::Panel@ ba = GUI::Panel(@testPanel);
 	ba.align=GUI::Align::TOP;
@@ -48,7 +68,7 @@ void main() {
 	bd.height=5;
 	bd.color=Color::Gray;
 
-	testPanel.performRecursiveLayout();
+	//testPanel.invalidateLayout();
 
 	PerFrameMenu::register(renderMenu);
 	PerTick::register(tickMenu);

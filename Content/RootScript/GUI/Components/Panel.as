@@ -2,7 +2,6 @@
 // A simple panel that draws a colored or white box with or without a texture.
 
 namespace GUI { // open GUI namespace
-
 shared class Panel : GUI { // open GUI::Panel class
 	// # Constructor
 	Panel(string vcls="GUI::Panel") { super(vcls); @coltex=GUI::ColTex(); }
@@ -15,7 +14,7 @@ shared class Panel : GUI { // open GUI::Panel class
 	bool tiledTexture { get const { return coltex.tiled; } set { coltex.tiled=value; } }
 
 	// # render function
-	void doRender(float&in interp) {
+	void render(float&in interp) {
 		coltex.paint(opacity);
 		UI::addRect(frame());
 	}

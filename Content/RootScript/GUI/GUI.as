@@ -128,7 +128,7 @@ namespace GUI { // open GUI namespace
 
 	// # tick(int&in tick)
 	// entrypoint for the tick event function.
-	shared void tick(int&in tick=0) {
+	shared void runTick(int&in tick=0) {
 		tickMouse();
 		tickTextEntering();
 		triggerRecursiveTick(tick);
@@ -136,7 +136,7 @@ namespace GUI { // open GUI namespace
 
 	// # render(float&in interp)
 	// entrypoint for the renderMenu event function.
-	shared void render(float&in interp) {
+	shared void runRender(float&in interp) {
 		triggerRecursiveRender(interp);
 	}
 

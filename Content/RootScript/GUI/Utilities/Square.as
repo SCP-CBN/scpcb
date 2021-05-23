@@ -61,8 +61,8 @@ shared class Square { // GUI::Square class
 	Square opSub_r(const array<float>&in margins) { return Square(x-(margins[0]), y-(margins[1]), w-(margins[0]+margins[2]), h-(margins[1]+margins[3])); }
 
 	// # Relational functions typically for margins.
-	Square@ opAddAssign(Square@&in other) { x+=other.x; y+=other.y; w+=other.w; h+=other.h; return @this; }
-	Square@ opSubAssign(Square@&in other) { x-=other.x; y-=other.y; w-=other.w; h-=other.h; return @this; }
+	Square@ opAddAssign(Square@&in other) { x-=other.x; y-=other.y; w+=other.w; h+=other.h; return @this; }
+	Square@ opSubAssign(Square@&in other) { x+=other.x; y+=other.y; w-=other.w; h-=other.h; return @this; }
 	Square opAdd(Square@&in other) { return Square(x-other.x, y-other.y, w+other.w, h+other.h); }
 	Square opSub(Square@&in other) { return Square(x+other.x, y+other.y, w-other.w, h-other.h); }
 	Square opAdd_r(Square@&in other) { return Square(x-other.x, y-other.y, w+other.w, h+other.h); }

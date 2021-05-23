@@ -28,7 +28,7 @@ shared class GUI { // GUI baseclass
 
 	// # .opacity
 	// A self-recursing alpha color property.
-	private float _opacity;
+	protected float _opacity;
 	float opacity { get const { return _opacity; } set { _opacity=value; for(int i=0; i<children.length(); i++) { children[i].opacity=value; } } }
 
 	// #.parent
@@ -90,8 +90,6 @@ shared class GUI { // GUI baseclass
 
 	// # .margin
 	// An array of padding dimensions (relative to GUI::scale).
-	// When calculating the render frame, the element is increased in size by the margin, and then reduced in size.
-	// This means elements given a particular size will stay true to that size by adding the margins around it.
 	// [0]=left, [1]=top, [2]=right, [3]=bottom.
 	array<float> margin;
 
@@ -110,26 +108,34 @@ shared class GUI { // GUI baseclass
 
 	// # .performRecursiveLayout()
 	// A recursive function that prepares and executes the layout function on this panel and its children
-	void performRecursiveLayout() {
+	void performRecursiveLayout(float&in interp=0) {
 		@layout=GUI::Square();
+		internalPreLayout();
 		preLayout();
 		if(!hidden) { for(int i=0; i<children.length(); i++) { if(shouldLayoutChild(@children[i],i)) { layoutChild(@children[i],i); } } }
+		internalDoLayout();
 		doLayout();
-		if(!hidden) { for(int i=0; i<children.length(); i++) { if(shouldLayoutChild(@children[i],i)) { children[i].performRecursiveLayout(); } } }
+		if(!hidden) { for(int i=0; i<children.length(); i++) { if(shouldLayoutChild(@children[i],i)) { children[i].performRecursiveLayout(interp); } } }
 		if(sizeToChildren) { frame.h=Math::maxFloat(frame.h,layout.y+layout.h); }
+		internalPostLayout();
 		postLayout();
 	}
-	bool shouldLayoutChild(GUI@&in child, int&in at) { return child.visible; } // override. called twice per child.
+	protected bool shouldLayoutChild(GUI@&in child, int&in at) { return child.visible; } // override. called twice per child.
 
 	void preLayout() {} // override, before any children layouts
 	void doLayout() {} // override, after finished laying out all children.
 	void postLayout() {} // override, after finished children recursive layout
 
+	void internalPreLayout() {} // override internal
+	void internalDoLayout() {} // override internal
+	void internalPostLayout() {} // override internal
+
 	// # .layoutChild()
 	// Performs the layout function on a child element, called by the recursion function.
-	void layoutChild(GUI@&in child, int&in at) {
+	protected void layoutChild(GUI@&in child, int&in at) {
 		GUI::Square@ childMargins=GUI::Square(child.margin)*GUI::scale;
-		GUI::Square@ childSquare=(child.square*GUI::scale)+childMargins;
+		GUI::Square@ childSquare=(child.square*GUI::scale);
+		preLayoutChild(@child,at);
 		switch(child.align) {
 			case GUI::Align::CENTER:
 				child.frame.position=(childSquare.position)-(childSquare.size/2);
@@ -203,25 +209,29 @@ shared class GUI { // GUI baseclass
 
 	void manualLayoutChild(GUI@&in child, int&in at) {} // GUI::Align::MANUAL override (ONLY where @child has GUI::Align::MANUAL).
 	void layoutParent(GUI@&in parent, int&in at) {} //override, for a child to affect its parents layout.
+	void preLayoutChild(GUI@&in child, int&in at) {} // override, before laying out a child, i.e set its size.
 	void postLayoutChild(GUI@&in child, int&in at) {} // override, to finish laying out a child.
 
 	// #### Mouse handling
 	// Exactly what it says on the tin.
 
-	// # .hovered
+	// # .hovered and .testHovered()
 	// Returns whether or not the panel is currently underneath the mouse.
-	// Activate by checking if(hovered) { /*updateWhileHovering();*/ }, or calling testHovering() each update to access the start/stop runOnce functions.
+	// call testHovering() in the tick function.
 	// There are several ways to do this, but the simplest is for all visible elements that need hovering functions to check it themselves.
-	private bool _wasHovered;
-	bool hovered { set { _wasHovered=false; } get {
-		if(!hidden && frame.contains(GUI::mouse())) { if(!_wasHovered) { _wasHovered=true; startHovering(); } return true; }
-		else if(_wasHovered) { _wasHovered=false; stopHovering(); }
+	protected bool _isHovered;
+	bool hovered { set { _isHovered=value; } get { return _isHovered; } }
+	bool testHovered() {
+		if(!hidden && frame.contains(GUI::mouse())) { if(!_isHovered) { _isHovered=true; startHovering(); } return true; }
+		else if(_isHovered) { _isHovered=false; stopHovering(); }
 		return false;
-	} }
-	bool testHovering() { return hovered; } // Almost a noop function, but not quite.
+	}
 
 	void startHovering() {} // override. RunOnce function on started hovering.
+	void internalStartHovering() {} // override
+
 	void stopHovering() {} // override. RunOnce function on stopped hovering.
+	void internalStopHovering() {} // override
 
 
 	// # .clickFunc
@@ -235,24 +245,25 @@ shared class GUI { // GUI baseclass
 	void performRecursiveClick(Vector2f&in mpos, array<GUI@> &clickables) { clickables.insertLast(@this);
 		for(int i=0; i<children.length(); i++) { if(shouldClickChild(mpos,@children[i])) { performRecursiveClick(mpos,clickables); } }
 	}
-	bool shouldClickChild(Vector2f&in mpos, GUI@&in child) { return (child.visible && !child.hidden && child.frame.contains(mpos)); }
+	protected bool shouldClickChild(Vector2f&in mpos, GUI@&in child) { return (child.visible && !child.hidden && child.frame.contains(mpos)); }
 
 	// # .performClick(mouse position)
 	// Called after performRecursiveClick to ensure clicks do not propogate to changes in the menu.
-	void performClick(Vector2f&in mpos) { doClick(mpos); if(@clickFunc!=null) { clickFunc(mpos); } }
+	void performClick(Vector2f&in mpos) { click(mpos); if(@clickFunc!=null) { clickFunc(mpos); } }
 
-	void doClick(Vector2f&in mpos) {} // override
+	void click(Vector2f&in mpos) {} // override
 
 	// #### Update/Tick/Think functions
 	// Exactly what it says on the tin.
 
 	// # .performRecursiveTick(tick)
-	void performRecursiveTick(int&in tick) {
-		doTick(tick); for(int i=0; i<children.length(); i++) { if(shouldTickChild(@children[i],tick)) { children[i].performRecursiveTick(tick); } }
+	void performRecursiveTick(int&in t) {
+		tickInternal(t); tick(t); for(int i=0; i<children.length(); i++) { if(shouldTickChild(@children[i])) { children[i].performRecursiveTick(t); } }
 	}
-	bool shouldTickChild(GUI@&in child, int&in tick) { return (child.visible && !child.hidden); }
+	protected bool shouldTickChild(GUI@&in child) { return (child.visible && !child.hidden); }
 
-	void doTick(int&in tick) {} // override
+	void tick(int&in t) {} // override
+	void tickInternal(int&in t) {} // override
 
 	// #### Paint and Rendering functions.
 	// Exactly what it says on the tin.
@@ -260,17 +271,17 @@ shared class GUI { // GUI baseclass
 	// # performRecursiveRender(interp)
 	// Exactly what it says on the tin.
 	void performRecursiveRender(float&in interp) {
-		doRender(interp);
+		render(interp);
 		for(int i=0; i<children.length(); i++) { if(shouldRenderChild(@children[i])) { children[i].performRecursiveRender(interp); } }
 	}
-	bool shouldRenderChild(GUI@&in child) { return (child.visible && !child.hidden); }
+	protected bool shouldRenderChild(GUI@&in child) { return (child.visible && !child.hidden); }
 
-	void doRender(float&in interp) {} // override
+	void render(float&in interp) {} // override
 
 	// #### Constructor ----
 
 	// # .internalConstruct( classname )
-	void internalConstruct(string&in vcls) {
+	protected void internalConstruct(string&in vcls) {
 		cls=vcls;
 		square=GUI::Square(Vector2f(),GUI::resolution);
 		frame=square;
