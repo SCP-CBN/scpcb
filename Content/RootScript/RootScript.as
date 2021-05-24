@@ -6,22 +6,10 @@ shared string rootDirGFX	= rootDirAssets + "GFX/";
 shared string rootDirLoadscreens = rootDirGFX + "Loadingscreens/";
 shared string rootDirGFXMenu	= rootDirGFX + "Menu/";
 
-GUI::Panel@ testPanel;
-
-int fixInitialResolutionBug;
+//GUI::Panel@ testPanel;
 
 void renderMenu(float interp) {
 	GUI::runRender(interp);
-
-/*
-	if(fixInitialResolutionBug< 20) { // The resolution is not captured correctly on init, and there's no hooks to fix it.
-		fixInitialResolutionBug++;
-		testPanel.invalidateLayout();
-		Menu::Pause::instance.invalidateLayout();
-		Debug::log("Resolution: " + GUI::resolution.toString());
-	}
-*/
-
 }
 void tickMenu(float interp) {
 	GUI::runTick(0);
@@ -32,14 +20,13 @@ void tickMenu(float interp) {
 
 void main() {
 	GUI::initialize();
-	Debug::log("Resolution INIT: " + GUI::resolution.toString());
-	@testPanel=GUI::Panel();
+	//@testPanel=GUI::Panel();
 
+/*
 	GUI::Panel@ abcd = GUI::Panel(@testPanel);
 	abcd.align=GUI::Align::TOP;
 	abcd.height=12;
 	abcd.color=Color::Blue;
-
 
 	GUI::Panel@ b = GUI::Panel(@testPanel);
 	b.align=GUI::Align::LEFT;
@@ -79,9 +66,7 @@ void main() {
 	bd.align=GUI::Align::BOTTOM;
 	bd.height=5;
 	bd.color=Color::Gray;
-
-	testPanel.invalidateLayout();
-
+*/
 
 	Menu::Pause::load();
 	Menu::pause();

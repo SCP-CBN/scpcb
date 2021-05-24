@@ -30,7 +30,7 @@ namespace Menu { namespace Pause { class InfoPanel : GUI {
 		difficulty.height=2.5;
 		difficulty.margin={0,0.02,0,0.02};
 		difficulty.text="Difficulty: Keter";
-		difficulty.fontScale=0.1;
+		difficulty.fontScale=0.15;
 		difficulty.alignText=GUI::Align::LEFT;
 
 		GUI::Label@ savefile=GUI::Label(@this);
@@ -38,7 +38,7 @@ namespace Menu { namespace Pause { class InfoPanel : GUI {
 		savefile.height=2.5;
 		savefile.margin={0,0.02,0,0.02};
 		savefile.text="savefile: 100% Keter NMG speedrun";
-		savefile.fontScale=0.1;
+		savefile.fontScale=0.15;
 		savefile.alignText=GUI::Align::LEFT;
 
 		GUI::Label@ seednum=GUI::Label(@this);
@@ -46,7 +46,7 @@ namespace Menu { namespace Pause { class InfoPanel : GUI {
 		seednum.height=2.5;
 		seednum.margin={0,0.02,0,0.02};
 		seednum.text="Seed: 133769";
-		seednum.fontScale=0.1;
+		seednum.fontScale=0.15;
 		seednum.alignText=GUI::Align::LEFT;
 	}
 } } }

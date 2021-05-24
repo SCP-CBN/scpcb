@@ -62,7 +62,8 @@ shared class MenuManager {
             if (GUITextInput::subscriber != null && currMenu != null && currMenu.type != "console") {
                 GUITextInput::subscriber.deselect();
             } else if (currMenu == null) {
-                activateMenu(PauseMenu::instance);
+                //activateMenu(PauseMenu::instance);
+		Menu::pause();
             } else if (currMenu.onEscapeHit()) {
                 deactivateMenu(currMenu);
             }
