@@ -11,7 +11,7 @@ GUI::Panel@ testPanel;
 void renderMenu(float interp) {
 	GUI::runRender(interp);
 
-	testPanel.performRecursiveLayout(interp);
+	//testPanel.performRecursiveLayout(interp);
 }
 void tickMenu(float interp) {
 	GUI::runTick(0);
@@ -42,9 +42,10 @@ void main() {
 	d.align=GUI::Align::BOTTOM;
 	d.height=5;
 	d.color=Color::Orange;
-	GUI::Button@ testbtn = GUI::Button(@c);
+	GUI::ButtonLabel@ testbtn = GUI::ButtonLabel(@c);
 	testbtn.align=GUI::Align::FILL;
 	testbtn.margin={4,8,12,16};
+	testbtn.text="tuch my butten";
 
 	GUI::Label@ testmsg = GUI::Label(@abcd);
 	testmsg.align=GUI::Align::FILL;

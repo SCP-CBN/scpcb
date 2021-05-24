@@ -14,12 +14,13 @@ shared class Label : GUI { // open GUI::Label class
 	float scale { get { return text.scale; } set { text.scale=value; } }
 
 	// # Layout
-	protected GUI::Square@ textFrame;
+	GUI::Square@ textFrame;
 	GUI::Align alignText;
 
 
 	void postLayout() { layoutPhrase(); }
 	void layoutPhrase() {
+		Debug::log("Laying out phrase");
 		textFrame.position=frame.position;
 		textFrame.size=Vector2f(text.width, text.height);
 		switch(alignText) {

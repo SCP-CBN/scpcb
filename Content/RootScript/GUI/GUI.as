@@ -101,7 +101,6 @@ namespace GUI { // open GUI namespace
 	shared void triggerRecursiveClick() {
 		Vector2f mpos=mouse();
 		clickedTextEntering(mpos); // Update text entering (defocusing if click outside)
-
 		// If a menu changes the menu, new elements could be clicked, so this deals with this.
 		array<GUI@> clickables;
 		for(int i=0; i<baseInstances.length(); i++) { if(baseInstances[i].visible) { baseInstances[i].performRecursiveClick(mpos,clickables); } }
@@ -111,7 +110,10 @@ namespace GUI { // open GUI namespace
 	// # ::tickMouse()
 	// Monitor the mouse for clicks.
 	shared bool wasMouse1Down;
-	shared void tickMouse() { if(Input::Mouse1::isDown()) { if(!wasMouse1Down) { triggerRecursiveClick(); wasMouse1Down=true; } } else if(wasMouse1Down) { wasMouse1Down=false; } }
+	shared void tickMouse() {
+		if(Input::Mouse1::isDown() || Input::Mouse1::isHit()) { if(!wasMouse1Down) { wasMouse1Down=true; triggerRecursiveClick(); } }
+		else if(wasMouse1Down) { wasMouse1Down=false; }
+	}
 
 
 	// #### Rendering and Ticking

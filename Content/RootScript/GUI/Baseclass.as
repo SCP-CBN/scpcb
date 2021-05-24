@@ -243,7 +243,7 @@ shared class GUI { // GUI baseclass
 	// The simplest and most efficient method of implementing a broadly capably click function, i.e if a child is clicked.
 	// Saves keeping track of which elements are clickables, which aren't, whats visible, what isnt, etc.
 	void performRecursiveClick(Vector2f&in mpos, array<GUI@> &clickables) { clickables.insertLast(@this);
-		for(int i=0; i<children.length(); i++) { if(shouldClickChild(mpos,@children[i])) { performRecursiveClick(mpos,clickables); } }
+		for(int i=0; i<children.length(); i++) { if(shouldClickChild(mpos,@children[i])) { children[i].performRecursiveClick(mpos,clickables); } }
 	}
 	protected bool shouldClickChild(Vector2f&in mpos, GUI@&in child) { return (child.visible && !child.hidden && child.frame.contains(mpos)); }
 

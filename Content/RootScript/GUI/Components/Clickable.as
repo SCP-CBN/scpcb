@@ -12,7 +12,10 @@ shared abstract class Clickable : GUI { // open GUI::Clickable class
 
 	// #.tickInternal
 	// This is why this is a mixin class.
-	protected void tickInternal(int&in tick) { if(pressed && !Input::Mouse1::isDown()) { pressed=false; internalStopClick(); stopClick(); } tickClickableInternal(); tickClickable(); }
+	protected void tickInternal(int&in tick) {
+		if(pressed && !(Input::Mouse1::isDown() || Input::Mouse1::isHit())) { pressed=false; internalStopClick(); stopClick(); }
+		tickClickableInternal(); tickClickable();
+	}
 
 	void tickClickable() {} // override
 	void tickClickableInternal() {} // override
@@ -23,8 +26,8 @@ shared abstract class Clickable : GUI { // open GUI::Clickable class
 
 	// # .internalStopClick/StartClick.
 	// Used for other baseclasses to inherit higher click functions, such as drag n drop.
-	void internalStopClick() { stopClick(); }
-	void internalStartClick(Vector2f&in mpos) { startClick(mpos); }
+	void internalStopClick() { }
+	void internalStartClick(Vector2f&in mpos) { }
 
 	void stopClick() {} // override
 	void startClick(Vector2f&in mpos) {} // override
