@@ -147,7 +147,7 @@ void main() {
 
     lcz.registerRoom("hll_plain_1_empty_a", Room1);
     lcz.registerRoom("hll_plain_1_empty_b", Room1);
-    lcz.generate();
+    // lcz.generate(); // commented because it takes forever to load
     PerTick::register(update);
     PerFrameGame::register(renderGame);
     PerFrameMenu::register(renderMenu);

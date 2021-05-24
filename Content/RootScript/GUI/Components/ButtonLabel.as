@@ -4,7 +4,7 @@
 namespace GUI { // open GUI namespace
 shared class ButtonLabel : Button { // open GUI::ButtonLabel class
 	// # Constructor
-	ButtonLabel(GUI@&in par, string vcls="GUI::ButtonLabel") { super(@par,vcls);
+	ButtonLabel(GUI@&in par, string&in vcls="GUI::ButtonLabel") { super(@par,vcls);
 		@label=GUI::Label(@foreground);
 		label.align=GUI::Align::FILL;
 	}
@@ -15,8 +15,8 @@ shared class ButtonLabel : Button { // open GUI::ButtonLabel class
 	::Font@ font { get { return @label.font.font; } set { @label.font.font=@value; } }
 
 	// # Skin
-	void internalStartClick(Vector2f&in mpos) { skin(); label.textFrame.position+=Vector2f(2,2); }
-	void internalStopClick() { skin(); label.textFrame.position-=Vector2f(2,2); }
+	void internalStartClick(Vector2f&in mpos) { label.textFrame.position+=Vector2f(2,2); Button::internalStartClick(mpos); }
+	void internalStopClick() { label.textFrame.position-=Vector2f(2,2); Button::internalStopClick();  }
 
 } // close GUI::Button class
 } // close GUI namespace

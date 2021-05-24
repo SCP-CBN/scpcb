@@ -69,8 +69,8 @@ shared class GUI { // GUI baseclass
 	float y { get { return square.y; } set { square.y=value; } }
 	float w { get { return square.w; } set { square.w=value; } }
 	float h { get { return square.h; } set { square.h=value; } }
-	float width=w; // alias
-	float height=h; // alias
+	float width { get { return square.w; } set { square.w=value; } }; // alias
+	float height { get { return square.h; } set { square.h=value; } }; // alias
 
 	// # .frame
 	// The aligned rendering square relative to the parent.
@@ -109,6 +109,7 @@ shared class GUI { // GUI baseclass
 	// # .performRecursiveLayout()
 	// A recursive function that prepares and executes the layout function on this panel and its children
 	void performRecursiveLayout(float&in interp=0) {
+		if(@parent==null) { square=GUI::Square(Vector2f(),GUI::resolution); frame=square; }
 		@layout=GUI::Square();
 		internalPreLayout();
 		preLayout();
@@ -133,70 +134,70 @@ shared class GUI { // GUI baseclass
 	// # .layoutChild()
 	// Performs the layout function on a child element, called by the recursion function.
 	protected void layoutChild(GUI@&in child, int&in at) {
-		GUI::Square@ childMargins=GUI::Square(child.margin)*GUI::scale;
-		GUI::Square@ childSquare=(child.square*GUI::scale);
+		GUI::Square@ childMargins=GUI::Square(child.margin);
 		preLayoutChild(@child,at);
 		switch(child.align) {
 			case GUI::Align::CENTER:
-				child.frame.position=(childSquare.position)-(childSquare.size/2);
+				child.frame.position=(frame.position+(frame.size/2))-(child.square.size/2);
+				child.frame.size=child.square.size;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::LEFT:
-				child.frame.position=childSquare.position+frame.position+layout.position;
-				child.frame.size=Vector2f(childSquare.w,frame.h-layout.y-layout.h);
+				child.frame.position=child.square.position+frame.position+layout.position;
+				child.frame.size=Vector2f(child.square.w,frame.h-layout.y-layout.h);
 				layout.x+=child.frame.w;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::TOP:
-				child.frame.position=childSquare.position+frame.position+layout.position;
-				child.frame.size=Vector2f(frame.w-layout.x-layout.w,childSquare.h);
+				child.frame.position=child.square.position+frame.position+layout.position;
+				child.frame.size=Vector2f(frame.w-layout.x-layout.w,child.square.h);
 				layout.y+=child.frame.h;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::RIGHT:
-				child.frame.position=childSquare.position+frame.position+Vector2f(frame.w-childSquare.w-layout.w,layout.y);
-				child.frame.size=Vector2f(childSquare.w,frame.h-layout.y-layout.h);
+				child.frame.position=child.square.position+frame.position+Vector2f(frame.w-child.square.w-layout.w,layout.y);
+				child.frame.size=Vector2f(child.square.w,frame.h-layout.y-layout.h);
 				layout.w+=child.frame.w;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::BOTTOM:
-				child.frame.position=childSquare.position+frame.position+Vector2f(layout.x,frame.h-childSquare.h-layout.h);
-				child.frame.size=Vector2f(frame.w-layout.x-layout.w,childSquare.h);
+				child.frame.position=child.square.position+frame.position+Vector2f(layout.x,frame.h-child.square.h-layout.h);
+				child.frame.size=Vector2f(frame.w-layout.x-layout.w,child.square.h);
 				layout.h+=child.frame.h;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::TOP_LEFT:
-				child.frame.position=childSquare.position+frame.position+layout.position;
-				child.frame.size=childSquare.size;
+				child.frame.position=child.square.position+frame.position+layout.position;
+				child.frame.size=child.square.size;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::TOP_RIGHT:
-				child.frame.position=childSquare.position+frame.position+Vector2f(frame.w-childSquare.w-layout.w,layout.y);
-				child.frame.size=childSquare.size;
+				child.frame.position=child.square.position+frame.position+Vector2f(frame.w-child.square.w-layout.w,layout.y);
+				child.frame.size=child.square.size;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::BOTTOM_LEFT:
-				child.frame.position=childSquare.position+frame.position+Vector2f(frame.w-childSquare.w-layout.w,frame.h-childSquare.h-layout.h);
-				child.frame.size=childSquare.size;
+				child.frame.position=child.square.position+frame.position+Vector2f(frame.w-child.square.w-layout.w,frame.h-child.square.h-layout.h);
+				child.frame.size=child.square.size;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::BOTTOM_RIGHT:
-				child.frame.position=childSquare.position+frame.position+Vector2f(frame.w-childSquare.w-layout.w,frame.h-layout.h-childSquare.h);
-				child.frame.size=childSquare.size;
+				child.frame.position=child.square.position+frame.position+Vector2f(frame.w-child.square.w-layout.w,frame.h-layout.h-child.square.h);
+				child.frame.size=child.square.size;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::FILL:
-				child.frame.position=childSquare.position+frame.position+layout.position;
-				child.frame.size=frame.size-layout.position-layout.size;
+				child.frame.position=child.square.position+frame.position+layout.position;
+				child.frame.size=frame.size-(layout.position+layout.size);
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::MANUAL:
-				child.frame=childSquare;
+				child.frame=child.square;
 				manualLayoutChild(@child,at);
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::NONE:
-				child.frame=childSquare;
+				child.frame=child.square;
 				child.frame-=childMargins;
 				break;
 			default:
@@ -220,18 +221,19 @@ shared class GUI { // GUI baseclass
 	// call testHovering() in the tick function.
 	// There are several ways to do this, but the simplest is for all visible elements that need hovering functions to check it themselves.
 	protected bool _isHovered;
-	bool hovered { set { _isHovered=value; } get { return _isHovered; } }
+	bool hovered { set { _isHovered=value; } get const { return _isHovered; } }
 	bool testHovered() {
-		if(!hidden && frame.contains(GUI::mouse())) { if(!_isHovered) { _isHovered=true; startHovering(); } return true; }
-		else if(_isHovered) { _isHovered=false; stopHovering(); }
+		if(hidden || !visible) { _isHovered=false; return false; }
+		if(frame.contains(GUI::mouse())) { if(!_isHovered) { _isHovered=true; internalStartHovering(); } return true; }
+		else if(_isHovered) { _isHovered=false; internalStopHovering(); }
 		return false;
 	}
 
 	void startHovering() {} // override. RunOnce function on started hovering.
-	void internalStartHovering() {} // override
+	void internalStartHovering() { startHovering(); }
 
 	void stopHovering() {} // override. RunOnce function on stopped hovering.
-	void internalStopHovering() {} // override
+	void internalStopHovering() { stopHovering(); }
 
 
 	// # .clickFunc
@@ -249,14 +251,15 @@ shared class GUI { // GUI baseclass
 
 	// # .performClick(mouse position)
 	// Called after performRecursiveClick to ensure clicks do not propogate to changes in the menu.
-	void performClick(Vector2f&in mpos) { click(mpos); if(@clickFunc!=null) { clickFunc(mpos); } }
+	void performClick(Vector2f&in mpos) { clickInternal(mpos); }
+	void clickInternal(Vector2f&in mpos) { click(); if(@clickFunc!=null) { clickFunc(); } }
 
-	void click(Vector2f&in mpos) {} // override
+	void click() {} // override
 
 	// #### Update/Tick/Think functions
 	// Exactly what it says on the tin.
 
-	// # .performRecursiveTick(tick)
+	// # .performRecursiveTick(tick t)
 	void performRecursiveTick(int&in t) {
 		tickInternal(t); tick(t); for(int i=0; i<children.length(); i++) { if(shouldTickChild(@children[i])) { children[i].performRecursiveTick(t); } }
 	}
@@ -278,13 +281,17 @@ shared class GUI { // GUI baseclass
 
 	void render(float&in interp) {} // override
 
+	// # .skin
+	// A function that sets colors and whatnots, particularly for buttons. Used internally in some places.
+	void skin() {} // override
+
 	// #### Constructor ----
 
 	// # .internalConstruct( classname )
 	protected void internalConstruct(string&in vcls) {
 		cls=vcls;
-		square=GUI::Square(Vector2f(),GUI::resolution);
-		frame=square;
+		square=GUI::Square();
+		frame=GUI::Square();
 		margin={0,0,0,0};
 		visible=true;
 		hidden=false;
@@ -293,7 +300,7 @@ shared class GUI { // GUI baseclass
 
 	// # ~Construct(classname)
 	// Constructs a non-parented menu frame/panel.
-	GUI(string&in vcls="GUI::class_name_missing") {
+	GUI(const string&in vcls="GUI::class_name_missing") {
 		GUI::baseInstances.insertLast(@this);
 		internalConstruct(vcls);
 		invalidateLayout(); // This assumes all recursive child elements are created at the same time the parentless element is.
@@ -301,8 +308,9 @@ shared class GUI { // GUI baseclass
 
 	// # ~Construct(gui@ parent, classname)
 	// Constructs a parented gui frame/panel. Assumes the originating GUI element is was invalid() earlier this frame.
-	GUI(GUI@&in par, string&in vcls="GUI::class_name_missing") {
+	GUI(GUI@&in par, const string&in vcls="GUI::class_name_missing") {
 		internalConstruct(vcls);
+
 		_opacity=par.opacity;
 		@parent=@par;
 	}

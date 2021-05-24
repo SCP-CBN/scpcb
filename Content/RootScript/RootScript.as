@@ -8,10 +8,20 @@ shared string rootDirGFXMenu	= rootDirGFX + "Menu/";
 
 GUI::Panel@ testPanel;
 
+int fixInitialResolutionBug;
+
 void renderMenu(float interp) {
 	GUI::runRender(interp);
 
-	//testPanel.performRecursiveLayout(interp);
+/*
+	if(fixInitialResolutionBug< 20) { // The resolution is not captured correctly on init, and there's no hooks to fix it.
+		fixInitialResolutionBug++;
+		testPanel.invalidateLayout();
+		Menu::Pause::instance.invalidateLayout();
+		Debug::log("Resolution: " + GUI::resolution.toString());
+	}
+*/
+
 }
 void tickMenu(float interp) {
 	GUI::runTick(0);
@@ -22,29 +32,30 @@ void tickMenu(float interp) {
 
 void main() {
 	GUI::initialize();
+	Debug::log("Resolution INIT: " + GUI::resolution.toString());
 	@testPanel=GUI::Panel();
+
 	GUI::Panel@ abcd = GUI::Panel(@testPanel);
 	abcd.align=GUI::Align::TOP;
-	abcd.height=5;
+	abcd.height=12;
 	abcd.color=Color::Blue;
-
 
 
 	GUI::Panel@ b = GUI::Panel(@testPanel);
 	b.align=GUI::Align::LEFT;
-	b.width=5;
+	b.width=12;
 	b.color=Color::Green;
 	GUI::Panel@ c = GUI::Panel(@testPanel);
 	c.align=GUI::Align::RIGHT;
-	c.width=5;
+	c.width=12;
 	c.color=Color::Red;
 	GUI::Panel@ d = GUI::Panel(@testPanel);
 	d.align=GUI::Align::BOTTOM;
-	d.height=5;
+	d.height=12;
 	d.color=Color::Orange;
-	GUI::ButtonLabel@ testbtn = GUI::ButtonLabel(@c);
+	GUI::ButtonLabel@ testbtn = GUI::ButtonLabel(@d);
 	testbtn.align=GUI::Align::FILL;
-	testbtn.margin={4,8,12,16};
+	testbtn.margin={1,2,3,4};
 	testbtn.text="tuch my butten";
 
 	GUI::Label@ testmsg = GUI::Label(@abcd);
@@ -69,7 +80,11 @@ void main() {
 	bd.height=5;
 	bd.color=Color::Gray;
 
-	//testPanel.invalidateLayout();
+	testPanel.invalidateLayout();
+
+
+	Menu::Pause::load();
+	Menu::pause();
 
 	PerFrameMenu::register(renderMenu);
 	PerTick::register(tickMenu);

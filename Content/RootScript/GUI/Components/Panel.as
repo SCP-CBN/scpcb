@@ -4,8 +4,8 @@
 namespace GUI { // open GUI namespace
 shared class Panel : GUI { // open GUI::Panel class
 	// # Constructor
-	Panel(string vcls="GUI::Panel") { super(vcls); @coltex=GUI::ColTex(); }
-	Panel(GUI@&in par, string vcls="GUI::Panel") { super(@par,vcls); @coltex=@GUI::ColTex(); }
+	Panel(string&in vcls="GUI::Panel") { super(vcls); @coltex=GUI::ColTex(); }
+	Panel(GUI@&in par, string&in vcls="GUI::Panel") { super(@par,vcls); @coltex=@GUI::ColTex(); }
 
 	// # Basic background/draw panel.
 	GUI::ColTex@ coltex;

@@ -59,7 +59,7 @@ namespace GUI { // open GUI namespace
 
 	// # ::triggerRecursiveLayout
 	// spawns a layout update event for all elements marked as invalid.
-	shared void triggerRecursiveLayout() { while(invalidElements.length()>0) { invalidElements[0].performRecursiveLayout(); invalidElements.removeAt(0); } }
+	shared void triggerRecursiveLayout(float&in interp) { while(invalidElements.length()>0) { invalidElements[0].performRecursiveLayout(); invalidElements.removeAt(0); } }
 
 	// #### Text entering
 
@@ -94,7 +94,7 @@ namespace GUI { // open GUI namespace
 	// # ::ClickFunction
 	// @element.clickFunc=@function_name or @element=GUI::ClickFunction(@func);
 	// It's a variable function used as an alternative to element.doClick().
-	shared funcdef void ClickFunction(Vector2f&in mpos);
+	shared funcdef void ClickFunction();
 
 	// # ::triggerRecursiveClick
 	// spawns a click event for all visible base elements.
@@ -139,6 +139,7 @@ namespace GUI { // open GUI namespace
 	// # render(float&in interp)
 	// entrypoint for the renderMenu event function.
 	shared void runRender(float&in interp) {
+		triggerRecursiveLayout(interp);
 		triggerRecursiveRender(interp);
 	}
 

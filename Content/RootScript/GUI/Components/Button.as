@@ -4,7 +4,7 @@
 namespace GUI { // open GUI namespace
 shared class Button : Clickable { // open GUI::Button class
 	// # Constructor
-	Button(GUI@&in par, string vcls="GUI::Button") { super(@par,vcls);
+	Button(GUI@&in par, string&in vcls="GUI::Button") { super(@par,vcls);
 		@background=@GUI::Panel(@this);
 		background.align=GUI::Align::FILL;
 		@background.texture=@GUI::Skin::Button::bgTexture;
@@ -43,13 +43,13 @@ shared class Button : Clickable { // open GUI::Button class
 			foreground.color=GUI::Skin::Button::whiteColor;
 		}
 	}
-	void internalStartHovering() { skin(); }
-	void internalStopHovering() { skin(); }
-	void internalStartClick() { skin(); }
-	void internalStopClick() { skin(); }
+	void internalStartHovering() { skin(); Clickable::internalStartHovering(); }
+	void internalStopHovering() { skin(); Clickable::internalStopHovering(); }
+	void internalStartClick(Vector2f&in mpos) { Clickable::internalStartClick(mpos); skin(); }
+	void internalStopClick() { Clickable::internalStopClick(); skin(); }
 	void internalPostLayout() { skin(); }
 
-	void tickClickableInternal() { testHovered(); }
+	void tickInternal(int&in tick) { testHovered(); Clickable::tickInternal(tick); }
 
 } // close GUI::Button class
 } // close GUI namespace

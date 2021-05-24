@@ -5,13 +5,14 @@ namespace GUI { // open GUI namespace
 
 shared class Label : GUI { // open GUI::Label class
 	// # Constructor
-	Label(GUI@&in par, string vcls="GUI::Label") { super(@par,vcls); @text=@GUI::String(); alignText=GUI::Align::CENTER; @textFrame=@GUI::Square(); }
+	Label(GUI@&in par, string&in vcls="GUI::Label") { super(@par,vcls); @text=@GUI::String(); alignText=GUI::Align::CENTER; @textFrame=@GUI::Square(); }
 
 	// # Basic background/draw Label.
 	GUI::String@ text;
 	GUI::Font@ font { get { return @text.font; } set { @text.font=@value; } }
 	Color color { get const { return text.color; } set { text.color=value; } }
 	float scale { get { return text.scale; } set { text.scale=value; } }
+	float fontScale { get { return text.scale; } set { text.scale=value; } } // alias
 
 	// # Layout
 	GUI::Square@ textFrame;
@@ -20,7 +21,6 @@ shared class Label : GUI { // open GUI::Label class
 
 	void postLayout() { layoutPhrase(); }
 	void layoutPhrase() {
-		Debug::log("Laying out phrase");
 		textFrame.position=frame.position;
 		textFrame.size=Vector2f(text.width, text.height);
 		switch(alignText) {
