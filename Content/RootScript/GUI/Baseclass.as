@@ -8,6 +8,7 @@
 // To manage layouts, you must call invalidateLayout() manually as-needed (in the majority of cases), as this is rarely called automatically.
 // layout updates are costly, requiring repositioning and resizing of all children elements, but the elements do not change often so this is worthwhile.
 // And sometimes you must change layout data without triggering an update, so having no automatic updates helps with that.
+// The layout function can also be called directly, with mother_panel.performRecursiveLayout(interp);
 
 shared class GUI { // GUI baseclass
 
@@ -108,7 +109,7 @@ shared class GUI { // GUI baseclass
 
 	// # .performRecursiveLayout()
 	// A recursive function that prepares and executes the layout function on this panel and its children
-	void performRecursiveLayout(float&in interp=0) {
+	void performRecursiveLayout(float&in interp=0.016) {
 		if(@parent==null) { square=GUI::Square(Vector2f(),GUI::resolution); frame=square; }
 		@layout=GUI::Square();
 		internalPreLayout();
@@ -135,55 +136,56 @@ shared class GUI { // GUI baseclass
 	// Performs the layout function on a child element, called by the recursion function.
 	protected void layoutChild(GUI@&in child, int&in at) {
 		GUI::Square@ childMargins=GUI::Square(child.margin);
+		GUI::Square@ childSquare=GUI::Square(child.square)+childMargins;
 		preLayoutChild(@child,at);
 		switch(child.align) {
 			case GUI::Align::CENTER:
-				child.frame.position=(frame.position+(frame.size/2))-(child.square.size/2);
-				child.frame.size=child.square.size;
+				child.frame.position=(frame.position+(frame.size/2))-(childSquare.size/2);
+				child.frame.size=childSquare.size;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::LEFT:
 				child.frame.position=child.square.position+frame.position+layout.position;
-				child.frame.size=Vector2f(child.square.w,frame.h-layout.y-layout.h);
+				child.frame.size=Vector2f(childSquare.w,frame.h-layout.y-layout.h);
 				layout.x+=child.frame.w;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::TOP:
 				child.frame.position=child.square.position+frame.position+layout.position;
-				child.frame.size=Vector2f(frame.w-layout.x-layout.w,child.square.h);
+				child.frame.size=Vector2f(frame.w-layout.x-layout.w,childSquare.h);
 				layout.y+=child.frame.h;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::RIGHT:
-				child.frame.position=child.square.position+frame.position+Vector2f(frame.w-child.square.w-layout.w,layout.y);
-				child.frame.size=Vector2f(child.square.w,frame.h-layout.y-layout.h);
+				child.frame.position=child.square.position+frame.position+Vector2f(frame.w-childSquare.w-layout.w,layout.y);
+				child.frame.size=Vector2f(childSquare.w,frame.h-layout.y-layout.h);
 				layout.w+=child.frame.w;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::BOTTOM:
-				child.frame.position=child.square.position+frame.position+Vector2f(layout.x,frame.h-child.square.h-layout.h);
-				child.frame.size=Vector2f(frame.w-layout.x-layout.w,child.square.h);
+				child.frame.position=child.square.position+frame.position+Vector2f(layout.x,frame.h-childSquare.h-layout.h);
+				child.frame.size=Vector2f(frame.w-layout.x-layout.w,childSquare.h);
 				layout.h+=child.frame.h;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::TOP_LEFT:
 				child.frame.position=child.square.position+frame.position+layout.position;
-				child.frame.size=child.square.size;
+				child.frame.size=childSquare.size;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::TOP_RIGHT:
-				child.frame.position=child.square.position+frame.position+Vector2f(frame.w-child.square.w-layout.w,layout.y);
-				child.frame.size=child.square.size;
+				child.frame.position=child.square.position+frame.position+Vector2f(frame.w-childSquare.w-layout.w,layout.y);
+				child.frame.size=childSquare.size;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::BOTTOM_LEFT:
-				child.frame.position=child.square.position+frame.position+Vector2f(frame.w-child.square.w-layout.w,frame.h-child.square.h-layout.h);
-				child.frame.size=child.square.size;
+				child.frame.position=child.square.position+frame.position+Vector2f(frame.w-childSquare.w-layout.w,frame.h-childSquare.h-layout.h);
+				child.frame.size=childSquare.size;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::BOTTOM_RIGHT:
-				child.frame.position=child.square.position+frame.position+Vector2f(frame.w-child.square.w-layout.w,frame.h-layout.h-child.square.h);
-				child.frame.size=child.square.size;
+				child.frame.position=child.square.position+frame.position+Vector2f(frame.w-childSquare.w-layout.w,frame.h-layout.h-childSquare.h);
+				child.frame.size=childSquare.size;
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::FILL:
@@ -197,7 +199,7 @@ shared class GUI { // GUI baseclass
 				child.frame-=childMargins;
 				break;
 			case GUI::Align::NONE:
-				child.frame=child.square;
+				child.frame=childSquare;
 				child.frame-=childMargins;
 				break;
 			default:
@@ -283,6 +285,7 @@ shared class GUI { // GUI baseclass
 
 	// # .skin
 	// A function that sets colors and whatnots, particularly for buttons. Used internally in some places.
+	// Is defined here only to simplify polymorphism.
 	void skin() {} // override
 
 	// #### Constructor ----

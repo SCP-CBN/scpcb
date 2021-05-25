@@ -2,18 +2,18 @@
 
 // # Menu::Pause (namespace) ----
 namespace Menu { namespace Pause {
-	Window@ instance;
+	shared Window@ instance;
 
-	Font@ roomBtnFont=Font::large;
+	shared Font@ roomBtnFont=Font::large;
 
-	void load() {
+	shared void load() {
 		@instance=Window();
 	}
 
 } }
 
 // # Menu::pause()
-namespace Menu { void pause() {
+namespace Menu { shared void pause() {
 	World::paused=true;
 	Pause::instance.open();
 } }
@@ -21,9 +21,9 @@ namespace Menu { void pause() {
 
 
 // # Menu::Pause::InfoPanel (GUI class) ----
-namespace Menu { namespace Pause { class InfoPanel : GUI {
+namespace Menu { namespace Pause { shared class InfoPanel : GUI {
 	InfoPanel(GUI@&in parent) { super(@parent,"Menu::Pause::InfoPanel");
-		height=12;
+		height=8;
 
 		GUI::Label@ difficulty=GUI::Label(@this);
 		difficulty.align=GUI::Align::TOP;
@@ -105,7 +105,7 @@ namespace Menu { namespace Pause { class SpawnPropButton : Button {
 */
 
 // # Menu::Pause::Window@ (main class) ----
-namespace Menu { namespace Pause { class Window : GUI {
+namespace Menu { namespace Pause { shared class Window : GUI {
 
 	GUI@ canvas;
 	GUI::Panel@ body;
@@ -122,13 +122,13 @@ namespace Menu { namespace Pause { class Window : GUI {
 		GUI::Label@ header=GUI::Label(@body);
 		header.text="PAUSED";
 		header.align=GUI::Align::TOP;
-		header.height=GUI::resolution.y*0.07;
+		header.height=4;
 		header.fontScale=0.3;
-		header.margin={4,4,4,1};
+		header.margin={12+4,3,4,4};
 
 		@canvas=GUI(@body);
 		canvas.align=GUI::Align::FILL;
-		canvas.margin={GUI::resolution.x*0.07,GUI::resolution.y*0.01,2,0};
+		canvas.margin={12,0,2,1};
 
 		constructMain();
 		constructLoad();
@@ -181,7 +181,7 @@ namespace Menu { namespace Pause { class Window : GUI {
 
 		auto@ textPanel = Menu::Pause::InfoPanel(@canvasMain);
 		textPanel.align=GUI::Align::TOP;
-		textPanel.margin={1,4,1,0.5};
+		textPanel.margin={2,1,1,0.5};
 
 		GUI@ panelOfButtons=GUI(@canvasMain);
 		panelOfButtons.align=GUI::Align::FILL;
