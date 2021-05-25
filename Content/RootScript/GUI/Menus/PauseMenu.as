@@ -1,27 +1,39 @@
+// # Pause Menu
+// when you press esc while the game is running.
 
+namespace Menu { // open Menu namespace
 
-// # Menu::Pause (namespace) ----
-namespace Menu { namespace Pause {
-	shared Window@ instance;
-
-	shared Font@ roomBtnFont=Font::large;
-
-	shared void load() {
-		@instance=Window();
-	}
-
-} }
-
-// # Menu::pause()
-namespace Menu { shared void pause() {
+// # Menu::pause();
+// A helper function that opens the pause menu and pauses the game.
+shared void pause() {
 	World::paused=true;
 	Pause::instance.open();
-} }
+}
+
+} // close Menu namespace
 
 
+// # Menu::Pause (namespace)
+namespace Menu { // open Menu namespace
+namespace Pause { // open Menu::Pause namespace
 
-// # Menu::Pause::InfoPanel (GUI class) ----
-namespace Menu { namespace Pause { shared class InfoPanel : GUI {
+shared Font@ roomBtnFont=Font::large; // debug; This should be moved to Menu::Pause::Skin.
+
+// # Menu::Pause::instance
+// the live pausemenu gui object
+shared Window@ instance;
+
+// # Menu::Pause::load()
+// Creates the pause menu instance.
+shared void load() {
+	@instance=Window();
+	instance.performRecursiveLayout();
+	instance.visible=false; // start hidden
+}
+
+// # Menu::Pause::InfoPanel (GUI class)
+// A helper panel with accessor functions for difficulty/savefile/seed information on main pausemenu mage.
+shared class InfoPanel : GUI {
 	InfoPanel(GUI@&in parent) { super(@parent,"Menu::Pause::InfoPanel");
 		height=8;
 
@@ -49,27 +61,28 @@ namespace Menu { namespace Pause { shared class InfoPanel : GUI {
 		seednum.fontScale=0.15;
 		seednum.alignText=GUI::Align::LEFT;
 	}
-} } }
+}
+
 
 /* MISSING TEMPLATES
 
 // # Menu::Pause::SpawnRoomButton (GUI class) ----
-namespace Menu { namespace Pause { class SpawnRoomButton : ButtonLabel {
+class SpawnRoomButton : ButtonLabel {
 	Room::Template@ room;
 	SpawnRoomButton(GUI@ parent, Room::Template@ rm) { super(@parent, "Menu::Pause::SpawnRoomButton");
 		@room=@rm;
 		text=room.name;
 		@label.font=@roomBtnFont;
 	}
-	void doClick() {
+	void click() {
 		Debug::log("Wants to spawn Room : " + room.name);
 		Room::spawn(room.name, Player::Controller.position-Vector3f(0,20+Player::height,0));
 		instance.unpause();
 	}
-} } }
+}
 
 // # Menu::Pause::SpawnItemButton (GUI class) ----
-namespace Menu { namespace Pause { class SpawnItemButton : Button {
+class SpawnItemButton : Button {
 	Item::Template@ template;
 	GUIPanel@ icon;
 	SpawnItemButton(GUI@ parent, Item::Template@ itm) { super(@parent, "Menu::Pause::SpawnItemButton");
@@ -79,14 +92,14 @@ namespace Menu { namespace Pause { class SpawnItemButton : Button {
 		icon.margin={0.125,0.125,0.125,0.125};
 		@icon.texture=@template.icon.texture;
 	}
-	void doClick() {
+	void click() {
 		Item::spawn(template.name, Player::Controller.position+Vector3f(10,0,0));
 		instance.unpause();
 	}
-} } }
+}
 
 // # Menu::Pause::SpawnPropButton (GUI class) ----
-namespace Menu { namespace Pause { class SpawnPropButton : Button {
+class SpawnPropButton : Button {
 	Prop::Template@ template;
 	GUIPanel@ icon;
 	SpawnPropButton(GUI@ parent, Prop::Template@ itm) { super(@parent, "Menu::Pause::SpawnPropButton");
@@ -96,23 +109,27 @@ namespace Menu { namespace Pause { class SpawnPropButton : Button {
 		icon.margin={0.125,0.125,0.125,0.125};
 		@icon.texture=@template.icon.texture;
 	}
-	void doClick() {
+	void click() {
 		Prop::spawn(template.name, Player::Controller.position+Vector3f(10,0,0));
 		instance.unpause();
 	}
-} } }
+}
 
 */
 
 // # Menu::Pause::Window@ (main class) ----
-namespace Menu { namespace Pause { shared class Window : GUI {
+shared class Window : GUI {
 
+	// # .body
+	// The internal canvas, because we are Align::FILL'd to the screen.
+	protected GUI::Panel@ body;
+
+	// # .canvas
+	// The main canvas of the panel.
 	GUI@ canvas;
-	GUI::Panel@ body;
-//	GUIScrollPanel@ scrollTest;
 
+	// # Constructor()
 	Window() { super("Menu::Pause::Window");
-
 
 		@body=GUI::Panel(@this);
 		body.align=GUI::Align::CENTER;
@@ -141,22 +158,31 @@ namespace Menu { namespace Pause { shared class Window : GUI {
 		constructPropSpawner();
 		constructGUITest();
 
-
 	}
+
+	// # .open()
+	// make ourselves visible.
 	void open() {
 		visible=true;
 		openToMain();
-		invalidateLayout();
 	}
+
+	// # .close()
+	// make ourselves invisible, i.e quit to main menu.
 	void close() {
 		visible=false;
 	}
+
+	// # .unpause()
+	// When you explicitly want to unpause the game.
 	void unpause() {
+		close();
 		World::paused=false;
-		visible=false;
 	}
 
 
+	// # .openTo*
+	// Helper functions to switch to a particular page, used by the buttons.
 	void switchPage() { for(int i=0; i<canvas.children.length(); i++) { canvas.children[i].visible=false; } invalidateLayout(); }
 	void openToMain() { switchPage(); canvasMain.visible=true; }
 	void openToLoad() { switchPage(); canvasLoad.visible=true; }
@@ -169,11 +195,16 @@ namespace Menu { namespace Pause { shared class Window : GUI {
 	void openToPropSpawner() { switchPage(); canvasPropSpawner.visible=true; }
 	void openToGUITest() { switchPage(); canvasGUITest.visible=true; }
 	void openToQuit() {} // visible=false; MainMenu.visible=true; } // change to Menu::Main::instance.visible=true;
+
+	// # .doSomething()
+	// More button functions that interact with the game world.
 	void tpToZero() { } // rootscript doesnt have access to controller Player::Controller.position=Vector3f(0,25+5,0); unpause(); } // 25=Player::height
 
 	void toggleNoclip() { } // rootscript doesnt have access to controller
 		// bool nclip=Player::Controller.noclip; Player::Controller.noclip=!nclip; btnNoclip.text="Noclip ("+ (!nclip ? "ON" : "OFF") +")"; unpause(); }
 
+
+	// # The front page
 	GUI@ canvasMain;
 	void constructMain() {
 		@canvasMain=GUI(@canvas);
@@ -224,7 +255,7 @@ namespace Menu { namespace Pause { shared class Window : GUI {
 		@btnQuit.clickFunc=GUI::ClickFunction(openToQuit);
 	}
 
-
+	// # Spawn a room at your feet
 	GUI@ canvasRoomSpawner;
 	void constructRoomSpawner() {
 		@canvasRoomSpawner=GUI(@canvas);
@@ -252,6 +283,7 @@ namespace Menu { namespace Pause { shared class Window : GUI {
 	}
 
 
+	// # Load a new save file.
 	GUI@ canvasLoad;
 	void constructLoad() {
 		@canvasLoad=GUI(@canvas);
@@ -265,6 +297,8 @@ namespace Menu { namespace Pause { shared class Window : GUI {
 		@btnBack.clickFunc=GUI::ClickFunction(openToMain);
 	}
 
+
+	// # 3d Model Icon editor
 	GUI@ canvasIconEditor;
 	void constructIconEditor() {
 		@canvasIconEditor=GUI(@canvas);
@@ -278,6 +312,7 @@ namespace Menu { namespace Pause { shared class Window : GUI {
 		@btnBack.clickFunc=GUI::ClickFunction(openToDebug);
 	}
 
+	// # Spawn an item
 	GUI@ canvasItemSpawner;
 	void constructItemSpawner() {
 		@canvasItemSpawner=GUI(@canvas);
@@ -313,6 +348,7 @@ namespace Menu { namespace Pause { shared class Window : GUI {
 	}
 
 
+	// # Spawn a prop, like a door.
 	GUI@ canvasPropSpawner;
 	void constructPropSpawner() {
 		@canvasPropSpawner=GUI(@canvas);
@@ -347,6 +383,7 @@ namespace Menu { namespace Pause { shared class Window : GUI {
 
 	}
 
+	// # Debugging & GUI testing frame
 	GUI@ canvasGUITest;
 	void constructGUITest() {
 		@canvasGUITest=GUI(@canvas);
@@ -387,6 +424,7 @@ namespace Menu { namespace Pause { shared class Window : GUI {
 */
 	}
 
+	// # Debug menu
 	GUI::ButtonLabel@ btnNoclip;
 	GUI@ canvasDebug;
 	void constructDebug() {
@@ -474,7 +512,7 @@ namespace Menu { namespace Pause { shared class Window : GUI {
 	}
 
 
-
+	// # Cheats menu
 	GUI@ canvasCheats;
 	void constructCheats() {
 		@canvasCheats=GUI(@canvas);
@@ -491,11 +529,7 @@ namespace Menu { namespace Pause { shared class Window : GUI {
 
 	}
 
-
-
-
-
-
+	// # Options menu
 	GUI@ canvasOptions;
 	void constructOptions() {
 		@canvasOptions=GUI(@canvas);
@@ -510,4 +544,9 @@ namespace Menu { namespace Pause { shared class Window : GUI {
 	}
 
 
-} } }
+}
+
+
+
+} // close Menu::Pause namespace
+} // close Menu namespace
