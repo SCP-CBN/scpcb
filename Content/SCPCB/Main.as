@@ -48,8 +48,20 @@ external class HUDMenu;
 //external HUDMenu@ HUDMenu::instance; // TODO why doesn't this work?
 external void Console::addMessage(const string&in msg, const Color&in color = Color::White);
 
+abstract class TestAbstractBase {
+    abstract int member { get; }
+}
+
+class TestAbstractImplementation : TestAbstractBase {
+    int member { get { return 2; } }
+}
+
 void main() {
     Debug::log("Starting up!");
+
+    TestAbstractBase@ test_abstract_TODO_REMOVE;
+    @test_abstract_TODO_REMOVE = TestAbstractImplementation();
+    Debug::log("TestAbstract result: "+toString(test_abstract_TODO_REMOVE.member));
 
     @menuManager = MenuManager();
 

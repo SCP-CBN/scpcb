@@ -110,7 +110,8 @@ enum asEFuncTrait
 	asTRAIT_SHARED      = 128,
 	asTRAIT_EXTERNAL    = 256,
 	asTRAIT_EXPLICIT    = 512,
-	asTRAIT_PROPERTY    = 1024
+	asTRAIT_PROPERTY    = 1024,
+	asTRAIT_ABSTRACT    = 2048
 };
 
 struct asSFunctionTraits
@@ -177,6 +178,7 @@ public:
 	bool                 IsShared() const;
 	bool                 IsExplicit() const;
 	bool                 IsProperty() const;
+	bool                 IsAbstract() const;
 	asUINT               GetParamCount() const;
 	int                  GetParam(asUINT index, int *typeId, asDWORD *flags = 0, const char **name = 0, const char **defaultArg = 0) const;
 	int                  GetReturnTypeId(asDWORD *flags = 0) const;
@@ -215,6 +217,7 @@ public:
 	void SetProtected(bool set) { traits.SetTrait(asTRAIT_PROTECTED, set); }
 	void SetPrivate(bool set) { traits.SetTrait(asTRAIT_PRIVATE, set); }
 	void SetProperty(bool set) { traits.SetTrait(asTRAIT_PROPERTY, set); }
+	void SetAbstract(bool set) { traits.SetTrait(asTRAIT_ABSTRACT, set); }
 
 	asCScriptFunction(asCScriptEngine *engine, asCModule *mod, asEFuncType funcType);
 	~asCScriptFunction();

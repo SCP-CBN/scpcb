@@ -111,6 +111,7 @@
 #define TXT_EXPR_s_IS_DATA_TYPE               "Expression '%s' is a data type"
 #define TXT_EXTERNAL_SHARED_s_NOT_FOUND       "External shared entity '%s' not found"
 #define TXT_EXTERNAL_SHARED_s_CANNOT_REDEF    "External shared entity '%s' cannot redefine the original entity"
+#define TXT_ABSTRACT_s_CANNOT_REDEF           "Abstract method '%s' cannot have a definition"
 
 #define TXT_FAILED_TO_COMPILE_DEF_ARG_d_IN_FUNC_s "Failed while compiling default arg for parameter %d in function '%s'"
 #define TXT_FAILED_TO_CREATE_TEMP_OBJ             "Previous error occurred while attempting to create a temporary copy of object"
@@ -161,6 +162,7 @@
 #define TXT_INVALID_UNICODE_SEQUENCE_IN_SRC        "Invalid unicode sequence in source"
 #define TXT_INVALID_USE_OF_NAMED_ARGS              "Invalid use of named arguments"
 
+#define TXT_METHOD_MUST_OVERRIDE_s                  "Method '%s' declared as abstract must be overridden"
 #define TXT_METHOD_CANNOT_OVERRIDE_s                "Method '%s' declared as final and cannot be overridden"
 #define TXT_METHOD_CANT_HAVE_NAME_OF_CLASS          "The method cannot be named with the class name"
 #define TXT_METHOD_s_DOES_NOT_OVERRIDE              "Method '%s' marked as override but does not replace any base class or interface method"
@@ -244,6 +246,8 @@
 #define TXT_PROPERTY_HAS_NO_GET_ACCESSOR          "The property has no get accessor"
 #define TXT_PROPERTY_HAS_NO_SET_ACCESSOR          "The property has no set accessor"
 #define TXT_PROPERTY_WITHOUT_ACCESSOR             "Virtual property must have at least one get or set accessor"
+
+#define TXT_ABSTRACT_PROPERTY_MUST_BELONG_TO_ABSTRACT_CLASS "Abstract property must belong to an abstract class"
 
 #define TXT_REF_CANT_BE_TO_LOCAL_VAR            "Resulting reference cannot be returned. Returned references must not refer to local variables."
 #define TXT_REF_CANT_BE_RETURNED_DEFERRED_PARAM "Resulting reference cannot be returned. There are deferred arguments that may invalidate it."

@@ -56,3 +56,4 @@ Thumbs.db
 *.obj
 */bin/*
 */x64/*
+*.TMP

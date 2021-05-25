@@ -2482,7 +2482,7 @@ asCScriptNode *asCParser::ParseScript(bool inBlock)
 	UNREACHABLE_RETURN;
 }
 
-// BNF:1: NAMESPACE     ::= 'namespace' IDENTIFIER '{' SCRIPT '}'
+// BNF:1: NAMESPACE     ::= 'namespace' IDENTIFIER { '::' IDENTIFIER } '{' SCRIPT '}'
 asCScriptNode *asCParser::ParseNamespace()
 {
 	asCScriptNode *node = CreateNode(snNamespace);
@@ -2499,11 +2499,26 @@ asCScriptNode *asCParser::ParseNamespace()
 		Error(InsteadFound(t1), &t1);
 	}
 
-	// TODO: namespace: Allow declaration of multiple nested namespace with namespace A::B::C { }
 	node->AddChildLast(ParseIdentifier());
 	if( isSyntaxError ) return node;
 
+	asCScriptNode *lowestNode = node;
 	GetToken(&t1);
+	while( t1.type == ttScope )
+	{
+		lowestNode->UpdateSourcePos(t1.pos, t1.length);
+		asCScriptNode *scopeNode = CreateNode(snScript);
+		if( scopeNode == 0 ) return 0;
+		lowestNode->AddChildLast(scopeNode);
+
+		lowestNode = CreateNode(snNamespace);
+		if( lowestNode == 0 ) return 0;
+		scopeNode->AddChildLast(lowestNode);
+		lowestNode->AddChildLast(ParseIdentifier());
+		if( isSyntaxError ) return node;
+		GetToken(&t1);
+	}
+
 	if( t1.type == ttStartStatementBlock )
 		node->UpdateSourcePos(t1.pos, t1.length);
 	else
@@ -2515,7 +2530,7 @@ asCScriptNode *asCParser::ParseNamespace()
 
 	sToken start = t1;
 
-	node->AddChildLast(ParseScript(true));
+	lowestNode->AddChildLast(ParseScript(true));
 
 	if( !isSyntaxError )
 	{
@@ -2552,7 +2567,8 @@ asCScriptNode* asCParser::ParseShorthandNamespaceIfAvailable(asCScriptNode* node
 			asCScriptNode* nsnode = CreateNode(snNamespace);
 			if (nsnode == 0) return 0;
 
-			// TODO: namespace: Allow declaration of multiple nested namespace with namespace A::B::C { } (refer to ParseNamespace)
+			// namespace: Allow declaration of multiple nested namespace with namespace A::B::C { } (refer to ParseNamespace)
+			// edit: Don't bother to implement this here, better extern will make this whole function unnecessary.
 			nsnode->AddChildLast(ParseIdentifier());
 			if (isSyntaxError) return nsnode;
 
@@ -2784,7 +2800,7 @@ bool asCParser::IsVarDecl()
 	}
 
 	GetToken(&t1);
-	// Is can be within a scope
+	// It can be within a scope
 	if ( isExternal && t1.type == ttScope )
 	{
 		GetToken(&t1);
@@ -2854,8 +2870,13 @@ bool asCParser::IsVirtualPropertyDecl()
 	GetToken(&t);
 	RewindTo(&t);
 
-	// A class property decl can be preceded by 'private' or 'protected'
 	sToken t1;
+	GetToken(&t1);
+	if (t1.type != ttIdentifier || !IdentifierIs(t1, ABSTRACT_TOKEN)) {
+		RewindTo(&t1);
+	}
+
+	// A class property decl can be preceded by 'private' or 'protected'
 	for (int k = 0; k < 2; k++)
 	{
 		GetToken(&t1);
@@ -3218,6 +3239,14 @@ asCScriptNode *asCParser::ParseVirtualPropertyDecl(bool isMethod, bool isInterfa
 	GetToken(&t2);
 	RewindTo(&t1);
 
+	bool isAbstract = false;
+	if (isMethod && t1.type == ttIdentifier && IdentifierIs(t1, ABSTRACT_TOKEN)) {
+		isAbstract = true;
+		node->AddChildLast(ParseIdentifier());
+		GetToken(&t1);
+		RewindTo(&t1);
+	}
+
 	// A class method can start with 'private' or 'protected'
 	if( isMethod && t1.type == ttPrivate )
 		node->AddChildLast(ParseToken(ttPrivate));
@@ -3264,14 +3293,14 @@ asCScriptNode *asCParser::ParseVirtualPropertyDecl(bool isMethod, bool isInterfa
 				if( t1.type == ttConst )
 					accessorNode->AddChildLast(ParseToken(ttConst));
 
-				if( !isInterface )
+				if( !isInterface && !isAbstract )
 				{
 					ParseMethodAttributes(accessorNode);
 					if( isSyntaxError ) return node;
 				}
 			}
 
-			if( !isInterface )
+			if( !isInterface && !isAbstract )
 			{
 				GetToken(&t1);
 				if( t1.type == ttStartStatementBlock )
