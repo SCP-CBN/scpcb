@@ -1741,5 +1741,11 @@ bool asCScriptFunction::IsProperty() const
 	return traits.GetTrait(asTRAIT_PROPERTY);
 }
 
+// interface
+bool asCScriptFunction::IsAbstract() const
+{
+	return traits.GetTrait(asTRAIT_ABSTRACT);
+}
+
 END_AS_NAMESPACE
 

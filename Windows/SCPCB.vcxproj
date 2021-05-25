@@ -92,10 +92,9 @@
     <PostBuildEvent>
       <Command>xcopy /d /s /y "$(ProjectDir)..\Content\*" "$(TargetDir)"
 xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
-if $(ConfigurationName) == Debug xcopy /d /s /y "$(ProjectDir)..\Engine\Libraries\FreeImage3180\$(Platform)\$(Configuration)\FreeImaged.dll" "$(TargetDir)"
-if $(ConfigurationName) == Release xcopy /d /s /y "$(ProjectDir)..\Engine\Libraries\FreeImage3180\$(Platform)\$(Configuration)\FreeImage.dll" "$(TargetDir)"
 xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Configuration)\freetype.dll" "$(TargetDir)"
-"$(ProjectDir)..\Engine\Windows\BuildShaders\$(Platform)\$(Configuration)\BuildShaders.exe"  "$(TargetDir)SCPCB\GFX\Shaders"</Command>
+"$(ProjectDir)..\Engine\Windows\BuildShaders\$(Platform)\$(Configuration)\BuildShaders.exe"  "$(TargetDir)SCPCB\GFX\Shaders"
+"$(ProjectDir)$(Platform)\$(Configuration)\ResourceSync.exe" "$(ProjectDir)..\Content" "$(ProjectDir)bin\$(Platform)\$(Configuration)" .as:.png:.fbx</Command>
     </PostBuildEvent>
     <PostBuildEvent>
       <Message>Copy Contents files and DLLs to output directory and run BuildShaders.</Message>
@@ -132,10 +131,9 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
     <PostBuildEvent>
       <Command>xcopy /d /s /y "$(ProjectDir)..\Content\*" "$(TargetDir)"
 xcopy /d /y  "$(ProjectDir)$(Platform)\$(Configuration)\SDL2.dll" "$(TargetDir)"
-if $(ConfigurationName) == Debug xcopy /d /s /y "$(ProjectDir)..\Engine\Libraries\FreeImage3180\$(Platform)\$(Configuration)\FreeImaged.dll" "$(TargetDir)"
-if $(ConfigurationName) == Release xcopy /d /s /y "$(ProjectDir)..\Engine\Libraries\FreeImage3180\$(Platform)\$(Configuration)\FreeImage.dll" "$(TargetDir)"
 xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Configuration)\freetype.dll" "$(TargetDir)"
-"$(ProjectDir)..\Engine\Windows\BuildShaders\$(Platform)\$(Configuration)\BuildShaders.exe"  "$(TargetDir)SCPCB\GFX\Shaders"</Command>
+"$(ProjectDir)..\Engine\Windows\BuildShaders\$(Platform)\$(Configuration)\BuildShaders.exe"  "$(TargetDir)SCPCB\GFX\Shaders"
+"$(ProjectDir)$(Platform)\$(Configuration)\ResourceSync.exe" "$(ProjectDir)..\Content" "$(ProjectDir)bin\$(Platform)\$(Configuration)" .as:.png:.fbx</Command>
       <Message>Copy Contents files and DLLs to output directory and run BuildShaders.</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>

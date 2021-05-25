@@ -1220,12 +1220,13 @@ int asCModule::GetNextImportedFunctionId()
 
 #ifndef AS_NO_COMPILER
 // internal
-int asCModule::AddScriptFunction(int sectionIdx, int declaredAt, int id, const asCString &funcName, const asCDataType &returnType, const asCArray<asCDataType> &params, const asCArray<asCString> &paramNames, const asCArray<asETypeModifiers> &inOutFlags, const asCArray<asCString *> &defaultArgs, bool isInterface, asCObjectType *objType, bool isGlobalFunction, asSFunctionTraits funcTraits, asSNameSpace *ns)
+int asCModule::AddScriptFunction(int sectionIdx, int declaredAt, int id, const asCString &funcName, const asCDataType &returnType, const asCArray<asCDataType> &params, const asCArray<asCString> &paramNames, const asCArray<asETypeModifiers> &inOutFlags, const asCArray<asCString *> &defaultArgs, bool isInterface, bool isAbstract, asCObjectType *objType, bool isGlobalFunction, asSFunctionTraits funcTraits, asSNameSpace *ns)
 {
 	asASSERT(id >= 0);
 
 	// Store the function information
-	asCScriptFunction *func = asNEW(asCScriptFunction)(engine, this, isInterface ? asFUNC_INTERFACE : asFUNC_SCRIPT);
+	// TODO: add asFUNC_ABSTRACT?
+	asCScriptFunction *func = asNEW(asCScriptFunction)(engine, this, (isInterface || isAbstract) ? asFUNC_INTERFACE : asFUNC_SCRIPT);
 	if( func == 0 )
 	{
 		// Free the default args
@@ -1242,6 +1243,9 @@ int asCModule::AddScriptFunction(int sectionIdx, int declaredAt, int id, const a
 	// All methods of shared objects are also shared
 	if( objType && objType->IsShared() )
 		funcTraits.SetTrait(asTRAIT_SHARED, true);
+
+	if (isAbstract)
+		funcTraits.SetTrait(asTRAIT_ABSTRACT, true);
 
 	func->name             = funcName;
 	func->nameSpace        = ns;

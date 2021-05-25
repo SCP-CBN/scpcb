@@ -229,6 +229,14 @@ bool asCObjectType::IsInterface() const
 	return false;
 }
 
+bool asCObjectType::IsAbstract() const
+{
+	if ((flags & asOBJ_ABSTRACT))
+		return true;
+
+	return false;
+}
+
 // interface
 asUINT asCObjectType::GetFactoryCount() const
 {

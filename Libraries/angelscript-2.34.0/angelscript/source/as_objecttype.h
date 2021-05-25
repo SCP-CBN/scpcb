@@ -132,6 +132,7 @@ public:
 	void ReleaseAllFunctions();
 
 	bool IsInterface() const;
+	bool IsAbstract() const;
 
 	asCObjectProperty *AddPropertyToClass(const asCString &name, const asCDataType &dt, bool isPrivate, bool isProtected, bool isSerialize, bool isInherited);
 	void ReleaseAllProperties();
