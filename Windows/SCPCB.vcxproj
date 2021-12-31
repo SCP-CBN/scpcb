@@ -180,6 +180,7 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\TextureDefinitions.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\UIDefinitions.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\WorldDefinitions.h" />
+    <ClInclude Include="..\Src\Scripting\NativeUtils.h" />
     <ClInclude Include="..\Src\Scripting\RefCounter.h" />
     <ClInclude Include="..\Src\Scripting\ScriptClass.h" />
     <ClInclude Include="..\Src\Scripting\ScriptFunction.h" />

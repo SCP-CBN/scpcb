@@ -383,6 +383,9 @@
     <ClInclude Include="..\Libraries\angelscript\sdk\add_on\scriptarray\scriptarray.h">
       <Filter>Scripting\AngelScriptAddons\scriptarray</Filter>
     </ClInclude>
+    <ClInclude Include="..\Src\Scripting\NativeUtils.h">
+      <Filter>Scripting\NativeDefinitions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="SCPCB.rc" />
