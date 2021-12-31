@@ -76,6 +76,7 @@
       <RuntimeTypeInfo>true</RuntimeTypeInfo>
       <OpenMPSupport>false</OpenMPSupport>
       <EnableModules>false</EnableModules>
+      <UseStandardPreprocessor>true</UseStandardPreprocessor>
     </ClCompile>
     <Link>
       <AdditionalDependencies>%(AdditionalDependencies);$(Platform)/$(Configuration)/Engine.lib;../Libraries/freetype/objs/$(Platform)/$(Configuration) Static/freetype.lib;../Libraries/assimp-4.1.0/VS2017/assimp/$(Platform)/$(Configuration)/assimp.lib;../Libraries/tinyxml2/vs/$(Platform)/$(Configuration)/tinyxml2.lib;../Libraries/angelscript/sdk/angelscript/lib/angelscript64d.lib</AdditionalDependencies>

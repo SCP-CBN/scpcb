@@ -129,7 +129,7 @@ void main() {
 	Console::register(
         "hElP",
         ":(",
-        (string s) => {
+        function(string s) {
             Debug::log(s);
         }
     );
