@@ -4,6 +4,7 @@
 #include <angelscript.h>
 
 #include <PGE/String/String.h>
+#include <PGE/Exception/Exception.h>
 
 template <typename T, typename... Args>
 static void constructGen(Args... args, void* memory) {
@@ -15,18 +16,21 @@ static void destructGen(void* memory) {
     ((T*)memory)->~T();
 }
 
-template <typename T>
-const PGE::String getTypeName() {
-    // I will demangle other compilers if necessary
-    // Why is this shit not standardized
-    PGE::String name = typeid(T).name();
+static const PGE::String trimNamespaces(const PGE::String& name) {
     PGE::String::ReverseIterator it = name.findLast(":");
-    return name.substr(it != name.rend() ? String::Iterator(--it) : name.begin());
+    return name.substr(it != name.rend() ? PGE::String::Iterator(--it) : name.begin(), name.findFirst("<"));
 }
 
 template <typename T>
-const PGE::String getAsTypeName(bool isReturn = false) {
-    String ret;
+static const PGE::String getTypeName() {
+    // I will demangle other compilers if necessary
+    // Why is this shit not standardized
+    return trimNamespaces(typeid(T).name());
+}
+
+template <typename T>
+static const PGE::String getAsTypeName(bool isReturn = false) {
+    PGE::String ret;
     bool isConst = std::is_const<std::remove_reference<T>::type>::value;
     if (isConst) { ret += "const "; }
     ret += getTypeName<std::remove_cvref<T>::type>();
@@ -40,10 +44,10 @@ const PGE::String getAsTypeName(bool isReturn = false) {
 }
 
 template <typename T, typename... Args>
-const PGE::String idfk(const PGE::String& name, T(*fu)(Args...), asECallConvTypes callConv) {
-    String ret = getAsTypeName<T>(true) + " " + name + "(";
+static const PGE::String idfk(const PGE::String& name, T(*fu)(Args...), asECallConvTypes callConv) {
+    PGE::String ret = getAsTypeName<T>(true) + " " + trimNamespaces(name) + "(";
     if constexpr (sizeof...(Args) > 0) {
-        std::vector<String> strings; strings.reserve(sizeof...(Args));
+        std::vector<PGE::String> strings; strings.reserve(sizeof...(Args));
         (strings.push_back(getAsTypeName<Args>()), ...);
         switch (callConv) {
             case asCALL_CDECL_OBJLAST: {
@@ -53,35 +57,25 @@ const PGE::String idfk(const PGE::String& name, T(*fu)(Args...), asECallConvType
                 strings.erase(strings.begin());
             }
         }
-        ret += String::join(strings, ", ");
+        ret += PGE::String::join(strings, ", ");
     }
     return ret + ")";
 }
-
-template <typename T, typename M, typename... Args>
-concept ConstInvokable = requires(const T& t, M m, Args&&... args) {
-    (t.*m)(std::forward<Args>(args)...);
-};
-
-template <size_t I, typename... Args>
-struct AtIndex {
-    using Type = decltype(std::get<I>(std::tuple<Args...>()));
-};
 
 template <typename... Args>
 static const PGE::String funcToAsFuncName(const PGE::String& cppName) {
     //using StringLiterals; // TODO: ???
 
-    static const String OPERATOR = "operator";
+    static const PGE::String OPERATOR = "operator";
     if (cppName.substr(0, std::min(OPERATOR.length(), cppName.length())) != OPERATOR) {
         return cppName;
     }
 
-    constexpr auto prependPostPre = [](const String& op) constexpr {
-        return String("op") + (sizeof...(Args) == 0 ? "Pre" : "Post") + op;
+    constexpr auto prependPostPre = [](const PGE::String& op) constexpr {
+        return PGE::String("op") + (sizeof...(Args) == 0 ? "Pre" : "Post") + op;
     };
 
-    String suffix = cppName.substr(OPERATOR.length());
+    PGE::String suffix = cppName.substr(OPERATOR.length());
     // Reference: https://www.angelcode.com/angelscript/sdk/docs/manual/doc_script_class_ops.html
     if (suffix == "-") {
         return sizeof...(Args) == 0 ? "opNeg" : "opSub";
@@ -146,18 +140,18 @@ static const PGE::String funcToAsFuncName(const PGE::String& cppName) {
     } else if (suffix == "()") {
         return "opCall";
     } else {
-        throw Exception("Invalid operator");
+        throw PGE::Exception("Invalid operator");
     }
     // TODO: Casting support
 }
 
 template <bool isConst, typename Class, typename T, typename... Args>
-const PGE::String idfkProper(const PGE::String& name, bool opReversed) {
-    String ret = getAsTypeName<T>(true) + " " + funcToAsFuncName<Args...>(name) + (opReversed ? "_r" : "") + "(";
+static const PGE::String idfkProper(const PGE::String& name, bool opReversed) {
+    PGE::String ret = getAsTypeName<T>(true) + " " + funcToAsFuncName<Args...>(name) + (opReversed ? "_r" : "") + "(";
     if constexpr (sizeof...(Args) > 0) {
-        std::vector<String> strings; strings.reserve(sizeof...(Args));
+        std::vector<PGE::String> strings; strings.reserve(sizeof...(Args));
         (strings.push_back(getAsTypeName<Args>()), ...);
-        ret += String::join(strings, ", ");
+        ret += PGE::String::join(strings, ", ");
     }
     ret += ")";
     if constexpr (isConst) {
@@ -167,12 +161,12 @@ const PGE::String idfkProper(const PGE::String& name, bool opReversed) {
 }
 
 template <typename Class, typename T, typename... Args>
-const PGE::String idfkMethod(const PGE::String& name, T(Class::*)(Args...) const, bool isReversed = false) {
+static const PGE::String idfkMethod(const PGE::String& name, T(Class::*)(Args...) const, bool isReversed = false) {
     return idfkProper<true, Class, T, Args...>(name, isReversed);
 }
 
 template <typename Class, typename T, typename... Args>
-const PGE::String idfkMethod(const PGE::String& name, T(Class::*)(Args...), bool isReversed = false) {
+static const PGE::String idfkMethod(const PGE::String& name, T(Class::*)(Args...), bool isReversed = false) {
     return idfkProper<false, Class, T, Args...>(name, isReversed);
 }
 
@@ -208,6 +202,7 @@ constexpr auto ptrDeduceConst(T(Class::* func)(Args...) const) {
 #define PGE_REGISTER_METHOD_EX(class, ret, func, args) PGE_REGISTER_METHOD_EX_IMPL(class, ret, func, args, false)
 #define PGE_REGISTER_METHOD_EX_R(class, ret, func, args) PGE_REGISTER_METHOD_EX_IMPL(class, ret, func, args, true)
 
+#define PGE_REGISTER_GLOBAL_FUNCTION(func) RegisterGlobalFunction(pgeFUNCTION(func, asCALL_CDECL))
 
 #define PGE_REGISTER_TO_STRING(class) RegisterObjectMethod(#class, "string toString() const", asFUNCTION(String::from<class>), asCALL_CDECL_OBJLAST)
 
@@ -215,5 +210,7 @@ constexpr auto ptrDeduceConst(T(Class::* func)(Args...) const) {
     asCALL_CDECL_OBJLAST).cstr(), asFUNCTION((constructGen<class __VA_OPT__(, DEBRACE __VA_ARGS__)>)), asCALL_CDECL_OBJLAST)
 #define PGE_REGISTER_DESTRUCTOR(class) RegisterObjectBehaviour(#class, asBEHAVE_DESTRUCT, "void f()", asFUNCTION(destructGen<class>), asCALL_CDECL_OBJLAST)
 
+#define PGE_REGISTER_GLOBAL_PROPERTY_N(name, var) RegisterGlobalProperty((getAsTypeName<decltype(var)>(true) + " " + name).cstr(), (void*)&var)
+#define PGE_REGISTER_GLOBAL_PROPERTY(var) PGE_REGISTER_GLOBAL_PROPERTY_N(trimNamespaces(#var), var)
 
 #endif // NATIVE_UTILS_H_INCLUDED

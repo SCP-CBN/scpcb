@@ -128,21 +128,21 @@ MathDefinitions::MathDefinitions(ScriptManager* mgr) {
     //engine->PGE_REGISTER_TO_STRING(Vector2f);
 
     engine->SetDefaultNamespace("Vector2f");
-    engine->RegisterGlobalProperty("const Vector2f one", (void*)&PGE::Vectors::ONE2F);
-    engine->RegisterGlobalProperty("const Vector2f zero", (void*)&PGE::Vectors::ZERO2F);
+    engine->PGE_REGISTER_GLOBAL_PROPERTY_N("ONE", Vectors::ONE2F);
+    engine->PGE_REGISTER_GLOBAL_PROPERTY_N("ZERO", Vectors::ZERO2F);
     engine->SetDefaultNamespace("");
 
     // Vector3f
-    engine->RegisterObjectType("Vector3f", sizeof(PGE::Vector3f), asOBJ_VALUE | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<PGE::Vector3f>());
-    engine->RegisterObjectBehaviour("Vector3f", asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(vector3fConstructor), asCALL_CDECL_OBJLAST);
-    engine->RegisterObjectBehaviour("Vector3f", asBEHAVE_CONSTRUCT, "void f(float s)", asFUNCTION(vector3fConstructorSingle), asCALL_CDECL_OBJLAST);
-    engine->RegisterObjectBehaviour("Vector3f", asBEHAVE_CONSTRUCT, "void f(float x, float y, float z)", asFUNCTION(vector3fConstructorParametrized), asCALL_CDECL_OBJLAST);
-    engine->RegisterObjectBehaviour("Vector3f", asBEHAVE_DESTRUCT, "void f()", asFUNCTION(vector3fDestructor), asCALL_CDECL_OBJLAST);
-    engine->RegisterObjectProperty("Vector3f", "float x", asOFFSET(PGE::Vector3f, x));
-    engine->RegisterObjectProperty("Vector3f", "float y", asOFFSET(PGE::Vector3f, y));
-    engine->RegisterObjectProperty("Vector3f", "float z", asOFFSET(PGE::Vector3f, z));
+    engine->PGE_REGISTER_TYPE(Vector3f, asOBJ_APP_CLASS_ALLFLOATS);
+    engine->PGE_REGISTER_CONSTRUCTOR(Vector3f);
+    engine->PGE_REGISTER_CONSTRUCTOR(Vector3f, (float));
+    engine->PGE_REGISTER_CONSTRUCTOR(Vector3f, (float, float, float));
+    engine->PGE_REGISTER_DESTRUCTOR(Vector3f);
+    engine->PGE_REGISTER_PROPERTY(Vector3f, x);
+    engine->PGE_REGISTER_PROPERTY(Vector3f, y);
+    engine->PGE_REGISTER_PROPERTY(Vector3f, z);
 
-    engine->RegisterObjectMethod("Vector3f", "bool opEquals(const Vector3f&in other) const", asMETHODPR(PGE::Vector3f, operator==, (const PGE::Vector3f&) const, bool), asCALL_THISCALL);
+    engine->PGE_REGISTER_METHOD(Vector3f, operator==);
 
     engine->RegisterObjectMethod("Vector3f", "void opAssign(const Vector3f &in other)", asMETHODPR(PGE::Vector3f, operator=, (const PGE::Vector3f&), PGE::Vector3f&), asCALL_THISCALL);
     engine->RegisterObjectMethod("Vector3f", "void opAddAssign(const Vector3f&in other)", asMETHODPR(PGE::Vector3f, operator+=, (const PGE::Vector3f&), void), asCALL_THISCALL);
@@ -242,9 +242,9 @@ MathDefinitions::MathDefinitions(ScriptManager* mgr) {
 
     // Generic
     engine->SetDefaultNamespace("Math");
-    engine->RegisterGlobalFunction("float degToRad(float degrees)", asFUNCTION(PGE::Math::degToRad), asCALL_CDECL);
-    engine->RegisterGlobalFunction("float radToDeg(float radians)", asFUNCTION(PGE::Math::radToDeg), asCALL_CDECL);
-    engine->RegisterGlobalFunction("bool equalFloats(float val, float other)", asFUNCTION(PGE::Math::equalFloats), asCALL_CDECL);
+    engine->PGE_REGISTER_GLOBAL_FUNCTION(Math::degToRad);
+    engine->PGE_REGISTER_GLOBAL_FUNCTION(Math::radToDeg);
+    engine->PGE_REGISTER_GLOBAL_FUNCTION(Math::equalFloats);
     engine->RegisterGlobalFunction("int maxInt(int val, int other)", asFUNCTION(maxInt), asCALL_CDECL);
     engine->RegisterGlobalFunction("int minInt(int val, int other)", asFUNCTION(minInt), asCALL_CDECL);
     engine->RegisterGlobalFunction("float maxFloat(float val, float other)", asFUNCTION(maxFloat), asCALL_CDECL);
@@ -257,5 +257,5 @@ MathDefinitions::MathDefinitions(ScriptManager* mgr) {
     engine->RegisterGlobalFunction("float sqrt(float val)", asFUNCTION(std::sqrtf), asCALL_CDECL);
     engine->RegisterGlobalFunction("float sin(float radians)", asFUNCTION(std::sinf), asCALL_CDECL);
     engine->RegisterGlobalFunction("float cos(float radians)", asFUNCTION(std::cosf), asCALL_CDECL);
-    engine->RegisterGlobalProperty("const float PI", (void*)&PGE::Math::PI);
+    engine->PGE_REGISTER_GLOBAL_PROPERTY(Math::PI);
 }
