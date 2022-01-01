@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <scriptarray/scriptarray.h>
+#include <PGE/Color/ConsoleColor.h>
 
 using namespace PGE;
 
@@ -50,18 +51,22 @@ void ScriptManager::contextExceptionCallback(asIScriptContext* context) {
 
 void ScriptManager::messageCallback(const asSMessageInfo* msg, void* param) {
     String typeStr;
+    Console::ForegroundColor color;
     switch (msg->type) {
         case asEMsgType::asMSGTYPE_ERROR: {
             typeStr = "ERROR";
+            color = { Colors::RED };
         } break;
         case asEMsgType::asMSGTYPE_WARNING: {
             typeStr = "WARN";
+            color = { Colors::YELLOW };
         } break;
         case asEMsgType::asMSGTYPE_INFORMATION: {
             typeStr = "INFO";
+            color = { Colors::CYAN };
         } break;
     }
-    std::cout << msg->section << "(" << msg->row << ", " << msg->col << "): " << typeStr << ": " << msg->message << std::endl;
+    std::cout << msg->section << "(" << msg->row << ", " << msg->col << "): " << color << typeStr << ": " << msg->message << Console::ResetAll() << std::endl;
     log.push_back(*msg);
 }
 

@@ -5,6 +5,7 @@
 
 #include <PGE/Exception/Exception.h>
 #include <PGE/Math/Math.h>
+#include <PGE/Color/ConsoleColor.h>
 
 #include "../../Input/KeyBinds.h"
 #include "../ScriptManager.h"
@@ -69,9 +70,9 @@ ConsoleDefinitions::ConsoleDefinitions(ScriptManager* mgr, KeyBinds* kb) {
     engine->RegisterGlobalFunction("void execute(const string&in)", asMETHOD(ConsoleDefinitions, executeCommand), asCALL_THISCALL_ASGLOBAL, this);
 
     engine->SetDefaultNamespace("Debug");
-    engine->RegisterGlobalFunction("void log(?&in content)", asMETHOD(ConsoleDefinitions, log), asCALL_THISCALL_ASGLOBAL, this);
-    engine->RegisterGlobalFunction("void warning(?&in content)", asMETHOD(ConsoleDefinitions, warning), asCALL_THISCALL_ASGLOBAL, this);
-    engine->RegisterGlobalFunction("void error(?&in content)", asMETHOD(ConsoleDefinitions, error), asCALL_THISCALL_ASGLOBAL, this);
+    engine->RegisterGlobalFunction("void log(?&in content)", asMETHOD(ConsoleDefinitions, log<LogType::Log>), asCALL_THISCALL_ASGLOBAL, this);
+    engine->RegisterGlobalFunction("void warning(?&in content)", asMETHOD(ConsoleDefinitions, log<LogType::Warning>), asCALL_THISCALL_ASGLOBAL, this);
+    engine->RegisterGlobalFunction("void error(?&in content)", asMETHOD(ConsoleDefinitions, log<LogType::Error>), asCALL_THISCALL_ASGLOBAL, this);
 
     registerCommandInternal("help", "Provides a description of a specified command. Use it with no parameters to list all commands.", &ConsoleDefinitions::helpInternal);
     registerCommandInternal("bind", "Binds a command to a key.", &ConsoleDefinitions::bindInternal);
@@ -201,14 +202,18 @@ void ConsoleDefinitions::addConsoleMessage(const PGE::String& msg, const PGE::Co
 
 void ConsoleDefinitions::internalLog(void* ref, int typeId, LogType type) {
     PGE::String typeString;
+    PGE::Console::ForegroundColor color;
     switch (type) {
         case LogType::Log: {
+            color = { PGE::Colors::CYAN };
             typeString = "Log";
         } break;
         case LogType::Warning: {
+            color = { PGE::Colors::YELLOW };
             typeString = "Warn";
         } break;
         case LogType::Error: {
+            color = { PGE::Colors::RED };
             typeString = "Err";
         } break;
     }
@@ -274,19 +279,7 @@ void ConsoleDefinitions::internalLog(void* ref, int typeId, LogType type) {
     }
 #ifdef DEBUG
     std::ostream& out = (type == LogType::Error ? std::cerr : std::cout);
-    out << "Debug::" << typeString << ": " << content << std::endl;
+    out << color << "Debug::" << typeString << ": " << content << PGE::Console::ResetAll() << std::endl;
 #endif
     PGE::asrt(type != LogType::Error, "ERROR! " + content);
-}
-
-void ConsoleDefinitions::log(void* ref, int typeId) {
-    internalLog(ref, typeId, LogType::Log);
-}
-
-void ConsoleDefinitions::warning(void* ref, int typeId) {
-    internalLog(ref, typeId, LogType::Warning);
-}
-
-void ConsoleDefinitions::error(void* ref, int typeId) {
-    internalLog(ref, typeId, LogType::Error);
 }

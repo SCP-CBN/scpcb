@@ -47,9 +47,10 @@ class ConsoleDefinitions : public NativeDefinition {
 
         void internalLog(void* ref, int typeId, LogType type);
 
-        void log(void* ref, int typeId);
-        void warning(void* ref, int typeId);
-        void error(void* ref, int typeId);
+        template <ConsoleDefinitions::LogType type>
+        void log(void* ref, int typeId) {
+            internalLog(ref, typeId, type);
+        }
 
     public:
         ConsoleDefinitions(ScriptManager* mgr, KeyBinds* kb);
