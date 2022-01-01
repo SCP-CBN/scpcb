@@ -24,8 +24,8 @@ shared class GUIScrollbar : GUIComponent {
     float position {
         set {
             if (value != _position) {
-                float percentage = _sourceDisplayedSize / Math::maxFloat(_sourceDisplayedSize, _sourceTotalSize);
-                _position = Math::minFloat(value, _sourceDisplayedSize / percentage - _sourceDisplayedSize);
+                float percentage = _sourceDisplayedSize / Math::max(_sourceDisplayedSize, _sourceTotalSize);
+                _position = Math::min(value, _sourceDisplayedSize / percentage - _sourceDisplayedSize);
                 updateRectangles();
             }
         }
@@ -41,7 +41,7 @@ shared class GUIScrollbar : GUIComponent {
 
     private void updateRectangles() {
         scrollbar = Rectanglef(x, y, x + width, y + height);
-        float percentage = _sourceDisplayedSize / Math::maxFloat(_sourceDisplayedSize, _sourceTotalSize);
+        float percentage = _sourceDisplayedSize / Math::max(_sourceDisplayedSize, _sourceTotalSize);
         float screenY = y + height - _position * percentage;
         thumb = Rectanglef(x + 1.f, screenY - height * percentage, x + width - 1.f, screenY);
     }

@@ -35,7 +35,7 @@ shared class ConsoleMenu : Menu {
     }
 
     private void updateCoordinates() {
-        scrollOffset = Math::minFloat(0.f, scrollOffset + Input::getMouseWheelDelta().y); // TODO: Scale this with window size to prevent weird edge behavior?
+        scrollOffset = Math::min(0.f, scrollOffset + Input::getMouseWheelDelta().y); // TODO: Scale this with window size to prevent weird edge behavior?
         scrollbar.sourceTotalSize = messageHistory.length() * ConsoleMenu::lineHeight;
         scrollbar.position = -scrollOffset; // TODO: Replace with inout func?
         scrollOffset = -scrollbar.position;

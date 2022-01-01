@@ -136,7 +136,7 @@ class LightContainmentZone : Zone {
             int distance = -1;
             int furthest = -1;
             for (int j = i+1; j < xAnchors.length(); j++) {
-                int tempDist = Math::absFloat(xAnchors[i] - xAnchors[j]) + Math::absFloat(yAnchors[i] - yAnchors[j]);
+                int tempDist = Math::abs(xAnchors[i] - xAnchors[j]) + Math::abs(yAnchors[i] - yAnchors[j]);
                 if (distance < tempDist) {
                     distance = tempDist;
                     furthest = j;
@@ -162,8 +162,8 @@ class LightContainmentZone : Zone {
         while (ix != x2 || iy != y2) {
             // If we can change direction do so randomly with a bias towards the one further away.
             if (ix != x2 && iy != y2) {
-                int xDistance = Math::absFloat(ix - x2);
-                int yDistance = Math::absFloat(iy - y2);
+                int xDistance = Math::abs(ix - x2);
+                int yDistance = Math::abs(iy - y2);
                 if (xDistance > yDistance) {
                     float div = yDistance/xDistance;
                     if (xAdvancing) {

@@ -202,6 +202,8 @@ constexpr auto ptrDeduceConst(T(Class::* func)(Args...) const) {
 #define PGE_REGISTER_METHOD_EX(class, ret, func, args) PGE_REGISTER_METHOD_EX_IMPL(class, ret, func, args, false)
 #define PGE_REGISTER_METHOD_EX_R(class, ret, func, args) PGE_REGISTER_METHOD_EX_IMPL(class, ret, func, args, true)
 
+#define PGE_REGISTER_GLOBAL_FUNCTION_EX(ret, func, args) RegisterGlobalFunction(idfk<ret IDFK(DEBRACE args)>(#func, &func, asCALL_CDECL).cstr(), \
+    asFunctionPtr((void (*)())((ret (*)args)(func))), asCALL_CDECL)
 #define PGE_REGISTER_GLOBAL_FUNCTION(func) RegisterGlobalFunction(pgeFUNCTION(func, asCALL_CDECL))
 
 #define PGE_REGISTER_TO_STRING(class) RegisterObjectMethod(#class, "string toString() const", asFUNCTION(String::from<class>), asCALL_CDECL_OBJLAST)

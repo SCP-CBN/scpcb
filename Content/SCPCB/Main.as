@@ -214,7 +214,7 @@ void update(float deltaTime) {
             blinkTimer = 0.f;
         }
         if (Input::getDown() & Input::Blink != 0) {
-            blinkTimer = Math::maxFloat(-0.2f, blinkTimer);
+            blinkTimer = Math::max(-0.2f, blinkTimer);
         }
         
         if (blinkTimer <= -0.4f) {
@@ -247,13 +247,13 @@ void renderGame(float interpolation) {
         float alpha = 0.f;
         // Closing eyes.
         if (interpolatedBlink > -0.1f) {
-            alpha = Math::sin(Math::absFloat(interpolatedBlink / 0.4f * 2.f * Math::PI));
+            alpha = Math::sin(Math::abs(interpolatedBlink / 0.4f * 2.f * Math::PI));
         // Fully closed.
         } else if (interpolatedBlink > -0.3f) {
             alpha = 1.f;
         // Opening eyes.
         } else {
-            alpha = Math::absFloat(Math::sin(interpolatedBlink / 20.f * 2.f * Math::PI));
+            alpha = Math::abs(Math::sin(interpolatedBlink / 20.f * 2.f * Math::PI));
         }
         UI::setTextureless();
         UI::setColor(Color(0.f, 0.f, 0.f, alpha));

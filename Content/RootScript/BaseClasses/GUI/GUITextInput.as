@@ -275,7 +275,7 @@ shared class GUITextInput : GUIComponent {
                                 setCaretAndSelection(getFirstLeftWordBoundary(caretPosition));
                             }
                         } else {
-                            setCaretAndSelection(Math::clampInt(right ? caretPosition + 1 : caretPosition - 1, 0, text.text.length()));
+                            setCaretAndSelection(Math::clamp(right ? caretPosition + 1 : caretPosition - 1, 0, text.text.length()));
                         }
                     }
                     if (World::Platform::active == World::Platform::Apple) {

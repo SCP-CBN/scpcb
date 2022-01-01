@@ -128,8 +128,8 @@ MathDefinitions::MathDefinitions(ScriptManager* mgr) {
     //engine->PGE_REGISTER_TO_STRING(Vector2f);
 
     engine->SetDefaultNamespace("Vector2f");
-    engine->PGE_REGISTER_GLOBAL_PROPERTY_N("ONE", Vector2fs::ONE);
-    engine->PGE_REGISTER_GLOBAL_PROPERTY_N("ZERO", Vector2fs::ZERO);
+    engine->PGE_REGISTER_GLOBAL_PROPERTY(Vector2fs::ONE);
+    engine->PGE_REGISTER_GLOBAL_PROPERTY(Vector2fs::ZERO);
     engine->SetDefaultNamespace("");
 
     // Vector3f
@@ -245,17 +245,20 @@ MathDefinitions::MathDefinitions(ScriptManager* mgr) {
     engine->PGE_REGISTER_GLOBAL_FUNCTION(Math::degToRad);
     engine->PGE_REGISTER_GLOBAL_FUNCTION(Math::radToDeg);
     engine->PGE_REGISTER_GLOBAL_FUNCTION(Math::equalFloats);
-    engine->RegisterGlobalFunction("int maxInt(int val, int other)", asFUNCTION(maxInt), asCALL_CDECL);
-    engine->RegisterGlobalFunction("int minInt(int val, int other)", asFUNCTION(minInt), asCALL_CDECL);
-    engine->RegisterGlobalFunction("float maxFloat(float val, float other)", asFUNCTION(maxFloat), asCALL_CDECL);
-    engine->RegisterGlobalFunction("float minFloat(float val, float other)", asFUNCTION(minFloat), asCALL_CDECL);
-    engine->RegisterGlobalFunction("int clampInt(int val, int min, int max)", asFUNCTION(std::clamp<int>), asCALL_CDECL);
-    engine->RegisterGlobalFunction("float clampFloat(float val, float min, float max)", asFUNCTION(std::clamp<float>), asCALL_CDECL);
-    engine->RegisterGlobalFunction("float absFloat(float val)", asFUNCTIONPR(std::abs, (float), float), asCALL_CDECL);
-    engine->RegisterGlobalFunction("int floor(float val)", asFUNCTION(PGE::Math::floor), asCALL_CDECL);
-    engine->RegisterGlobalFunction("int ceil(float val)", asFUNCTION(PGE::Math::ceil), asCALL_CDECL);
-    engine->RegisterGlobalFunction("float sqrt(float val)", asFUNCTION(std::sqrtf), asCALL_CDECL);
-    engine->RegisterGlobalFunction("float sin(float radians)", asFUNCTION(std::sinf), asCALL_CDECL);
-    engine->RegisterGlobalFunction("float cos(float radians)", asFUNCTION(std::cosf), asCALL_CDECL);
+
+#define REGISTER_COMMON(type) \
+    engine->PGE_REGISTER_GLOBAL_FUNCTION_EX(const type&, std::max<type>, (const type&, const type&)); \
+    engine->PGE_REGISTER_GLOBAL_FUNCTION_EX(const type&, std::min<type>, (const type&, const type&)); \
+    engine->PGE_REGISTER_GLOBAL_FUNCTION_EX(type, std::abs, (type)); \
+    engine->PGE_REGISTER_GLOBAL_FUNCTION(std::clamp<type>);
+
+    REGISTER_COMMON(int);
+    REGISTER_COMMON(float);
+    
+    engine->PGE_REGISTER_GLOBAL_FUNCTION_EX(float, std::floor, (float));
+    engine->PGE_REGISTER_GLOBAL_FUNCTION_EX(float, std::ceil, (float));
+    engine->PGE_REGISTER_GLOBAL_FUNCTION_EX(float, std::sqrt, (float));
+    engine->PGE_REGISTER_GLOBAL_FUNCTION_EX(float, std::sin, (float));
+    engine->PGE_REGISTER_GLOBAL_FUNCTION_EX(float, std::cos, (float));
     engine->PGE_REGISTER_GLOBAL_PROPERTY(Math::PI);
 }
