@@ -244,13 +244,13 @@ bool Billboard::updateVertices(PGE::StructuredData& vertices, int startIndex) {
         PGE::Vector3f offset3 = rotationMatrix.transform(PGE::Vector3f(-scale.x * 0.5f, -scale.y * 0.5f, 0.f));
 
         vertices.setValue(startIndex + 0, "position", PGE::Vector4f(position + offset0,1.f));
-        vertices.setValue(startIndex + 0, "offset", PGE::Vectors::ZERO2F);
+        vertices.setValue(startIndex + 0, "offset", PGE::Vector2fs::ZERO);
         vertices.setValue(startIndex + 1, "position", PGE::Vector4f(position + offset1,1.f));
-        vertices.setValue(startIndex + 1, "offset", PGE::Vectors::ZERO2F);
+        vertices.setValue(startIndex + 1, "offset", PGE::Vector2fs::ZERO);
         vertices.setValue(startIndex + 2, "position", PGE::Vector4f(position + offset2,1.f));
-        vertices.setValue(startIndex + 2, "offset", PGE::Vectors::ZERO2F);
+        vertices.setValue(startIndex + 2, "offset", PGE::Vector2fs::ZERO);
         vertices.setValue(startIndex + 3, "position", PGE::Vector4f(position + offset3,1.f));
-        vertices.setValue(startIndex + 3, "offset", PGE::Vectors::ZERO2F);
+        vertices.setValue(startIndex + 3, "offset", PGE::Vector2fs::ZERO);
     }
 
     vertices.setValue(startIndex + 0, "texCoords", PGE::Vector2f(0.f,0.f));

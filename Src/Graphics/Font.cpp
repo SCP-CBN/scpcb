@@ -147,7 +147,7 @@ void Font::draw(const PGE::String& text, const PGE::Vector2f& pos, float scale, 
 void Font::draw(const PGE::String& text, const PGE::Vector3f& pos, const PGE::Vector2f& scale, const PGE::Vector3f& rotation, const PGE::Color& color) {
     PGE::Matrix4x4f modelMatrix = PGE::Matrix4x4f::constructWorldMat(pos, rotation, PGE::Vector3f(scale.x, scale.y, 1.f));
 
-    PGE::Vector3f currPos = PGE::Vectors::ZERO3F;
+    PGE::Vector3f currPos = PGE::Vector3fs::ZERO;
 
     modelMatrixConstant->setValue(modelMatrix);
     colorConstant->setValue(color);

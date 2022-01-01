@@ -116,7 +116,7 @@ Collision Collision::edgeTest(const PGE::Vector3f& v0,const PGE::Vector3f& v1,co
     t=t1<t2 ? t1 : t2;
     if( t>1.f ) { return retVal; }    //intersects too far away
     PGE::Vector3f i=sv + dv * t;
-    PGE::Vector3f p=PGE::Vectors::ZERO3F;
+    PGE::Vector3f p=PGE::Vector3fs::ZERO;
     if( i.y>v0.distance(v1) ) { return retVal; }    //intersection above cylinder
     if( i.y>=0 ){
         p.y=i.y;

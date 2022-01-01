@@ -14,7 +14,7 @@ Collision CollisionMesh::checkCollision(const PGE::Matrix4x4f& matrix, const PGE
     lineBox.addPoint(line.pointB);
     lineBox.addPoint(lineBox.getMin() + PGE::Vector3f(-radius,-height*0.5f,-radius));
     lineBox.addPoint(lineBox.getMax() + PGE::Vector3f(radius,height*0.5f,radius));
-    PGE::AABBox triBox(PGE::Vectors::ZERO3F);
+    PGE::AABBox triBox(PGE::Vector3fs::ZERO);
     for (size_t i=0;i<indices.size()/3;i++) {
         PGE::Vector3f vert0 = matrix.transform(vertices[indices[(i*3)+0]]);
         PGE::Vector3f vert1 = matrix.transform(vertices[indices[(i*3)+1]]);

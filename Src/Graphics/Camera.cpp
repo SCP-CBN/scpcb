@@ -29,7 +29,7 @@ Camera::Camera(GraphicsResources* gr, int w, int h, float fov, float nearZ, floa
     this->orthographicProj = orthographic;
 
     rotation = PGE::Matrices::IDENTITY;
-    dataInter = DataInterpolator(position, PGE::Vector3f(-pitchAngle, yawAngle, tilt), PGE::Vectors::ZERO3F);
+    dataInter = DataInterpolator(position, PGE::Vector3f(-pitchAngle, yawAngle, tilt), PGE::Vector3fs::ZERO);
 
     needsProjUpdate = true;
     update();
@@ -38,7 +38,7 @@ Camera::Camera(GraphicsResources* gr, int w, int h, float fov, float nearZ, floa
 Camera::Camera(GraphicsResources* gr, int w, int h) : Camera(gr, w, h, PGE::Math::degToRad(70.0f)) { }
 
 void Camera::update() {
-    dataInter.update(position, PGE::Vector3f(-pitchAngle, yawAngle, tilt), PGE::Vectors::ZERO3F);
+    dataInter.update(position, PGE::Vector3f(-pitchAngle, yawAngle, tilt), PGE::Vector3fs::ZERO);
 }
 
 void Camera::updateDrawTransform(float interpolation) {

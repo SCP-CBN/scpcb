@@ -114,7 +114,7 @@ CBR::CBR(GraphicsResources* gr, const PGE::String& filename) {
             for (int k = 0; k < vertexCount; k++) {
                 Vertex tempVertex;
                 tempVertex.position = PGE::Vector4f(reader.read<PGE::Vector3f>(), 1.f);
-                tempVertex.normal = PGE::Vectors::ONE3F;
+                tempVertex.normal = PGE::Vector3fs::ONE;
                 tempVertex.lmUv = reader.read<PGE::Vector2f>();
                 tempVertex.diffUv = reader.read<PGE::Vector2f>();
                 tempVertex.color = PGE::Colors::WHITE;

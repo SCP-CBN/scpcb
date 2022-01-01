@@ -64,7 +64,7 @@ Model::Model(Assimp::Importer* importer, GraphicsResources* gr, const PGE::Strin
         PGE::StructuredData vertices = PGE::StructuredData(material.getShader().getVertexLayout(), mesh->mNumVertices);
         for (unsigned j = 0; j < mesh->mNumVertices; j++) {
             vertices.setValue(j, "position", PGE::Vector4f((float)mesh->mVertices[j].x, (float)mesh->mVertices[j].y, (float)mesh->mVertices[j].z, 1.f));
-            vertices.setValue(j, "normal", PGE::Vectors::ONE3F);
+            vertices.setValue(j, "normal", PGE::Vector3fs::ONE);
             vertices.setValue(j, "uv", PGE::Vector2f((float)mesh->mTextureCoords[0][j].x, (float)mesh->mTextureCoords[0][j].y));
         }
 

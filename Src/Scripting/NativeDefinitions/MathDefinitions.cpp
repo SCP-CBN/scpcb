@@ -128,8 +128,8 @@ MathDefinitions::MathDefinitions(ScriptManager* mgr) {
     //engine->PGE_REGISTER_TO_STRING(Vector2f);
 
     engine->SetDefaultNamespace("Vector2f");
-    engine->PGE_REGISTER_GLOBAL_PROPERTY_N("ONE", Vectors::ONE2F);
-    engine->PGE_REGISTER_GLOBAL_PROPERTY_N("ZERO", Vectors::ZERO2F);
+    engine->PGE_REGISTER_GLOBAL_PROPERTY_N("ONE", Vector2fs::ONE);
+    engine->PGE_REGISTER_GLOBAL_PROPERTY_N("ZERO", Vector2fs::ZERO);
     engine->SetDefaultNamespace("");
 
     // Vector3f
@@ -176,8 +176,8 @@ MathDefinitions::MathDefinitions(ScriptManager* mgr) {
     engine->RegisterObjectMethod("Vector3f", "string toString() const", asFUNCTION(vector3fToString), asCALL_CDECL_OBJLAST);
 
     engine->SetDefaultNamespace("Vector3f");
-    engine->RegisterGlobalProperty("const Vector3f one", (void*) &PGE::Vectors::ONE3F);
-    engine->RegisterGlobalProperty("const Vector3f zero", (void*)&PGE::Vectors::ZERO3F);
+    engine->RegisterGlobalProperty("const Vector3f one", (void*) &PGE::Vector3fs::ONE);
+    engine->RegisterGlobalProperty("const Vector3f zero", (void*)&PGE::Vector3fs::ZERO);
     engine->SetDefaultNamespace("");
 
     // Matrix4x4f

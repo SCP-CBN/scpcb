@@ -14,7 +14,7 @@ constexpr float STAMINA_RECOVERY_RATE = 0.2f;
 PlayerController::PlayerController(float r, float camHeight) {
     collider = new Collider(r, camHeight);
 
-    position = PGE::Vectors::ZERO3F;
+    position = PGE::Vector3fs::ZERO;
     camAnimState = 0.f;
     currWalkSpeed = 0.f;
     stamina = 1.f;
@@ -44,7 +44,7 @@ void PlayerController::update(float yaw, float pitch, Input input, float timeSte
         // TODO: Scale this.
         currWalkSpeed = currWalkSpeed * WALK_SPEED_SMOOTHING_FACTOR + targetSpeed * (1.f - WALK_SPEED_SMOOTHING_FACTOR);
 
-        PGE::Vector2f targetDir = PGE::Vectors::ZERO2F;
+        PGE::Vector2f targetDir = PGE::Vector2fs::ZERO;
         if ((input & Input::FORWARD) != Input::NONE) {
             targetDir = targetDir + PGE::Vector2f(sinAngle, cosAngle);
         }

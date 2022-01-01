@@ -224,7 +224,7 @@ RM2::RM2(GraphicsResources* gfxRes, const PGE::String& filename) {
                     PGE::Vector2f lmUv = PGE::Vector2f(inLmU.f, inLmV.f);
 
                     vertices.setValue(i, "position", position);
-                    vertices.setValue(i, "normal", PGE::Vectors::ONE3F);
+                    vertices.setValue(i, "normal", PGE::Vector3fs::ONE);
                     vertices.setValue(i, "diffUv", diffUv);
                     vertices.setValue(i, "lmUv", lmUv);
                     //vertices.setValue(i, "color", PGE::Colors::WHITE);
