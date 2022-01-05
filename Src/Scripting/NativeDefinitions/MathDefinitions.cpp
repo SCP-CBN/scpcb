@@ -48,10 +48,10 @@ static void rectangleDestructor(void* memory) {
     ((PGE::Rectanglef*)memory)->~Rectanglef();
 }
 
-#define REGISTER_VECTOR_COMMON(vector) \
-    engine->PGE_REGISTER_TYPE(vector, asOBJ_APP_CLASS_ALLFLOATS); \
+#define REGISTER_VECTOR_COMMON_GEN(vector, type, trait) \
+    engine->PGE_REGISTER_TYPE(vector, trait); \
     engine->PGE_REGISTER_CONSTRUCTOR(vector); \
-    engine->PGE_REGISTER_CONSTRUCTOR(vector, (float)); \
+    engine->PGE_REGISTER_CONSTRUCTOR(vector, (type)); \
     engine->PGE_REGISTER_DESTRUCTOR(vector); \
  \
     engine->PGE_REGISTER_METHOD(vector, operator==); \
@@ -59,10 +59,9 @@ static void rectangleDestructor(void* memory) {
     engine->PGE_REGISTER_METHOD_EX(vector, vector&, operator=, (const vector&)); \
     engine->PGE_REGISTER_METHOD_EX(vector, void, operator+=, (const vector&)); \
     engine->PGE_REGISTER_METHOD_EX(vector, void, operator-=, (const vector&)); \
-    engine->PGE_REGISTER_METHOD_EX(vector, void, operator+=, (float)); \
-    engine->PGE_REGISTER_METHOD_EX(vector, void, operator-=, (float)); \
+    engine->PGE_REGISTER_METHOD_EX(vector, void, operator+=, (type)); \
+    engine->PGE_REGISTER_METHOD_EX(vector, void, operator-=, (type)); \
     engine->PGE_REGISTER_METHOD(vector, operator*=); \
-    engine->PGE_REGISTER_METHOD(vector, operator/=); \
     engine->PGE_REGISTER_METHOD_EX(vector, const vector, operator-, ()); \
  \
     engine->PGE_REGISTER_METHOD(vector, lengthSquared); \
@@ -70,34 +69,48 @@ static void rectangleDestructor(void* memory) {
     engine->PGE_REGISTER_METHOD(vector, distanceSquared); \
     engine->PGE_REGISTER_METHOD(vector, distance); \
  \
-    engine->PGE_REGISTER_METHOD(vector, normalize); \
- \
-    engine->PGE_REGISTER_METHOD(vector, reflect); \
     engine->PGE_REGISTER_METHOD(vector, dotProduct); \
  \
     engine->SetDefaultNamespace(#vector); \
     engine->PGE_REGISTER_GLOBAL_PROPERTY(vector ## s::ONE); \
     engine->PGE_REGISTER_GLOBAL_PROPERTY(vector ## s::ZERO); \
-    engine->SetDefaultNamespace("")
+    engine->SetDefaultNamespace(""); \
+ \
+    engine->PGE_REGISTER_TO_STRING(vector)
 
+
+#define REGISTER_VECTOR_COMMON(vector) \
+    REGISTER_VECTOR_COMMON_GEN(vector, float, asOBJ_APP_CLASS_ALLFLOATS); \
+    engine->PGE_REGISTER_METHOD(vector, operator/=); \
+    engine->PGE_REGISTER_METHOD(vector, normalize); \
+    engine->PGE_REGISTER_METHOD(vector, reflect)
 
 MathDefinitions::MathDefinitions(ScriptManager* mgr) {
     engine = mgr->getAngelScriptEngine();
 
-    // Vector2f
     REGISTER_VECTOR_COMMON(Vector2f);
     engine->PGE_REGISTER_CONSTRUCTOR(Vector2f, (float, float));
     engine->PGE_REGISTER_PROPERTY(Vector2f, x);
     engine->PGE_REGISTER_PROPERTY(Vector2f, y);
 
-    //engine->PGE_REGISTER_TO_STRING(Vector2f);
-
-    // Vector3f
     REGISTER_VECTOR_COMMON(Vector3f);
     engine->PGE_REGISTER_CONSTRUCTOR(Vector3f, (float, float, float));
     engine->PGE_REGISTER_PROPERTY(Vector3f, x);
     engine->PGE_REGISTER_PROPERTY(Vector3f, y);
     engine->PGE_REGISTER_PROPERTY(Vector3f, z);
+    engine->PGE_REGISTER_METHOD(Vector3f, crossProduct);
+
+    REGISTER_VECTOR_COMMON(Vector4f);
+    engine->PGE_REGISTER_CONSTRUCTOR(Vector4f, (float, float, float, float));
+    engine->PGE_REGISTER_PROPERTY(Vector4f, x);
+    engine->PGE_REGISTER_PROPERTY(Vector4f, y);
+    engine->PGE_REGISTER_PROPERTY(Vector4f, z);
+    engine->PGE_REGISTER_PROPERTY(Vector4f, w);
+
+    REGISTER_VECTOR_COMMON_GEN(Vector2i, int, asOBJ_APP_CLASS_ALLINTS);
+    engine->PGE_REGISTER_CONSTRUCTOR(Vector2i, (int, int));
+    engine->PGE_REGISTER_PROPERTY(Vector2i, x);
+    engine->PGE_REGISTER_PROPERTY(Vector2i, y);
 
     // Matrix4x4f
     engine->RegisterObjectType("Matrix4x4f", sizeof(PGE::Matrix4x4f), asOBJ_VALUE | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<PGE::Matrix4x4f>());
@@ -158,6 +171,8 @@ MathDefinitions::MathDefinitions(ScriptManager* mgr) {
 
     engine->RegisterObjectMethod("Rectanglef", "bool isPointInside(const Vector2f&in p) const", asMETHOD(PGE::Rectanglef, isPointInside), asCALL_THISCALL);
     engine->RegisterObjectMethod("Rectanglef", "bool intersects(const Rectanglef&in other) const", asMETHOD(PGE::Rectanglef, intersects), asCALL_THISCALL);
+
+    String test = String::from(Vector2f(2.f));
 
     // Generic
     engine->SetDefaultNamespace("Math");
