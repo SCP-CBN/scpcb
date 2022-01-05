@@ -14,26 +14,6 @@
 
 using namespace PGE;
 
-static void vector3fConstructor(void* memory) {
-    ::new(memory) PGE::Vector3f();
-}
-
-static void vector3fConstructorSingle(float s, void* memory) {
-    ::new(memory) PGE::Vector3f(s);
-}
-
-static void vector3fConstructorParametrized(float x, float y, float z, void* memory) {
-    ::new(memory) PGE::Vector3f(x, y, z);
-}
-
-static void vector3fDestructor(void* memory) {
-    ((PGE::Vector3f*)memory)->~Vector3f();
-}
-
-static PGE::String vector3fToString(const PGE::Vector3f& vec) {
-    return "Vector3f(" + PGE::String::from(vec.x) + ", " + PGE::String::from(vec.y) + ", " + PGE::String::from(vec.z) + ")";
-}
-
 static void matrixConstructor(void* memory) {
     ::new(memory) PGE::Matrix4x4f();
 }
@@ -68,117 +48,56 @@ static void rectangleDestructor(void* memory) {
     ((PGE::Rectanglef*)memory)->~Rectanglef();
 }
 
-static int maxInt(int a, int b) {
-    return std::max(a, b);
-}
+#define REGISTER_VECTOR_COMMON(vector) \
+    engine->PGE_REGISTER_TYPE(vector, asOBJ_APP_CLASS_ALLFLOATS); \
+    engine->PGE_REGISTER_CONSTRUCTOR(vector); \
+    engine->PGE_REGISTER_CONSTRUCTOR(vector, (float)); \
+    engine->PGE_REGISTER_DESTRUCTOR(vector); \
+ \
+    engine->PGE_REGISTER_METHOD(vector, operator==); \
+ \
+    engine->PGE_REGISTER_METHOD_EX(vector, vector&, operator=, (const vector&)); \
+    engine->PGE_REGISTER_METHOD_EX(vector, void, operator+=, (const vector&)); \
+    engine->PGE_REGISTER_METHOD_EX(vector, void, operator-=, (const vector&)); \
+    engine->PGE_REGISTER_METHOD_EX(vector, void, operator+=, (float)); \
+    engine->PGE_REGISTER_METHOD_EX(vector, void, operator-=, (float)); \
+    engine->PGE_REGISTER_METHOD(vector, operator*=); \
+    engine->PGE_REGISTER_METHOD(vector, operator/=); \
+    engine->PGE_REGISTER_METHOD_EX(vector, const vector, operator-, ()); \
+ \
+    engine->PGE_REGISTER_METHOD(vector, lengthSquared); \
+    engine->PGE_REGISTER_METHOD(vector, length); \
+    engine->PGE_REGISTER_METHOD(vector, distanceSquared); \
+    engine->PGE_REGISTER_METHOD(vector, distance); \
+ \
+    engine->PGE_REGISTER_METHOD(vector, normalize); \
+ \
+    engine->PGE_REGISTER_METHOD(vector, reflect); \
+    engine->PGE_REGISTER_METHOD(vector, dotProduct); \
+ \
+    engine->SetDefaultNamespace(#vector); \
+    engine->PGE_REGISTER_GLOBAL_PROPERTY(vector ## s::ONE); \
+    engine->PGE_REGISTER_GLOBAL_PROPERTY(vector ## s::ZERO); \
+    engine->SetDefaultNamespace("")
 
-static int minInt(int a, int b) {
-    return std::min(a, b);
-}
-
-static float maxFloat(float a, float b) {
-    return std::max(a, b);
-}
-
-static float minFloat(float a, float b) {
-    return std::min(a, b);
-}
 
 MathDefinitions::MathDefinitions(ScriptManager* mgr) {
     engine = mgr->getAngelScriptEngine();
 
     // Vector2f
-    engine->PGE_REGISTER_TYPE(Vector2f, asOBJ_APP_CLASS_ALLFLOATS);
-    engine->PGE_REGISTER_CONSTRUCTOR(Vector2f);
-    engine->PGE_REGISTER_CONSTRUCTOR(Vector2f, (float));
+    REGISTER_VECTOR_COMMON(Vector2f);
     engine->PGE_REGISTER_CONSTRUCTOR(Vector2f, (float, float));
-    engine->PGE_REGISTER_DESTRUCTOR(Vector2f);
     engine->PGE_REGISTER_PROPERTY(Vector2f, x);
     engine->PGE_REGISTER_PROPERTY(Vector2f, y);
 
-    engine->PGE_REGISTER_METHOD(Vector2f, operator==);
-
-    engine->PGE_REGISTER_METHOD_EX(Vector2f, Vector2f&, operator=, (const Vector2f&));
-    engine->PGE_REGISTER_METHOD_EX(Vector2f, void, operator+=, (const Vector2f&));
-    engine->PGE_REGISTER_METHOD_EX(Vector2f, void, operator-=, (const Vector2f&));
-    engine->PGE_REGISTER_METHOD_EX(Vector2f, void, operator+=, (float));
-    engine->PGE_REGISTER_METHOD_EX(Vector2f, void, operator-=, (float));
-    engine->PGE_REGISTER_METHOD(Vector2f, operator*=);
-    engine->PGE_REGISTER_METHOD(Vector2f, operator/=);
-    engine->PGE_REGISTER_METHOD_EX(Vector2f, const Vector2f, operator-, ());
-
-    engine->PGE_REGISTER_METHOD_EX(Vector2f, const Vector2f, operator+, (const Vector2f&));
-    engine->PGE_REGISTER_METHOD_EX(Vector2f, const Vector2f, operator-, (const Vector2f&));
-    engine->PGE_REGISTER_METHOD_EX(Vector2f, const Vector2f, operator+, (float));
-    engine->PGE_REGISTER_METHOD_EX(Vector2f, const Vector2f, operator-, (float));
-    engine->PGE_REGISTER_METHOD(Vector2f, operator*);
-    engine->PGE_REGISTER_METHOD_R(Vector2f, operator*);
-    engine->PGE_REGISTER_METHOD(Vector2f, operator/);
-    
-    engine->PGE_REGISTER_METHOD(Vector2f, lengthSquared);
-    engine->PGE_REGISTER_METHOD(Vector2f, length);
-    engine->PGE_REGISTER_METHOD(Vector2f, distanceSquared);
-    engine->PGE_REGISTER_METHOD(Vector2f, distance);
-
-    engine->PGE_REGISTER_METHOD(Vector2f, normalize);
-
-    engine->PGE_REGISTER_METHOD(Vector2f, reflect);
-    engine->PGE_REGISTER_METHOD(Vector2f, dotProduct);
-
     //engine->PGE_REGISTER_TO_STRING(Vector2f);
 
-    engine->SetDefaultNamespace("Vector2f");
-    engine->PGE_REGISTER_GLOBAL_PROPERTY(Vector2fs::ONE);
-    engine->PGE_REGISTER_GLOBAL_PROPERTY(Vector2fs::ZERO);
-    engine->SetDefaultNamespace("");
-
     // Vector3f
-    engine->PGE_REGISTER_TYPE(Vector3f, asOBJ_APP_CLASS_ALLFLOATS);
-    engine->PGE_REGISTER_CONSTRUCTOR(Vector3f);
-    engine->PGE_REGISTER_CONSTRUCTOR(Vector3f, (float));
+    REGISTER_VECTOR_COMMON(Vector3f);
     engine->PGE_REGISTER_CONSTRUCTOR(Vector3f, (float, float, float));
-    engine->PGE_REGISTER_DESTRUCTOR(Vector3f);
     engine->PGE_REGISTER_PROPERTY(Vector3f, x);
     engine->PGE_REGISTER_PROPERTY(Vector3f, y);
     engine->PGE_REGISTER_PROPERTY(Vector3f, z);
-
-    engine->PGE_REGISTER_METHOD(Vector3f, operator==);
-
-    engine->RegisterObjectMethod("Vector3f", "void opAssign(const Vector3f &in other)", asMETHODPR(PGE::Vector3f, operator=, (const PGE::Vector3f&), PGE::Vector3f&), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "void opAddAssign(const Vector3f&in other)", asMETHODPR(PGE::Vector3f, operator+=, (const PGE::Vector3f&), void), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "void opAddAssign(float f)", asMETHODPR(PGE::Vector3f, operator+=, (float), void), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "void opSubAssign(const Vector3f&in other)", asMETHODPR(PGE::Vector3f, operator-=, (const PGE::Vector3f&), void), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "void opSubAssign(float f)", asMETHODPR(PGE::Vector3f, operator-=, (float), void), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "void opMulAssign(float f)", asMETHODPR(PGE::Vector3f, operator*=, (float), void), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "void opDivAssign(float f)", asMETHODPR(PGE::Vector3f, operator/=, (float), void), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "Vector3f opNeg()", asMETHODPR(PGE::Vector3f, operator-, () const, const PGE::Vector3f), asCALL_THISCALL);
-
-    engine->RegisterObjectMethod("Vector3f", "Vector3f opAdd(const Vector3f&in other) const", asMETHODPR(PGE::Vector3f, operator+, (const PGE::Vector3f&) const, const PGE::Vector3f), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "Vector3f opAdd(float f) const", asMETHODPR(PGE::Vector3f, operator+, (float) const, const PGE::Vector3f), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "Vector3f opSub(const Vector3f&in other) const", asMETHODPR(PGE::Vector3f, operator-, (const PGE::Vector3f&) const, const PGE::Vector3f), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "Vector3f opSub(float f) const", asMETHODPR(PGE::Vector3f, operator-, (float) const, const PGE::Vector3f), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "Vector3f opMul(float f) const", asMETHODPR(PGE::Vector3f, operator*, (float) const, const PGE::Vector3f), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "Vector3f opMul_r(float f) const", asMETHODPR(PGE::Vector3f, operator*, (float) const, const PGE::Vector3f), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "Vector3f opDiv(float f) const", asMETHODPR(PGE::Vector3f, operator/, (float) const, const PGE::Vector3f), asCALL_THISCALL);
-
-    engine->RegisterObjectMethod("Vector3f", "float lengthSquared() const", asMETHOD(PGE::Vector3f, lengthSquared), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "float length() const", asMETHOD(PGE::Vector3f, length), asCALL_THISCALL);
-
-    engine->RegisterObjectMethod("Vector3f", "float distanceSquared(const Vector3f&in other) const", asMETHOD(PGE::Vector3f, distanceSquared), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "float distance(const Vector3f&in other) const", asMETHOD(PGE::Vector3f, distance), asCALL_THISCALL);
-
-    engine->RegisterObjectMethod("Vector3f", "Vector3f normalize() const", asMETHOD(PGE::Vector3f, normalize), asCALL_THISCALL);
-
-    engine->RegisterObjectMethod("Vector3f", "Vector3f reflect(const Vector3f&in other) const", asMETHOD(PGE::Vector3f, reflect), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "float dotProduct(const Vector3f&in other) const", asMETHOD(PGE::Vector3f, dotProduct), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Vector3f", "Vector3f crossProduct(const Vector3f&in other) const", asMETHOD(PGE::Vector3f, crossProduct), asCALL_THISCALL);
-
-    engine->RegisterObjectMethod("Vector3f", "string toString() const", asFUNCTION(vector3fToString), asCALL_CDECL_OBJLAST);
-
-    engine->SetDefaultNamespace("Vector3f");
-    engine->RegisterGlobalProperty("const Vector3f one", (void*) &PGE::Vector3fs::ONE);
-    engine->RegisterGlobalProperty("const Vector3f zero", (void*)&PGE::Vector3fs::ZERO);
-    engine->SetDefaultNamespace("");
 
     // Matrix4x4f
     engine->RegisterObjectType("Matrix4x4f", sizeof(PGE::Matrix4x4f), asOBJ_VALUE | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<PGE::Matrix4x4f>());
