@@ -212,6 +212,8 @@ constexpr auto ptrDeduceConst(T(Class::* func)(Args...) const) {
     asCALL_CDECL_OBJLAST).cstr(), asFUNCTION((constructGen<class __VA_OPT__(, DEBRACE __VA_ARGS__)>)), asCALL_CDECL_OBJLAST)
 #define PGE_REGISTER_DESTRUCTOR(class) RegisterObjectBehaviour(#class, asBEHAVE_DESTRUCT, "void f()", asFUNCTION(destructGen<class>), asCALL_CDECL_OBJLAST)
 
+#define PGE_REGISTER_CAST_AS_CTOR(FROM, TO) RegisterObjectBehaviour(#TO, asBEHAVE_CONSTRUCT, "void f(const " #FROM "&in)", asMETHOD(FROM, operator TO), asCALL_THISCALL)
+
 #define PGE_REGISTER_GLOBAL_PROPERTY_N(name, var) RegisterGlobalProperty((getAsTypeName<decltype(var)>(true) + " " + name).cstr(), (void*)&var)
 #define PGE_REGISTER_GLOBAL_PROPERTY(var) PGE_REGISTER_GLOBAL_PROPERTY_N(trimNamespaces(#var), var)
 

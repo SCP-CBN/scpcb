@@ -32,6 +32,6 @@ const PGE::Vector2f& MouseData::getDelta() const {
     return mouseDelta;
 }
 
-const PGE::Vector2f& MouseData::getWheelDelta() const {
+const PGE::Vector2i& MouseData::getWheelDelta() const {
     return mouseWheelDelta;
 }
