@@ -70,7 +70,7 @@ World::World() {
 
     applyConfig(config);
 
-    //lol = new CBR(gfxRes, "asd.cbr");
+    lol = new CBR(gfxRes, "asd.cbr");
 
     shutdownRequested = false;
 }
@@ -162,7 +162,7 @@ void World::draw(float interpolation, RenderType r) {
     if (r != RenderType::UIOnly) {
         drawPlaying(interpolation);
         scripting->drawGame(interpolation);
-        //lol->render(PGE::Matrix4x4f::constructWorldMat(PGE::Vector3f(0, 0, 0), PGE::Vector3f(0, 0, 0), PGE::Vector3f(0.1, 0.1, 0.1)));
+        lol->render(PGE::Matrix4x4f::constructWorldMat(PGE::Vector3f(0, 100, 0), PGE::Vector3f(0, 0, 0), PGE::Vector3f(0.1, 0.1, 0.1)));
     }
 
     if (r != RenderType::NoUI) {
