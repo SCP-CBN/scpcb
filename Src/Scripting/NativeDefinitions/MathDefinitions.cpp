@@ -14,24 +14,6 @@
 
 using namespace PGE;
 
-static void matrixConstructor(void* memory) {
-    ::new(memory) PGE::Matrix4x4f();
-}
-
-static void matrixConstructorParametrized(float aa, float ab, float ac, float ad,
-                                   float ba, float bb, float bc, float bd,
-                                   float ca, float cb, float cc, float cd,
-                                   float da, float db, float dc, float dd, void* memory) {
-    ::new(memory) PGE::Matrix4x4f(aa, ab, ac, ad,
-                                ba, bb, bc, bd,
-                                ca, cb, cc, cd,
-                                da, db, dc, dd);
-}
-
-static void matrixDestructor(void* memory) {
-    ((PGE::Matrix4x4f*)memory)->~Matrix4x4f();
-}
-
 static void rectangleConstructor(void* memory) {
     ::new(memory) PGE::Rectanglef();
 }
@@ -49,14 +31,12 @@ static void rectangleDestructor(void* memory) {
 }
 
 #define REGISTER_VECTOR_COMMON_GEN(vector, type, trait) \
-    engine->PGE_REGISTER_TYPE(vector, trait); \
+    engine->PGE_REGISTER_TYPE(vector, trait | asOBJ_POD); \
     engine->PGE_REGISTER_CONSTRUCTOR(vector); \
     engine->PGE_REGISTER_CONSTRUCTOR(vector, (type)); \
-    engine->PGE_REGISTER_DESTRUCTOR(vector); \
  \
     engine->PGE_REGISTER_METHOD(vector, operator==); \
  \
-    engine->PGE_REGISTER_METHOD_EX(vector, vector&, operator=, (const vector&)); \
     engine->PGE_REGISTER_METHOD_EX(vector, void, operator+=, (const vector&)); \
     engine->PGE_REGISTER_METHOD_EX(vector, void, operator-=, (const vector&)); \
     engine->PGE_REGISTER_METHOD_EX(vector, void, operator+=, (type)); \
@@ -93,6 +73,16 @@ static void rectangleDestructor(void* memory) {
     engine->PGE_REGISTER_METHOD(vector, operator/); \
     engine->PGE_REGISTER_METHOD(vector, normalize); \
     engine->PGE_REGISTER_METHOD(vector, reflect)
+
+constexpr float& matrixAccessorMut(int x, int y, Matrix4x4f& mat) {
+    PGE::asrt(x >= 0 && x < 4, "x out of range [0, 4)! (" + String::from(x) + ")");
+    PGE::asrt(y >= 0 && y < 4, "y out of range [0, 4)! (" + String::from(y) + ")");
+    return mat[x][y];
+}
+
+constexpr float matrixAccessor(int x, int y, const Matrix4x4f& mat) {
+    return matrixAccessorMut(x, y, (Matrix4x4f&)mat);
+}
 
 MathDefinitions::MathDefinitions(ScriptManager* mgr) {
     engine = mgr->getAngelScriptEngine();
@@ -132,39 +122,61 @@ MathDefinitions::MathDefinitions(ScriptManager* mgr) {
     engine->PGE_REGISTER_CAST_AS_CTOR(Vector2i, Vector2f);
 
     // Matrix4x4f
-    engine->PGE_REGISTER_TYPE(Matrix4x4f, asOBJ_APP_CLASS_ALLFLOATS);
+    engine->PGE_REGISTER_TYPE(Matrix4x4f, asOBJ_APP_CLASS_ALLFLOATS | asOBJ_POD);
     engine->PGE_REGISTER_CONSTRUCTOR(Matrix4x4f);
     engine->PGE_REGISTER_CONSTRUCTOR(Matrix4x4f, (float, float, float, float,
                                                   float, float, float, float,
                                                   float, float, float, float,
-                                                  float, float, float, float)
-    );
-    engine->PGE_REGISTER_DESTRUCTOR(Matrix4x4f);
+                                                  float, float, float, float));
+    engine->PGE_REGISTER_CONSTRUCTOR(Matrix4x4f, (Vector4f, Vector4f, Vector4f, Vector4f));
+
+    engine->SetDefaultNamespace("Matrix4x4f");
+    engine->PGE_REGISTER_GLOBAL_FUNCTION(Matrix4x4f::translate);
+    engine->PGE_REGISTER_GLOBAL_FUNCTION(Matrix4x4f::rotatePitch);
+    engine->PGE_REGISTER_GLOBAL_FUNCTION(Matrix4x4f::rotateYaw);
+    engine->PGE_REGISTER_GLOBAL_FUNCTION(Matrix4x4f::rotateRoll);
+    engine->PGE_REGISTER_GLOBAL_FUNCTION(Matrix4x4f::rotate);
+    engine->PGE_REGISTER_GLOBAL_FUNCTION(Matrix4x4f::scale);
+
+    engine->PGE_REGISTER_GLOBAL_FUNCTION(Matrix4x4f::lookAt);
+
+    engine->PGE_REGISTER_GLOBAL_FUNCTION(Matrix4x4f::constructWorldMat);
+    engine->PGE_REGISTER_GLOBAL_FUNCTION(Matrix4x4f::constructViewMat);
+    engine->PGE_REGISTER_GLOBAL_FUNCTION(Matrix4x4f::constructPerspectiveMat);
+    engine->PGE_REGISTER_GLOBAL_FUNCTION(Matrix4x4f::constructOrthographicMat);
+    engine->SetDefaultNamespace("");
+
+    engine->RegisterObjectMethod("Matrix4x4f", "float opIndex(int, int) const", asFUNCTION(matrixAccessor), asCALL_CDECL_OBJLAST);
+    engine->RegisterObjectMethod("Matrix4x4f", "float& opIndex(int, int)", asFUNCTION(matrixAccessorMut), asCALL_CDECL_OBJLAST);
 
     engine->PGE_REGISTER_METHOD(Matrix4x4f, operator==);
+    engine->PGE_REGISTER_METHOD(Matrix4x4f, equals);
 
-    engine->PGE_REGISTER_METHOD_EX(Matrix4x4f, Matrix4x4f&, operator=, (const Matrix4x4f&));
+    engine->PGE_REGISTER_METHOD(Matrix4x4f, operator+=);
+    engine->PGE_REGISTER_METHOD(Matrix4x4f, operator+);
+
     engine->PGE_REGISTER_METHOD_EX(Matrix4x4f, void, operator*=, (float));
     engine->PGE_REGISTER_METHOD_EX(Matrix4x4f, void, operator*=, (const Matrix4x4f&));
     engine->PGE_REGISTER_METHOD_EX(Matrix4x4f, Matrix4x4f, operator*, (float));
     engine->PGE_REGISTER_METHOD_EX(Matrix4x4f, Matrix4x4f, operator*, (const Matrix4x4f&));
 
-    engine->PGE_REGISTER_METHOD(Matrix4x4f, transpose);
+    engine->PGE_REGISTER_METHOD_EX(Matrix4x4f, Vector4f, operator*, (const Vector4f&));
+
     engine->PGE_REGISTER_METHOD_EX(Matrix4x4f, Vector3f, transform, (const Vector3f&));
     engine->PGE_REGISTER_METHOD_EX(Matrix4x4f, Vector4f, transform, (const Vector4f&));
 
-    //engine->RegisterObjectMethod("Matrix4x4f", "string toString() const", asMETHOD(PGE::Matrix4x4f, toString), asCALL_THISCALL);
+    engine->PGE_REGISTER_METHOD(Matrix4x4f, transpose);
+
+    engine->PGE_REGISTER_METHOD(Matrix4x4f, extractViewTarget);
+    engine->PGE_REGISTER_METHOD(Matrix4x4f, extractViewUp);
+    engine->PGE_REGISTER_METHOD(Matrix4x4f, extractViewPosition);
 
     engine->SetDefaultNamespace("Matrix4x4f");
-    engine->RegisterGlobalFunction("Matrix4x4f translate(const Vector3f&in position)", asFUNCTION(PGE::Matrix4x4f::translate), asCALL_CDECL);
-    engine->RegisterGlobalFunction("Matrix4x4f scale(const Vector3f&in scale)", asFUNCTION(PGE::Matrix4x4f::scale), asCALL_CDECL);
-    engine->RegisterGlobalFunction("Matrix4x4f rotate(const Vector3f&in rotation)", asFUNCTION(PGE::Matrix4x4f::rotate), asCALL_CDECL);
-    
-    engine->RegisterGlobalFunction("Matrix4x4f constructWorldMat(const Vector3f&in position, const Vector3f&in rotation, const Vector3f&in scale)", asFUNCTION(PGE::Matrix4x4f::constructWorldMat), asCALL_CDECL);
-    engine->RegisterGlobalFunction("Matrix4x4f constructViewMat(const Vector3f&in position, const Vector3f&in target, const Vector3f&in upVector)", asFUNCTION(PGE::Matrix4x4f::constructViewMat), asCALL_CDECL);
-    engine->RegisterGlobalFunction("Matrix4x4f constructPerspectiveMat(float horizontalfov, float aspectRatio, float nearZ, float farZ)", asFUNCTION(PGE::Matrix4x4f::constructPerspectiveMat), asCALL_CDECL);
-    engine->RegisterGlobalFunction("Matrix4x4f constructOrthographicMat(float width, float height, float nearZ, float farZ)", asFUNCTION(PGE::Matrix4x4f::constructOrthographicMat), asCALL_CDECL);
+    engine->PGE_REGISTER_GLOBAL_PROPERTY(Matrices::ZERO);
+    engine->PGE_REGISTER_GLOBAL_PROPERTY(Matrices::IDENTITY);
     engine->SetDefaultNamespace("");
+
+    engine->PGE_REGISTER_TO_STRING(Matrix4x4f);
 
     // Rectanglef
     engine->RegisterObjectType("Rectanglef", sizeof(PGE::Rectanglef), asOBJ_VALUE | asOBJ_APP_CLASS_ALLFLOATS | asGetTypeTraits<PGE::Rectanglef>());

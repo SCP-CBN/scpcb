@@ -79,6 +79,23 @@ void main() {
     myFunc(() => { doSomething(); });
     myOtherFunc((a, b) => a == b);
 
+    Matrix4x4f esadfsdf;
+
+    Debug::log(esadfsdf[1, 2]);
+    esadfsdf[1, 2] = 222222;
+    Debug::log(esadfsdf[1, 2]);
+
+    Debug::log(Matrix4x4f());
+
+    Matrix4x4f testmatfunny = Matrix4x4f(1.f, 1.f, 1.f, 1.f,
+                                         1.f, 1.f, 1.f, 1.f,
+                                         1.f, 1.f, 1.f, 1.f,
+                                         1.f, 1.f, 1.f, 1.f);
+
+    Matrix4x4f otherMat = testmatfunny;
+
+    testmatfunny = otherMat;
+
     Debug::log("Starting up!");
 
     Testt@ test_abstract_TODO_REMOVE;
