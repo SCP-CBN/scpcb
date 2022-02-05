@@ -18,7 +18,7 @@ ModelImageGenerator::~ModelImageGenerator() {
 }
 
 void ModelImageGenerator::initialize(int texSize) {
-    PGE::asrt(!initialized, "Model Image Generator has already been initialized");
+    PGE_ASSERT(!initialized, "Model Image Generator has already been initialized");
 
     this->texSize = texSize;
 
@@ -32,7 +32,7 @@ void ModelImageGenerator::initialize(int texSize) {
 }
 
 void ModelImageGenerator::deinitialize() {
-    PGE::asrt(initialized, "Model Image Generator has not been initialized");
+    PGE_ASSERT(initialized, "Model Image Generator has not been initialized");
 
     delete cam;
     graphics->resetRenderTarget();
@@ -46,7 +46,7 @@ bool ModelImageGenerator::getInitialized() const {
 }
 
 PGE::Texture* ModelImageGenerator::generate(const PGE::String& model, float scale, const PGE::Vector3f& rotation, PGE::Vector2f position) {
-    PGE::asrt(initialized, "Model Image Generator has not been initialized");
+    PGE_ASSERT(initialized, "Model Image Generator has not been initialized");
 
     PGE::Texture* tex = PGE::Texture::createRenderTarget(*graphics, texSize, texSize, PGE::Texture::Format::RGBA32);
 

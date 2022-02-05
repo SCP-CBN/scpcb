@@ -3,6 +3,8 @@
 
 #include <PGE/Input/InputManager.h>
 
+#include "../Scripting/NativeDefinitionHelpers.h"
+
 class ScriptManager;
 
 class EventDefinition;
@@ -37,7 +39,7 @@ class ScriptWorld {
         std::vector<ScriptModule*> modules;
 
     public:
-        ScriptWorld(World* world, GraphicsResources* gfxRes, Camera* camera, KeyBinds* keyBinds, MouseData* mouseData, PGE::InputManager* inputManager, LocalizationManager* lm, PickableManager* pm, UIMesh* um,  Config* config, float timestep, BillboardManager* bm, ModelImageGenerator* mig);
+        ScriptWorld(const NativeDefinitionsHelpers& helpers);
         ~ScriptWorld();
 
         void update(float timeStep);

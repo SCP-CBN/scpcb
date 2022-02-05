@@ -39,17 +39,17 @@ ScriptModule::~ScriptModule() {
 }
 
 void ScriptModule::addScript(const PGE::String& sectionName, Script* script) {
-    PGE::asrt(!built, "Module already built!");
+    PGE_ASSERT(!built, "Module already built!");
 
     int errorCode = scriptModule->AddScriptSection(sectionName.cstr(), script->getScriptContents().cstr(), script->getScriptContents().length());
-    PGE::asrt(errorCode == 0, "kablooey! (" + PGE::String::from(errorCode) + ")");
+    PGE_ASSERT(errorCode == 0, "kablooey! (" + PGE::String::from(errorCode) + ")");
 
     scripts.push_back(script);
 }
 
 void ScriptModule::build() {
     int errorCode = scriptModule->Build();
-    PGE::asrt(errorCode == 0, "whabammy! (" + PGE::String::from(errorCode) + ")");
+    PGE_ASSERT(errorCode == 0, "whabammy! (" + PGE::String::from(errorCode) + ")");
 
     std::vector<asITypeInfo*> unprocessedTypes;
     int typeCount = scriptModule->GetObjectTypeCount();
@@ -83,7 +83,7 @@ void ScriptModule::build() {
             }
             unprocessedTypes.erase(unprocessedTypes.begin()+i);
         }
-        PGE::asrt(unprocessedTypes.size() < unprocessedCount, "Failed to process all classes!");
+        PGE_ASSERT(unprocessedTypes.size() < unprocessedCount, "Failed to process all classes!");
     }
 
     for (int i = 0; i < classes.size(); i++) {
@@ -369,7 +369,7 @@ void ScriptModule::loadXML(void* ref, Type* type, tinyxml2::XMLElement* element)
             clss = (ScriptClass*)type;
         }
 
-        PGE::asrt(obj != nullptr, PGE::String("Unexpected uninitialized variable: ") + element->Name());
+        PGE_ASSERT(obj != nullptr, PGE::String("Unexpected uninitialized variable: ") + element->Name());
 
         ScriptObject classObject = ScriptObject(clss, obj);
         classObject.loadXML(element, this);

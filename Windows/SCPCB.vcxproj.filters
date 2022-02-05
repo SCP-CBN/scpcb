@@ -194,6 +194,9 @@
     <ClCompile Include="..\Libraries\angelscript\sdk\add_on\scriptarray\scriptarray.cpp">
       <Filter>Scripting\AngelScriptAddons\scriptarray</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Scripting\NativeDefinitionRegistrar.cpp">
+      <Filter>Scripting</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -264,9 +267,6 @@
       <Filter>Scripting\NativeDefinitions</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\InputDefinitions.h">
-      <Filter>Scripting\NativeDefinitions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Scripting\NativeDefinitions\MathDefinitions.h">
       <Filter>Scripting\NativeDefinitions</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\PlayerControllerDefinitions.h">
@@ -385,6 +385,15 @@
     </ClInclude>
     <ClInclude Include="..\Src\Scripting\NativeUtils.h">
       <Filter>Scripting\NativeDefinitions</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Scripting\NativeDefinitionRegistrar.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Scripting\NativeDefinitionDependencies.h">
+      <Filter>Scripting</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Src\Scripting\NativeDefinitionHelpers.h">
+      <Filter>Scripting</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

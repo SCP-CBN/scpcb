@@ -133,7 +133,7 @@ void Config::saveFile() const {
 }
 
 void Config::setResolution(int width, int height) {
-    PGE::asrt(width > 0 && height > 0, "Invalid display resolution. (width: " + PGE::String::from(width) + ", height: " + PGE::String::from(height) + ")");
+    PGE_ASSERT(width > 0 && height > 0, "Invalid display resolution. (width: " + PGE::String::from(width) + ", height: " + PGE::String::from(height) + ")");
 
     this->width->value = width;
     this->height->value = height;

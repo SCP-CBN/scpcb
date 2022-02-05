@@ -41,13 +41,13 @@ Model::Model(Assimp::Importer* importer, GraphicsResources* gr, const PGE::Strin
     );
 
     PGE::String err = importer->GetErrorString();
-    PGE::asrt(err.isEmpty(), "Failed to load model (err: " + err + ")");
+    PGE_ASSERT(err.isEmpty(), "Failed to load model (err: " + err + ")");
 
     materialCount = scene->mNumMaterials;
     materials = new PGE::Material*[materialCount];
     for (unsigned i = 0; i < materialCount; i++) {
         aiString texturePath;
-        PGE::asrt(scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath) == aiReturn_SUCCESS, "Texture for model " + filename + " failed to load.");
+        PGE_ASSERT(scene->mMaterials[i]->GetTexture(aiTextureType_DIFFUSE, 0, &texturePath) == aiReturn_SUCCESS, "Texture for model " + filename + " failed to load.");
         PGE::String textureName = PGE::String(texturePath.C_Str()).replace("\\", "/");
         int lastSlash = textureName.findLast("/").getPosition();
         textureName = textureName.substr(lastSlash + 1, textureName.length() - lastSlash - 5);

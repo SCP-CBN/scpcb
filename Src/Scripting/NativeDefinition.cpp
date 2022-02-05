@@ -6,7 +6,7 @@
 #include "../Graphics/Billboard.h"
 
 static void throwOnError(int err) {
-	PGE::asrt(err == 0, "Function could not be registered: " + PGE::String::from(err));
+	PGE_ASSERT(err == 0, "Function could not be registered: " + PGE::String::from(err));
 }
 
 template<class A, class B>
@@ -27,7 +27,7 @@ static B* refCastCount(A* a) {
 
 template<class BASE, class DERIVED>
 void NativeDefinition::registerInheritance(const char* base, const char* derived) {
-	PGE::asrt(engine->GetTypeInfoByName(base)->GetFlags() & asOBJ_NOCOUNT != 0 || engine->GetTypeInfoByName(derived)->GetFlags() & asOBJ_NOCOUNT != 0, "poggers");
+	PGE_ASSERT(engine->GetTypeInfoByName(base)->GetFlags() & asOBJ_NOCOUNT != 0 || engine->GetTypeInfoByName(derived)->GetFlags() & asOBJ_NOCOUNT != 0, "poggers");
 	throwOnError(engine->RegisterObjectMethod(base, (PGE::String(derived) + "@ opCast()").cstr(), asFUNCTION((refCast<BASE, DERIVED>)), asCALL_CDECL_OBJLAST));
 	throwOnError(engine->RegisterObjectMethod(derived, (PGE::String(base) + "@ opImplCast()").cstr(), asFUNCTION((refCast<DERIVED, BASE>)), asCALL_CDECL_OBJLAST));
 	throwOnError(engine->RegisterObjectMethod(base, ("const " + PGE::String(derived) + "@ opCast() const").cstr(), asFUNCTION((refCast<BASE, DERIVED>)), asCALL_CDECL_OBJLAST));
@@ -36,7 +36,7 @@ void NativeDefinition::registerInheritance(const char* base, const char* derived
 
 template<class BASE, class DERIVED>
 void NativeDefinition::registerInheritanceCount(const char* base, const char* derived) {
-	PGE::asrt(engine->GetTypeInfoByName(base)->GetFlags() & asOBJ_NOCOUNT == 0 && engine->GetTypeInfoByName(derived)->GetFlags() & asOBJ_NOCOUNT == 0, "POGGERS");
+	PGE_ASSERT(engine->GetTypeInfoByName(base)->GetFlags() & asOBJ_NOCOUNT == 0 && engine->GetTypeInfoByName(derived)->GetFlags() & asOBJ_NOCOUNT == 0, "POGGERS");
 	throwOnError(engine->RegisterObjectMethod(base, (PGE::String(derived) + "@ opCast()").cstr(), asFUNCTION((refCastCount<BASE, DERIVED>)), asCALL_CDECL_OBJLAST));
 	throwOnError(engine->RegisterObjectMethod(derived, (PGE::String(base) + "@ opImplCast()").cstr(), asFUNCTION((refCastCount<DERIVED, BASE>)), asCALL_CDECL_OBJLAST));
 	throwOnError(engine->RegisterObjectMethod(base, ("const " + PGE::String(derived) + "@ opCast() const").cstr(), asFUNCTION((refCastCount<BASE, DERIVED>)), asCALL_CDECL_OBJLAST));

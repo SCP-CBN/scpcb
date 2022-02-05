@@ -104,8 +104,8 @@ void ConsoleDefinitions::registerCommand(const PGE::String& name, const PGE::Str
     asIScriptFunction* func = (asIScriptFunction*)(((typeId & asTYPEID_OBJHANDLE) != 0) ? *((void**)f) : f);
     for (unsigned i = 0; i < func->GetParamCount(); i++) {
         int paramTypeId;
-        PGE::asrt(func->GetParam(i, &paramTypeId) == 0, "ptooey?");
-        PGE::asrt(paramTypeId == asTYPEID_BOOL || paramTypeId == asTYPEID_INT32 || paramTypeId == asTYPEID_FLOAT || paramTypeId == engine->GetStringFactoryReturnTypeId(), "STINKY INVALID TYPE");
+        PGE_ASSERT(func->GetParam(i, &paramTypeId) == 0, "ptooey?");
+        PGE_ASSERT(paramTypeId == asTYPEID_BOOL || paramTypeId == asTYPEID_INT32 || paramTypeId == asTYPEID_FLOAT || paramTypeId == engine->GetStringFactoryReturnTypeId(), "STINKY INVALID TYPE");
     }
     Command newCommand = { func, nullptr, name, helpText };
     commands.emplace(name, newCommand);
@@ -128,7 +128,7 @@ void ConsoleDefinitions::executeCommand(const PGE::String& in) {
             asIScriptFunction* func = find->second.func;
             params.erase(params.begin());
             // TODO: Do we need to check all AS funcs or none?
-            PGE::asrt(scriptContext->Prepare(func) == 0, "ptooey! 2");
+            PGE_ASSERT(scriptContext->Prepare(func) == 0, "ptooey! 2");
             if (func->GetParamCount() != params.size()) {
                 const char* defaultParam;
                 func->GetParam((asUINT)params.size(), nullptr, nullptr, nullptr, &defaultParam);
@@ -141,7 +141,7 @@ void ConsoleDefinitions::executeCommand(const PGE::String& in) {
             PGE::String errMsg;
             for (unsigned i = 0; i < params.size(); i++) {
                 int paramTypeId;
-                PGE::asrt(func->GetParam(i, &paramTypeId) == 0, "ptooey! 3");
+                PGE_ASSERT(func->GetParam(i, &paramTypeId) == 0, "ptooey! 3");
                 if (paramTypeId == asTYPEID_BOOL) {
                     if (params[i].toLower().equals("true") || params[i].equals("1")) {
                         scriptContext->SetArgByte(i, 1);
@@ -192,12 +192,12 @@ void ConsoleDefinitions::executeCommand(const PGE::String& in) {
 }
 
 void ConsoleDefinitions::addConsoleMessage(const PGE::String& msg, const PGE::Color& color) {
-    PGE::asrt(msgContext->Prepare(addConsoleMsgFunc) == 0, "prepare fail");
-    PGE::asrt(msgContext->SetObject(consoleInstance) == 0, "setobj fail");
-    PGE::asrt(msgContext->SetArgObject(0, (void*)&msg) == 0, "setarg0 fail");
-    PGE::asrt(msgContext->SetArgObject(1, (void*)&color) == 0, "setarg1 fail");
-    PGE::asrt(msgContext->Execute() == 0, "epic execute fail");
-    PGE::asrt(msgContext->Unprepare() == 0, "unprepare fail");
+    PGE_ASSERT(msgContext->Prepare(addConsoleMsgFunc) == 0, "prepare fail");
+    PGE_ASSERT(msgContext->SetObject(consoleInstance) == 0, "setobj fail");
+    PGE_ASSERT(msgContext->SetArgObject(0, (void*)&msg) == 0, "setarg0 fail");
+    PGE_ASSERT(msgContext->SetArgObject(1, (void*)&color) == 0, "setarg1 fail");
+    PGE_ASSERT(msgContext->Execute() == 0, "epic execute fail");
+    PGE_ASSERT(msgContext->Unprepare() == 0, "unprepare fail");
 }
 
 void ConsoleDefinitions::internalLog(void* ref, int typeId, LogType type) {
@@ -223,7 +223,7 @@ void ConsoleDefinitions::internalLog(void* ref, int typeId, LogType type) {
     } else {
         switch (typeId) {
             case asTYPEID_VOID: { // This should never happen.
-                PGE::asrt(false, "VOID PARAMETER");
+                PGE_ASSERT(false, "VOID PARAMETER");
             } break;
             case asTYPEID_BOOL: {
                 content = (*(bool*)ref) ? "True" : "False";
@@ -281,5 +281,5 @@ void ConsoleDefinitions::internalLog(void* ref, int typeId, LogType type) {
     std::ostream& out = (type == LogType::Error ? std::cerr : std::cout);
     out << color << "Debug::" << typeString << ": " << content << PGE::Console::ResetAll() << std::endl;
 #endif
-    PGE::asrt(type != LogType::Error, "ERROR! " + content);
+    PGE_ASSERT(type != LogType::Error, "ERROR! " + content);
 }

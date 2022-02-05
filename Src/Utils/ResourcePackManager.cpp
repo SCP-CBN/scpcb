@@ -31,7 +31,7 @@ void ResourcePackManager::loadResPacks() {
 			metaPath = modFolders[j] + "meta.xml";
 			if (metaPath.exists()) {
 				xmlErr = xmlDoc.LoadFile(metaPath.str().cstr());
-				PGE::asrt(xmlErr == tinyxml2::XML_SUCCESS, "XML moment " + xmlErr);
+				PGE_ASSERT(xmlErr == tinyxml2::XML_SUCCESS, "XML moment " + xmlErr);
 				xmlRoot = xmlDoc.RootElement();
 				if (xmlRoot != nullptr && xmlRoot->FirstChildElement("Type")->GetText() == PGE::String("ResPack")) {
 					modName = xmlRoot->FirstChildElement("Name")->GetText();

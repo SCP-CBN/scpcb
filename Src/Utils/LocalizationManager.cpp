@@ -9,7 +9,7 @@
 LocalizationManager::Language::Language(const PGE::String& langCode) {
     code = langCode;
     PGE::FilePath path = PGE::FilePath::fromStr("Data/lang/" + langCode + "/text.ini");
-    PGE::asrt(path.exists(), "Language file \"" + path.str() + "\" not found");
+    PGE_ASSERT(path.exists(), "Language file \"" + path.str() + "\" not found");
 
     INIFile* iniFile = new INIFile(path);
     std::vector<INIFile::Section*> sections = iniFile->getAllSections();

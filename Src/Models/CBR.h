@@ -13,7 +13,7 @@ class CBR {
     private:
         GraphicsResources* gr;
 
-        PGE::Texture** lightmaps;
+        std::vector<PGE::Texture*> lightmaps;
         std::vector<PGE::Texture*> allTextures;
         std::vector<PGE::Material*> materials;
         std::vector<PGE::Mesh*> meshes;

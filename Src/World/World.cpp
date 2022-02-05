@@ -64,7 +64,7 @@ World::World() {
     miGen = new ModelImageGenerator(graphics, gfxRes);
     miGen->initialize(256);
 
-    scripting = new ScriptWorld(this, gfxRes, camera, keyBinds, mouseData, inputManager, locMng, pickMng, uiMesh, config, (float)timing->getTimeStep(), billMng, miGen);
+    scripting = new ScriptWorld({ this, gfxRes, camera, keyBinds, mouseData, inputManager, locMng, pickMng, uiMesh, config, (float)timing->getTimeStep(), billMng, miGen });
 
     miGen->deinitialize();
 

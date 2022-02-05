@@ -12,12 +12,13 @@
 #include "../Scripting/ScriptFunction.h"
 #include "../Scripting/ScriptClass.h"
 
+#include "../Scripting/NativeDefinitionRegistrar.h"
+
 #include "../Scripting/NativeDefinitions/WorldDefinitions.h"
 #include "../Scripting/NativeDefinitions/MementoDefinitions.h"
 #include "../Scripting/NativeDefinitions/ConsoleDefinitions.h"
 #include "../Scripting/NativeDefinitions/InputDefinitions.h"
 #include "../Scripting/NativeDefinitions/ColorDefinitions.h"
-#include "../Scripting/NativeDefinitions/MathDefinitions.h"
 #include "../Scripting/NativeDefinitions/RandomDefinitions.h"
 #include "../Scripting/NativeDefinitions/UIDefinitions.h"
 #include "../Scripting/NativeDefinitions/TextureDefinitions.h"
@@ -32,36 +33,37 @@
 #include "../Scripting/NativeDefinitions/EventDefinition.h"
 #include "../Scripting/NativeDefinitions/ReflectionDefinitions.h"
 
-ScriptWorld::ScriptWorld(World* world, GraphicsResources* gfxRes, Camera* camera, KeyBinds* keyBinds, MouseData* mouseData, PGE::InputManager* inputManager, LocalizationManager* lm, PickableManager* pm, UIMesh* um, Config* config, float timestep, BillboardManager* bm, ModelImageGenerator* mig) {
+ScriptWorld::ScriptWorld(const NativeDefinitionsHelpers& helpers) {
     manager = new ScriptManager();
 
     refCounterManager = new RefCounterManager();
 
-    nativeDefs.push_back(new WorldDefinitions(manager, world));
+    NativeDefinitionRegistrar::registerNativeDefs(*manager, *refCounterManager, helpers);
+
+    nativeDefs.push_back(new WorldDefinitions(manager, helpers.world));
     nativeDefs.push_back(new MementoDefinitions(manager));
     nativeDefs.push_back(new ColorDefinitions(manager));
-    nativeDefs.push_back(new MathDefinitions(manager));
     nativeDefs.push_back(new RandomDefinitions(manager, refCounterManager));
-    nativeDefs.push_back(new InputDefinitions(manager, keyBinds, mouseData, inputManager));
-    nativeDefs.push_back(new TextureDefinitions(manager, gfxRes));
-    nativeDefs.push_back(new ModelImageGeneratorDefinitions(manager, mig));
-    nativeDefs.push_back(new UIDefinitions(manager, um, config, world));
-    nativeDefs.push_back(new LocalizationDefinitions(manager, lm));
-    nativeDefs.push_back(new BillboardDefinitions(manager, bm));
+    nativeDefs.push_back(new InputDefinitions(manager, helpers.keyBinds, helpers.mouseData, helpers.inputManager));
+    nativeDefs.push_back(new TextureDefinitions(manager, helpers.gfxRes));
+    nativeDefs.push_back(new ModelImageGeneratorDefinitions(manager, helpers.mig));
+    nativeDefs.push_back(new UIDefinitions(manager, helpers.um, helpers.config, helpers.world));
+    nativeDefs.push_back(new LocalizationDefinitions(manager, helpers.lm));
+    nativeDefs.push_back(new BillboardDefinitions(manager, helpers.bm));
     nativeDefs.push_back(new CollisionDefinitions(manager, refCounterManager));
-    nativeDefs.push_back(new ModelDefinitions(manager, gfxRes));
-    nativeDefs.push_back(new RM2Definitions(manager, gfxRes));
-    nativeDefs.push_back(new PickableDefinitions(manager, refCounterManager, pm));
-    nativeDefs.push_back(new PlayerControllerDefinitions(manager, refCounterManager, camera));
+    nativeDefs.push_back(new ModelDefinitions(manager, helpers.gfxRes));
+    nativeDefs.push_back(new RM2Definitions(manager, helpers.gfxRes));
+    nativeDefs.push_back(new PickableDefinitions(manager, refCounterManager, helpers.pm));
+    nativeDefs.push_back(new PlayerControllerDefinitions(manager, refCounterManager, helpers.camera));
     nativeDefs.push_back(new ReflectionDefinitions(manager));
-    ConsoleDefinitions* conDef = new ConsoleDefinitions(manager, keyBinds);
+    ConsoleDefinitions* conDef = new ConsoleDefinitions(manager, helpers.keyBinds);
     nativeDefs.push_back(conDef);
 
-    keyBinds->setConsoleDefinitions(conDef);
+    helpers.keyBinds->setConsoleDefinitions(conDef);
 
     perTickEventDefinition = new EventDefinition(manager, "PerTick",
         std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::Float, "deltaTime") });
-    perTickEventDefinition->setArgument("deltaTime", timestep); // TODO: Make timestep const global.
+    perTickEventDefinition->setArgument("deltaTime", helpers.timestep); // TODO: Make timestep const global.
 
     perFrameGameEventDefinition = new EventDefinition(manager, "PerFrameGame",
         std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
@@ -69,7 +71,7 @@ ScriptWorld::ScriptWorld(World* world, GraphicsResources* gfxRes, Camera* camera
     perFrameMenuEventDefinition = new EventDefinition(manager, "PerFrameMenu",
         std::vector<ScriptFunction::Signature::Argument> { ScriptFunction::Signature::Argument(Type::Float, "interpolation") });
 
-    const std::vector<PGE::String>& enabledMods = config->enabledMods->value;
+    const std::vector<PGE::String>& enabledMods = helpers.config->enabledMods->value;
 
     tinyxml2::XMLDocument doc;
 
@@ -87,7 +89,7 @@ ScriptWorld::ScriptWorld(World* world, GraphicsResources* gfxRes, Camera* camera
                     }
                 }
             }
-            PGE::asrt(depsNotEnabled == 0, enabledMods[i] + " has dependencies that are not enabled before it");
+            PGE_ASSERT(depsNotEnabled == 0, enabledMods[i] + " has dependencies that are not enabled before it");
         }
         ScriptModule* scriptModule = new ScriptModule(manager, enabledMods[i]);
         std::vector<PGE::FilePath> files = directory.enumerateFiles();

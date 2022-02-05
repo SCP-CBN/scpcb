@@ -43,23 +43,30 @@ static const PGE::String getAsTypeName(bool isReturn = false) {
     return ret;
 }
 
+bool isTypeConst(const PGE::String& type) {
+    return type.findFirst("const") != type.end();
+}
+
 template <typename T, typename... Args>
 static const PGE::String idfk(const PGE::String& name, T(*fu)(Args...), asECallConvTypes callConv) {
     PGE::String ret = getAsTypeName<T>(true) + " " + trimNamespaces(name) + "(";
+    bool isConst = false;
     if constexpr (sizeof...(Args) > 0) {
         std::vector<PGE::String> strings; strings.reserve(sizeof...(Args));
         (strings.push_back(getAsTypeName<Args>()), ...);
         switch (callConv) {
             case asCALL_CDECL_OBJLAST: {
+                isConst = isTypeConst(strings.back());
                 strings.pop_back();
             } break;
             case asCALL_CDECL_OBJFIRST: {
+                isConst = isTypeConst(strings.front());
                 strings.erase(strings.begin());
             }
         }
         ret += PGE::String::join(strings, ", ");
     }
-    return ret + ")";
+    return ret + ")" + (isConst ? " const" : "");
 }
 
 template <typename... Args>
@@ -146,12 +153,20 @@ static const PGE::String funcToAsFuncName(const PGE::String& cppName) {
 }
 
 template <bool isConst, typename Class, typename T, typename... Args>
-static const PGE::String idfkProper(const PGE::String& name, bool opReversed) {
+static const PGE::String idfkProper(const PGE::String& name, bool opReversed, const std::vector<PGE::String>& defaults) {
     PGE::String ret = getAsTypeName<T>(true) + " " + funcToAsFuncName<Args...>(name) + (opReversed ? "_r" : "") + "(";
     if constexpr (sizeof...(Args) > 0) {
         std::vector<PGE::String> strings; strings.reserve(sizeof...(Args));
         (strings.push_back(getAsTypeName<Args>()), ...);
-        ret += PGE::String::join(strings, ", ");
+        for (int i : PGE::Range(strings.size())) {
+            if (i != 0) {
+                ret += ", ";
+            }
+            ret += strings[i];
+            if (int defaultIndex = i - (strings.size() - defaults.size()); defaultIndex >= 0) {
+                ret += " = " + defaults[defaultIndex];
+            }
+        }
     }
     ret += ")";
     if constexpr (isConst) {
@@ -161,13 +176,15 @@ static const PGE::String idfkProper(const PGE::String& name, bool opReversed) {
 }
 
 template <typename Class, typename T, typename... Args>
-static const PGE::String idfkMethod(const PGE::String& name, T(Class::*)(Args...) const, bool isReversed = false) {
-    return idfkProper<true, Class, T, Args...>(name, isReversed);
+static const PGE::String idfkMethod(const PGE::String& name, T(Class::*)(Args...) const,
+    bool isReversed = false, const std::vector<PGE::String>& defaults = { }) {
+    return idfkProper<true, Class, T, Args...>(name, isReversed, defaults);
 }
 
 template <typename Class, typename T, typename... Args>
-static const PGE::String idfkMethod(const PGE::String& name, T(Class::*)(Args...), bool isReversed = false) {
-    return idfkProper<false, Class, T, Args...>(name, isReversed);
+static const PGE::String idfkMethod(const PGE::String& name, T(Class::*)(Args...),
+    bool isReversed = false, const std::vector<PGE::String>& defaults = { }) {
+    return idfkProper<false, Class, T, Args...>(name, isReversed, defaults);
 }
 
 template <typename Class, typename T, typename... Args>
@@ -193,9 +210,12 @@ constexpr auto ptrDeduceConst(T(Class::* func)(Args...) const) {
 
 #define IDFK(...) __VA_OPT__(,) __VA_ARGS__
 
-#define PGE_REGISTER_METHOD_IMPL(class, func, reversedOp) RegisterObjectMethod(#class, idfkMethod<class>(#func, &class::func, reversedOp).cstr(), asMETHOD(class, func), asCALL_THISCALL)
-#define PGE_REGISTER_METHOD(class, func) PGE_REGISTER_METHOD_IMPL(class, func, false)
+#define PGE_REGISTER_METHOD_IMPL(class, func, reversedOp, ...) RegisterObjectMethod(#class, idfkMethod<class>(#func, &class::func, reversedOp, { __VA_ARGS__ }).cstr(), asMETHOD(class, func), asCALL_THISCALL)
+#define PGE_REGISTER_METHOD(class, func, ...) PGE_REGISTER_METHOD_IMPL(class, func, false, __VA_ARGS__)
 #define PGE_REGISTER_METHOD_R(class, func) PGE_REGISTER_METHOD_IMPL(class, func, true)
+
+#define PGE_REGISTER_FUNCTION_AS_METHOD(class, name, func) \
+    RegisterObjectMethod(#class, idfk(name, func, asCALL_CDECL_OBJFIRST).cstr(), asFUNCTION(func), asCALL_CDECL_OBJFIRST)
 
 #define PGE_REGISTER_METHOD_EX_IMPL(class, ret, func, args, reversedOp) RegisterObjectMethod(#class, idfkMethod<class, ret IDFK(DEBRACE args)>(#func, &class::func, reversedOp).cstr(), \
     asSMethodPtr<sizeof(void(class::*)())>::template Convert(ptrDeduceConst<class, ret IDFK(DEBRACE args)>(&class::func)), asCALL_THISCALL)

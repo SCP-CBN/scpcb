@@ -162,6 +162,9 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
     <ClInclude Include="..\Src\Save\Config.h" />
     <ClInclude Include="..\Src\Save\ConfigValues.h" />
     <ClInclude Include="..\Src\Scripting\CachedArgument.h" />
+    <ClInclude Include="..\Src\Scripting\NativeDefinitionDependencies.h" />
+    <ClInclude Include="..\Src\Scripting\NativeDefinitionHelpers.h" />
+    <ClInclude Include="..\Src\Scripting\NativeDefinitionRegistrar.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\BillboardDefinitions.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\CollisionDefinitions.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\ColorDefinitions.h" />
@@ -169,7 +172,6 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\EventDefinition.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\InputDefinitions.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\LocalizationDefinitions.h" />
-    <ClInclude Include="..\Src\Scripting\NativeDefinitions\MathDefinitions.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\MementoDefinitions.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\ModelDefinitions.h" />
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\ModelImageGeneratorDefinitions.h" />
@@ -236,6 +238,7 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
     <ClCompile Include="..\Src\Save\ConfigValues.cpp" />
     <ClCompile Include="..\Src\Scripting\CachedArgument.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinition.cpp" />
+    <ClCompile Include="..\Src\Scripting\NativeDefinitionRegistrar.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\BillboardDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\CollisionDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\ColorDefinitions.cpp" />
