@@ -1,4 +1,4 @@
-#include "ReflectionDefinitions.h"
+#include "../NativeDefinitionRegistrar.h"
 
 #include "../ScriptManager.h"
 
@@ -204,30 +204,32 @@ class Reflection {
         }
 };
 
+static ScriptManager* scriptManager;
 
-void ReflectionDefinitions::reflectionConstructor(asITypeInfo* typeInfo, void* memory) {
+static void reflectionConstructor(asITypeInfo* typeInfo, void* memory) {
     new(memory) Reflection(typeInfo, scriptManager);
 }
 
-void ReflectionDefinitions::reflectionDestructor(void* memory) {
+static void reflectionDestructor(void* memory) {
     ((Reflection*)memory)->~Reflection();
 }
 
-ReflectionDefinitions::ReflectionDefinitions(ScriptManager* mgr) {
-    engine = mgr->getAngelScriptEngine();
-    scriptManager = mgr;
+static void registerReflectionDefinitions(ScriptManager& mgr, asIScriptEngine& engine, RefCounterManager&, const NativeDefinitionsHelpers&) {
+    scriptManager = &mgr;
 
-    engine->RegisterObjectType("Reflection<class T>", sizeof(Reflection), asOBJ_VALUE | asOBJ_APP_CLASS_ALLINTS | asOBJ_TEMPLATE | asGetTypeTraits<Reflection>());
-    engine->RegisterObjectBehaviour("Reflection<T>", asBEHAVE_CONSTRUCT, "void f(int&in)", asMETHOD(ReflectionDefinitions, reflectionConstructor), asCALL_THISCALL_OBJLAST, this);
-    engine->RegisterObjectBehaviour("Reflection<T>", asBEHAVE_DESTRUCT, "void f()", asMETHOD(ReflectionDefinitions, reflectionDestructor), asCALL_THISCALL_OBJLAST, this);
-    engine->RegisterObjectMethod("Reflection<T>", "void requireInterface(const string&in interfaceName)", asMETHOD(Reflection, requireInterface), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Reflection<T>", "void clearRequiredInterfaces()", asMETHOD(Reflection, clearRequiredInterfaces), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Reflection<T>", "array<string>@ getDerivedNames()", asMETHOD(Reflection, getDerivedNames), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Reflection<T>", "void setConstructorArgument(int index, int val)", asMETHODPR(Reflection, setConstructorArgument, (int, int), void), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Reflection<T>", "void setConstructorArgument(int index, uint val)", asMETHODPR(Reflection, setConstructorArgument, (int, unsigned), void), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Reflection<T>", "void setConstructorArgument(int index, float val)", asMETHODPR(Reflection, setConstructorArgument, (int, float), void), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Reflection<T>", "void setConstructorArgument(int index, double val)", asMETHODPR(Reflection, setConstructorArgument, (int, double), void), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Reflection<T>", "void setConstructorArgument(int index, const string&in val)", asMETHODPR(Reflection, setConstructorArgument, (int, const PGE::String&), void), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Reflection<T>", "void setConstructorArgument(int index, ?&in val)", asMETHODPR(Reflection, setConstructorArgument, (int, void*, int), void), asCALL_THISCALL);
-    engine->RegisterObjectMethod("Reflection<T>", "T@ callConstructor(const string&in derivedClassName)", asMETHOD(Reflection, callConstructor), asCALL_THISCALL);
+    engine.RegisterObjectType("Reflection<class T>", sizeof(Reflection), asOBJ_VALUE | asOBJ_APP_CLASS_ALLINTS | asOBJ_TEMPLATE | asGetTypeTraits<Reflection>());
+    engine.RegisterObjectBehaviour("Reflection<T>", asBEHAVE_CONSTRUCT, "void f(int&in)", asFUNCTION(reflectionConstructor), asCALL_CDECL_OBJLAST);
+    engine.RegisterObjectBehaviour("Reflection<T>", asBEHAVE_DESTRUCT, "void f()", asFUNCTION(reflectionDestructor), asCALL_CDECL_OBJLAST);
+    engine.RegisterObjectMethod("Reflection<T>", "void requireInterface(const string&in interfaceName)", asMETHOD(Reflection, requireInterface), asCALL_THISCALL);
+    engine.RegisterObjectMethod("Reflection<T>", "void clearRequiredInterfaces()", asMETHOD(Reflection, clearRequiredInterfaces), asCALL_THISCALL);
+    engine.RegisterObjectMethod("Reflection<T>", "array<string>@ getDerivedNames()", asMETHOD(Reflection, getDerivedNames), asCALL_THISCALL);
+    engine.RegisterObjectMethod("Reflection<T>", "void setConstructorArgument(int index, int val)", asMETHODPR(Reflection, setConstructorArgument, (int, int), void), asCALL_THISCALL);
+    engine.RegisterObjectMethod("Reflection<T>", "void setConstructorArgument(int index, uint val)", asMETHODPR(Reflection, setConstructorArgument, (int, unsigned), void), asCALL_THISCALL);
+    engine.RegisterObjectMethod("Reflection<T>", "void setConstructorArgument(int index, float val)", asMETHODPR(Reflection, setConstructorArgument, (int, float), void), asCALL_THISCALL);
+    engine.RegisterObjectMethod("Reflection<T>", "void setConstructorArgument(int index, double val)", asMETHODPR(Reflection, setConstructorArgument, (int, double), void), asCALL_THISCALL);
+    engine.RegisterObjectMethod("Reflection<T>", "void setConstructorArgument(int index, const string&in val)", asMETHODPR(Reflection, setConstructorArgument, (int, const PGE::String&), void), asCALL_THISCALL);
+    engine.RegisterObjectMethod("Reflection<T>", "void setConstructorArgument(int index, ?&in val)", asMETHODPR(Reflection, setConstructorArgument, (int, void*, int), void), asCALL_THISCALL);
+    engine.RegisterObjectMethod("Reflection<T>", "T@ callConstructor(const string&in derivedClassName)", asMETHOD(Reflection, callConstructor), asCALL_THISCALL);
 }
+
+static NativeDefinitionRegistrar _ { &registerReflectionDefinitions };

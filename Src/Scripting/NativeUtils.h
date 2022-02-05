@@ -43,7 +43,7 @@ static const PGE::String getAsTypeName(bool isReturn = false) {
     return ret;
 }
 
-bool isTypeConst(const PGE::String& type) {
+static bool isTypeConst(const PGE::String& type) {
     return type.findFirst("const") != type.end();
 }
 

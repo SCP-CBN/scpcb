@@ -14,24 +14,16 @@
 
 #include "../Scripting/NativeDefinitionRegistrar.h"
 
-#include "../Scripting/NativeDefinitions/WorldDefinitions.h"
-#include "../Scripting/NativeDefinitions/MementoDefinitions.h"
 #include "../Scripting/NativeDefinitions/ConsoleDefinitions.h"
-#include "../Scripting/NativeDefinitions/InputDefinitions.h"
-#include "../Scripting/NativeDefinitions/ColorDefinitions.h"
 #include "../Scripting/NativeDefinitions/RandomDefinitions.h"
 #include "../Scripting/NativeDefinitions/UIDefinitions.h"
-#include "../Scripting/NativeDefinitions/TextureDefinitions.h"
 #include "../Scripting/NativeDefinitions/ModelImageGeneratorDefinitions.h"
 #include "../Scripting/NativeDefinitions/LocalizationDefinitions.h"
 #include "../Scripting/NativeDefinitions/BillboardDefinitions.h"
 #include "../Scripting/NativeDefinitions/ModelDefinitions.h"
-#include "../Scripting/NativeDefinitions/RM2Definitions.h"
-#include "../Scripting/NativeDefinitions/CollisionDefinitions.h"
 #include "../Scripting/NativeDefinitions/PickableDefinitions.h"
 #include "../Scripting/NativeDefinitions/PlayerControllerDefinitions.h"
 #include "../Scripting/NativeDefinitions/EventDefinition.h"
-#include "../Scripting/NativeDefinitions/ReflectionDefinitions.h"
 
 ScriptWorld::ScriptWorld(const NativeDefinitionsHelpers& helpers) {
     manager = new ScriptManager();
@@ -40,22 +32,14 @@ ScriptWorld::ScriptWorld(const NativeDefinitionsHelpers& helpers) {
 
     NativeDefinitionRegistrar::registerNativeDefs(*manager, *refCounterManager, helpers);
 
-    nativeDefs.push_back(new WorldDefinitions(manager, helpers.world));
-    nativeDefs.push_back(new MementoDefinitions(manager));
-    nativeDefs.push_back(new ColorDefinitions(manager));
     nativeDefs.push_back(new RandomDefinitions(manager, refCounterManager));
-    nativeDefs.push_back(new InputDefinitions(manager, helpers.keyBinds, helpers.mouseData, helpers.inputManager));
-    nativeDefs.push_back(new TextureDefinitions(manager, helpers.gfxRes));
     nativeDefs.push_back(new ModelImageGeneratorDefinitions(manager, helpers.mig));
     nativeDefs.push_back(new UIDefinitions(manager, helpers.um, helpers.config, helpers.world));
     nativeDefs.push_back(new LocalizationDefinitions(manager, helpers.lm));
     nativeDefs.push_back(new BillboardDefinitions(manager, helpers.bm));
-    nativeDefs.push_back(new CollisionDefinitions(manager, refCounterManager));
     nativeDefs.push_back(new ModelDefinitions(manager, helpers.gfxRes));
-    nativeDefs.push_back(new RM2Definitions(manager, helpers.gfxRes));
     nativeDefs.push_back(new PickableDefinitions(manager, refCounterManager, helpers.pm));
     nativeDefs.push_back(new PlayerControllerDefinitions(manager, refCounterManager, helpers.camera));
-    nativeDefs.push_back(new ReflectionDefinitions(manager));
     ConsoleDefinitions* conDef = new ConsoleDefinitions(manager, helpers.keyBinds);
     nativeDefs.push_back(conDef);
 

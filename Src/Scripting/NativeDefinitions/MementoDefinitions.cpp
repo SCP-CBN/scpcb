@@ -1,4 +1,4 @@
-#include "MementoDefinitions.h"
+#include "../NativeDefinitionRegistrar.h"
 
 #include <deque>
 
@@ -128,16 +128,16 @@ static void destroyMM(MementoManager* mm) {
 	delete mm;
 }
 
-MementoDefinitions::MementoDefinitions(ScriptManager* mgr) {
-	engine = mgr->getAngelScriptEngine();
+static void registerMementoDefinitions(ScriptManager&, asIScriptEngine& engine, RefCounterManager&, const NativeDefinitionsHelpers&) {
+	engine.RegisterObjectType("MementoManager", sizeof(MementoManager), asOBJ_REF | asOBJ_NOCOUNT);
 
-	engine->RegisterObjectType("MementoManager", sizeof(MementoManager), asOBJ_REF | asOBJ_NOCOUNT);
-
-	engine->RegisterObjectMethod("MementoManager", "string execute(const string&in txt, int&inout pos, bool undo)", asMETHOD(MementoManager, execute), asCALL_THISCALL);
-	engine->RegisterObjectMethod("MementoManager", "void clear()", asMETHOD(MementoManager, clear), asCALL_THISCALL);
-	engine->RegisterObjectMethod("MementoManager", "void push(int startPos, const string&in content, bool write, bool linked = false)", asMETHOD(MementoManager, push), asCALL_THISCALL);
+	engine.RegisterObjectMethod("MementoManager", "string execute(const string&in txt, int&inout pos, bool undo)", asMETHOD(MementoManager, execute), asCALL_THISCALL);
+	engine.RegisterObjectMethod("MementoManager", "void clear()", asMETHOD(MementoManager, clear), asCALL_THISCALL);
+	engine.RegisterObjectMethod("MementoManager", "void push(int startPos, const string&in content, bool write, bool linked = false)", asMETHOD(MementoManager, push), asCALL_THISCALL);
 	
-	engine->SetDefaultNamespace("MementoManager");
-	engine->RegisterGlobalFunction("MementoManager@ create(int maxMemSize)", asFUNCTION(createMM), asCALL_CDECL);
-	engine->RegisterGlobalFunction("void destroy(MementoManager@ mm)", asFUNCTION(destroyMM), asCALL_CDECL);
+	engine.SetDefaultNamespace("MementoManager");
+	engine.RegisterGlobalFunction("MementoManager@ create(int maxMemSize)", asFUNCTION(createMM), asCALL_CDECL);
+	engine.RegisterGlobalFunction("void destroy(MementoManager@ mm)", asFUNCTION(destroyMM), asCALL_CDECL);
 }
+
+static NativeDefinitionRegistrar _ { &registerMementoDefinitions };

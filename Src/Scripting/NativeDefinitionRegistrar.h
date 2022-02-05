@@ -5,14 +5,15 @@
 
 #include "NativeDefinitionDependencies.h"
 
+class ScriptManager;
 class RefCounterManager;
 struct NativeDefinitionsHelpers;
 
 class NativeDefinitionRegistrar {
 	public:
-		using NativeDefinitionFunction = void(*)(class asIScriptEngine&, RefCounterManager&, const NativeDefinitionsHelpers&);
+		using NativeDefinitionFunction = void(*)(ScriptManager&, class asIScriptEngine&, RefCounterManager&, const NativeDefinitionsHelpers&);
 
-		static void registerNativeDefs(class ScriptManager& sm, RefCounterManager& refMgr, const NativeDefinitionsHelpers& helpers);
+		static void registerNativeDefs(ScriptManager& sm, RefCounterManager& refMgr, const NativeDefinitionsHelpers& helpers);
 
 		NativeDefinitionRegistrar(NativeDefinitionFunction natDefFunc,
 			NativeDefinitionDependencies dependencies = NativeDefinitionDependencyFlagBits::NONE,

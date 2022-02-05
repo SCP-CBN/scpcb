@@ -16,7 +16,7 @@ void NativeDefinitionRegistrar::registerNativeDefs(ScriptManager& sm, RefCounter
 		for (auto it = registeredNativeDefs.begin(); it != registeredNativeDefs.end();) {
 			const NativeDefinitionRegistrar& natDef = **it;
 			if (!(~current & natDef.dependencies)) {
-				natDef.func(*sm.getAngelScriptEngine(), refMgr, helpers);
+				natDef.func(sm, *sm.getAngelScriptEngine(), refMgr, helpers);
 				// Already resolved dependencies can't be resolved again
 				PGE_ASSERT(natDef.resolvesDependencies == NativeDefinitionDependencyFlagBits::NONE ||
 					current != (natDef.resolvesDependencies | current),

@@ -81,7 +81,7 @@ constexpr float matrixAccessor(const Matrix4x4f& mat, int x, int y) {
     return matrixAccessorMut((Matrix4x4f&)mat, x, y);
 }
 
-static void registerMathDefinitions(asIScriptEngine& engine, RefCounterManager&, const NativeDefinitionsHelpers&) {
+static void registerMathDefinitions(class ScriptManager&, asIScriptEngine& engine, RefCounterManager&, const NativeDefinitionsHelpers&) {
     // Generic
     engine.SetDefaultNamespace("Math");
     engine.PGE_REGISTER_GLOBAL_FUNCTION(Math::degToRad);

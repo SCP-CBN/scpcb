@@ -260,19 +260,10 @@
     <ClInclude Include="..\Src\Scripting\NativeDefinition.h">
       <Filter>Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Scripting\NativeDefinitions\CollisionDefinitions.h">
-      <Filter>Scripting\NativeDefinitions</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\EventDefinition.h">
       <Filter>Scripting\NativeDefinitions</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Scripting\NativeDefinitions\InputDefinitions.h">
-      <Filter>Scripting\NativeDefinitions</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\PlayerControllerDefinitions.h">
-      <Filter>Scripting\NativeDefinitions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Scripting\NativeDefinitions\RM2Definitions.h">
       <Filter>Scripting\NativeDefinitions</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Graphics\DebugGraphics.h">
@@ -305,9 +296,6 @@
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\ConsoleDefinitions.h">
       <Filter>Scripting\NativeDefinitions</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Scripting\NativeDefinitions\ColorDefinitions.h">
-      <Filter>Scripting\NativeDefinitions</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\Save\ConfigValues.h">
       <Filter>Save</Filter>
     </ClInclude>
@@ -336,15 +324,6 @@
       <Filter>Input</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\LocalizationDefinitions.h">
-      <Filter>Scripting\NativeDefinitions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Scripting\NativeDefinitions\TextureDefinitions.h">
-      <Filter>Scripting\NativeDefinitions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Scripting\NativeDefinitions\MementoDefinitions.h">
-      <Filter>Scripting\NativeDefinitions</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Scripting\NativeDefinitions\WorldDefinitions.h">
       <Filter>Scripting\NativeDefinitions</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Scripting\RefCounter.h">
