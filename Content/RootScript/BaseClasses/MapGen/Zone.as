@@ -12,7 +12,7 @@ shared abstract class Zone {
     }
 
     Room@ createRandomRoom(RoomType type) {
-        return createRoom(mapGenEntries[type][Random::getInt(mapGenEntries[type].length())].roomName);
+        return createRoom(mapGenEntries[type][Random::gnextInt(mapGenEntries[type].length())].roomName);
     }
 
     Room@ createRoom(string name) {

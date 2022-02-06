@@ -338,9 +338,6 @@
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\ModelImageGeneratorDefinitions.h">
       <Filter>Scripting\NativeDefinitions</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Scripting\NativeDefinitions\RandomDefinitions.h">
-      <Filter>Scripting\NativeDefinitions</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\Models\CBR.h">
       <Filter>Models</Filter>
     </ClInclude>

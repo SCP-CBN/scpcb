@@ -15,7 +15,6 @@
 #include "../Scripting/NativeDefinitionRegistrar.h"
 
 #include "../Scripting/NativeDefinitions/ConsoleDefinitions.h"
-#include "../Scripting/NativeDefinitions/RandomDefinitions.h"
 #include "../Scripting/NativeDefinitions/UIDefinitions.h"
 #include "../Scripting/NativeDefinitions/ModelImageGeneratorDefinitions.h"
 #include "../Scripting/NativeDefinitions/LocalizationDefinitions.h"
@@ -32,7 +31,6 @@ ScriptWorld::ScriptWorld(const NativeDefinitionsHelpers& helpers) {
 
     NativeDefinitionRegistrar::registerNativeDefs(*manager, *refCounterManager, helpers);
 
-    nativeDefs.push_back(new RandomDefinitions(manager, refCounterManager));
     nativeDefs.push_back(new ModelImageGeneratorDefinitions(manager, helpers.mig));
     nativeDefs.push_back(new UIDefinitions(manager, helpers.um, helpers.config, helpers.world));
     nativeDefs.push_back(new LocalizationDefinitions(manager, helpers.lm));
