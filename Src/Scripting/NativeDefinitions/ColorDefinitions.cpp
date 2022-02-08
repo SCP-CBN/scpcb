@@ -58,4 +58,8 @@ static void registerColorDefinitions(ScriptManager&, asIScriptEngine& engine, Re
     engine.RegisterGlobalProperty("const Color Black", (void*)&PGE::Colors::BLACK);
 }
 
-static NativeDefinitionRegistrar _ { &registerColorDefinitions };
+static NativeDefinitionRegistrar _ {
+    &registerColorDefinitions,
+    NativeDefinitionDependencyFlags::NONE,
+    NativeDefinitionDependencyFlags::COLOR
+};

@@ -67,40 +67,58 @@ void GraphicsResources::dropShader(PGE::Shader* shader) {
 }
 
 PGE::Texture* GraphicsResources::getTexture(const PGE::String& filename) {
-    auto find = pathToTextures.find(filename);
-    if (find != pathToTextures.end()) {
-        find->second->refCount++;
-        return find->second->texture;
-    }
-
-    PGE::FilePath path = rpm->getHighestModPath(filename);
-    if (!path.exists()) {
-        return nullptr;
-    }
-
-    TextureEntry* newTexture = new TextureEntry();
-    newTexture->refCount = 1;
-    newTexture->texture = TextureHelper::load(graphics, path);
-    newTexture->name = filename;
-    pathToTextures.emplace(filename, newTexture);
-    textureToTextures.emplace(newTexture->texture, newTexture);
-    return newTexture->texture;
+    bool b;
+    return getTexture(filename, b);
 }
 
-void GraphicsResources::dropTexture(PGE::Texture* texture) {
-    auto find = textureToTextures.find(texture);
-    if (find != textureToTextures.end()) {
-        TextureEntry* textureEntry = find->second;
-        textureEntry->refCount--;
-        if (textureEntry->refCount <= 0) {
-            delete texture;
-            pathToTextures.erase(textureEntry->name);
-            textureToTextures.erase(find);
-            delete textureEntry;
-        }
-    } else {
-        delete texture;
+PGE::Texture* GraphicsResources::getTexture(const PGE::String& filename, bool& isNew) {
+    auto it = refCountStr.find(filename);
+    if (it != refCountStr.end()) {
+        it->second->count++;
+        isNew = false;
+        return it->second->ptr;
     }
+    isNew = true;
+    PGE::FilePath path = rpm->getHighestModPath(filename);
+    if (!path.exists()) { return nullptr; }
+    Content* ret = new Content{
+        filename,
+        TextureHelper::load(graphics, path),
+        1,
+    };
+    refCountStr.emplace(filename, ret);
+    refCountPtr.emplace(ret->ptr, ret);
+    return ret->ptr;
+}
+
+bool GraphicsResources::dropTexture(PGE::Texture* texture) {
+    auto it = refCountPtr.find(texture);
+    PGE_ASSERT(it != refCountPtr.end(), "ptr was not registered");
+    it->second->count--;
+    if (it->second->count == 0) {
+        refCountStr.erase(refCountStr.find(it->second->str));
+        delete it->second;
+        refCountPtr.erase(it);
+        delete texture;
+        return true;
+    }
+    return false;
+}
+
+void GraphicsResources::addTextureRef(PGE::Texture* ptr) {
+    auto it = refCountPtr.find(ptr);
+    PGE_ASSERT(it != refCountPtr.end(), "ptr was not registered");
+    it->second->count++;
+}
+
+void GraphicsResources::registerTexture(const PGE::String& name, PGE::Texture* ptr) {
+    Content* ret = new Content{
+        name,
+        TextureHelper::load(graphics, rpm->getHighestModPath(name)),
+        0,
+    };
+    refCountStr.emplace(name, ret);
+    refCountPtr.emplace(ret->ptr, ret);
 }
 
 ModelInstance* GraphicsResources::getModelInstance(const PGE::String& filename) {

@@ -66,6 +66,7 @@ PGE::Texture* ModelImageGenerator::generate(const PGE::String& model, float scal
         mi->render();
         gfxRes->dropModelInstance(mi);
 
+        gfxRes->registerTexture("MIG: " + model, tex);
         return tex;
     } catch (...) {
         delete tex;

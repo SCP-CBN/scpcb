@@ -22,7 +22,7 @@ static void registerRandomDefinitions(ScriptManager&, asIScriptEngine& engine, R
 	engine.PGE_REGISTER_METHOD_AS_FUNCTION_EX_G(Random, i32, nextInt, (i32, i32), genericRandom);
 
 	engine.SetDefaultNamespace("");
-	PGE_REGISTER_REF_TYPE_FULL(engine, refCtr, Random);
+	PGE_REGISTER_REF_TYPE_FULL(Random, engine, refCtr);
 	engine.PGE_REGISTER_REF_CONSTRUCTOR(Random, ());
 	engine.PGE_REGISTER_REF_CONSTRUCTOR(Random, (u64));
 	engine.PGE_REGISTER_METHOD(Random, next);

@@ -93,6 +93,6 @@ static void registerCollisionDefinitions(ScriptManager&, asIScriptEngine& engine
 
 static NativeDefinitionRegistrar _ {
     &registerCollisionDefinitions,
-    NativeDefinitionDependencyFlagBits::MATH,
-    NativeDefinitionDependencyFlagBits::COLLISION,
+    NativeDefinitionDependencyFlags::MATH,
+    NativeDefinitionDependencyFlags::COLLISION,
 };

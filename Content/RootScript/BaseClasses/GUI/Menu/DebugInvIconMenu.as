@@ -64,7 +64,6 @@ shared class DebugInvIconMenu : Menu {
         if (updateText(x, cachedX) || updateText(y, cachedY) ||
         updateText(pitch, cachedPitch) || updateText(yaw, cachedYaw) || updateText(roll, cachedRoll) ||
         updateText(scale, cachedScale) || textUpdate) {
-            Texture::drop(img.tex);
             ModelImageGenerator::initialize(256);
             @img.tex = ModelImageGenerator::generate(cachedName, cachedScale, Vector3f(cachedPitch, cachedYaw, cachedRoll), Vector2f(cachedX, cachedY));
             ModelImageGenerator::deinitialize();

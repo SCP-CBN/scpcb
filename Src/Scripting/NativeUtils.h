@@ -20,7 +20,7 @@ static void destructGen(void* memory) {
 
 template <typename T>
 class GenericRefCounter : public RefCounter {
-	private:
+    protected:
 		std::unordered_map<void*, int> refCount;
 		RefCounterManager& refCounterManager;
 
@@ -40,18 +40,20 @@ class GenericRefCounter : public RefCounter {
 		}
 
 		void addRef(void* ptr) override {
-			PGE_ASSERT(refCount.find(ptr) != refCount.end(), "ptr was not registered");
-			refCount[ptr]++;
+            auto it = refCount.find(ptr);
+			PGE_ASSERT(it != refCount.end(), "ptr was not registered");
+            it->second++;
 		}
 
 		void release(void* ptr) override {
 			auto it = refCount.find(ptr);
 			PGE_ASSERT(it != refCount.end(), "ptr was not registered");
+            it->second--;
 			if (it->second == 0) {
 				refCount.erase(it);
 				refCounterManager.unlinkPtr(ptr);
 				delete (T*)ptr;
-			} else { it->second--; }
+			}
 		}
 };
 
@@ -79,7 +81,7 @@ static const PGE::String getAsTypeName(bool isReturn = false) {
     PGE::String ret;
     bool isConst = std::is_const<std::remove_reference<T>::type>::value;
     if (isConst) { ret += "const "; }
-    ret += getTypeName<std::remove_cvref<T>::type>();
+    ret += getTypeName<std::remove_cvref<T>::type>().replace("String", "string");
     if (std::is_pointer<T>::value) { ret = ret.replace("*", "@"); }
     ret = ret.replace("unsigned ", "u");
     if (std::is_reference<T>::value) {
@@ -227,14 +229,21 @@ constexpr auto ptrDeduceConst(T(Class::* func)(Args...) const) {
 
 #define DEBRACE(...) __VA_ARGS__
 
-#define PGE_REGISTER_REF_TYPE_FULL(engine, refCtr, class) \
-static GenericRefCounter<class> CLASS_FAC(class){refCtr}; \
+#define PGE_REGISTER_REF_TYPE_CUSTOM(class, engine, factory) \
 engine.PGE_REGISTER_REF_TYPE(class); \
-engine.RegisterObjectBehaviour(#class, asBEHAVE_ADDREF, "void f()", asMETHOD(GenericRefCounter<class>, addRef), asCALL_THISCALL_OBJLAST, &CLASS_FAC(class)); \
-engine.RegisterObjectBehaviour(#class, asBEHAVE_RELEASE, "void f()", asMETHOD(GenericRefCounter<class>, release), asCALL_THISCALL_OBJLAST, &CLASS_FAC(class))
+engine.RegisterObjectBehaviour(#class, asBEHAVE_ADDREF, "void f()", asMETHOD(GenericRefCounter<class>, addRef), asCALL_THISCALL_OBJLAST, &factory); \
+engine.RegisterObjectBehaviour(#class, asBEHAVE_RELEASE, "void f()", asMETHOD(GenericRefCounter<class>, release), asCALL_THISCALL_OBJLAST, &factory)
+
+#define PGE_REGISTER_REF_TYPE_FULL(class, engine, refCtr) \
+static GenericRefCounter<class> CLASS_FAC(class){refCtr}; \
+PGE_REGISTER_REF_TYPE_CUSTOM(class, engine, CLASS_FAC(class))
+
 
 #define PGE_REGISTER_REF_CONSTRUCTOR(class, args) \
     RegisterObjectBehaviour(#class, asBEHAVE_FACTORY, #class "@ f" #args, asMETHOD(GenericRefCounter<class>, factory<DEBRACE args>), asCALL_THISCALL_ASGLOBAL, &CLASS_FAC(class))
+
+#define PGE_REGISTER_REF_CONSTRUCTOR_CUSTOM(class, func, factory) \
+    RegisterObjectBehaviour(#class, asBEHAVE_FACTORY, (idfkMethod("f", &decltype(factory)::func, false, { }, true)).cstr(), asMETHOD(decltype(factory), func), asCALL_THISCALL_ASGLOBAL, &factory)
 
 #define pgeOFFSET(class, property) (getAsTypeName<decltype(class::property)>() + " " #property).cstr(), asOFFSET(class, property)
 #define PGE_REGISTER_PROPERTY(class, property) RegisterObjectProperty(#class, pgeOFFSET(class, property))

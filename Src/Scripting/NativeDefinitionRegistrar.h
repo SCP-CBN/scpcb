@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "NativeDefinitionDependencies.h"
+#include "NativeDefinitionDependencyFlags.h"
 
 class ScriptManager;
 class RefCounterManager;
@@ -16,17 +16,19 @@ class NativeDefinitionRegistrar {
 		static void registerNativeDefs(ScriptManager& sm, RefCounterManager& refMgr, const NativeDefinitionsHelpers& helpers);
 
 		NativeDefinitionRegistrar(NativeDefinitionFunction natDefFunc,
-			NativeDefinitionDependencies dependencies = NativeDefinitionDependencyFlagBits::NONE,
-			NativeDefinitionDependencies resolvesDependencies = NativeDefinitionDependencyFlagBits::NONE);
+			NativeDefinitionDependencyFlags dependencies = NativeDefinitionDependencyFlags::NONE,
+			NativeDefinitionDependencyFlags resolvesDependencies = NativeDefinitionDependencyFlags::NONE);
 
-		~NativeDefinitionRegistrar();
+#ifdef DEBUG
+		~NativeDefinitionRegistrar() noexcept(false);
+#endif
 
 	private:
 		static std::vector<NativeDefinitionRegistrar*> registeredNativeDefs;
 
 		NativeDefinitionFunction func;
-		NativeDefinitionDependencies dependencies;
-		NativeDefinitionDependencies resolvesDependencies;
+		NativeDefinitionDependencyFlags dependencies;
+		NativeDefinitionDependencyFlags resolvesDependencies;
 };
 
 #endif // NATIVE_DEFINITION_REGISTRAR_H_INCLUDED

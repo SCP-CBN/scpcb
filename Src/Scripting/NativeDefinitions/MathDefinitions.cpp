@@ -228,6 +228,6 @@ static void registerMathDefinitions(class ScriptManager&, asIScriptEngine& engin
 
 static NativeDefinitionRegistrar _ {
     &registerMathDefinitions,
-    NativeDefinitionDependencyFlagBits::NONE,
-    NativeDefinitionDependencyFlagBits::MATH
+    NativeDefinitionDependencyFlags::NONE,
+    NativeDefinitionDependencyFlags::MATH
 };

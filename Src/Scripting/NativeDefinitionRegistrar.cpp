@@ -9,8 +9,8 @@ using namespace PGE;
 std::vector<NativeDefinitionRegistrar*> NativeDefinitionRegistrar::registeredNativeDefs;
 
 void NativeDefinitionRegistrar::registerNativeDefs(ScriptManager& sm, RefCounterManager& refMgr, const NativeDefinitionsHelpers& helpers) {
-	NativeDefinitionDependencies current = NativeDefinitionDependencyFlagBits::NONE;
-	NativeDefinitionDependencies prev;
+	NativeDefinitionDependencyFlags current = NativeDefinitionDependencyFlags::NONE;
+	NativeDefinitionDependencyFlags prev;
 	do {
 		prev = current;
 		for (auto it = registeredNativeDefs.begin(); it != registeredNativeDefs.end();) {
@@ -18,9 +18,9 @@ void NativeDefinitionRegistrar::registerNativeDefs(ScriptManager& sm, RefCounter
 			if (!(~current & natDef.dependencies)) {
 				natDef.func(sm, *sm.getAngelScriptEngine(), refMgr, helpers);
 				// Already resolved dependencies can't be resolved again
-				PGE_ASSERT(natDef.resolvesDependencies == NativeDefinitionDependencyFlagBits::NONE ||
+				PGE_ASSERT(natDef.resolvesDependencies == NativeDefinitionDependencyFlags::NONE ||
 					current != (natDef.resolvesDependencies | current),
-					"Dependency " + String::from<NativeDefinitionDependencies::UnderlyingType>(natDef.resolvesDependencies) + " already resolved");
+					"Dependency " + String::from(natDef.resolvesDependencies) + " already resolved");
 				current |= natDef.resolvesDependencies;
 				it = registeredNativeDefs.erase(it);
 			} else {
@@ -32,13 +32,13 @@ void NativeDefinitionRegistrar::registerNativeDefs(ScriptManager& sm, RefCounter
 }
 
 NativeDefinitionRegistrar::NativeDefinitionRegistrar(NativeDefinitionFunction natDefFunc,
-	NativeDefinitionDependencies dependencies, NativeDefinitionDependencies resolvesDependencies)
+	NativeDefinitionDependencyFlags dependencies, NativeDefinitionDependencyFlags resolvesDependencies)
 	: func(natDefFunc), dependencies(dependencies), resolvesDependencies(resolvesDependencies) {
 	registeredNativeDefs.push_back(this);
 }
 
-NativeDefinitionRegistrar::~NativeDefinitionRegistrar() {
 #ifdef DEBUG
+NativeDefinitionRegistrar::~NativeDefinitionRegistrar() noexcept(false) {
 	PGE_ASSERT(registeredNativeDefs.empty(), "Not all registered native definitions were consumed");
-#endif
 }
+#endif

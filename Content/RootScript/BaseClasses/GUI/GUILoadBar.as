@@ -1,5 +1,5 @@
 namespace GUILoadBar {
-    shared Texture@ whiteBar = Texture::get("SCPCB/GFX/HUD/BlinkMeter");
+    shared Texture@ whiteBar = Texture("SCPCB/GFX/HUD/BlinkMeter");
 }
 
 const float BORDER = 1.f;

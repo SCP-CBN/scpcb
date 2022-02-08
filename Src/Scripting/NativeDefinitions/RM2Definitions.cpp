@@ -35,4 +35,4 @@ static void registerRM2Definitions(ScriptManager&, asIScriptEngine& engine, RefC
     engine.RegisterGlobalFunction("void delete(RM2@ rm2)", asFUNCTION(deleteRM2), asCALL_CDECL);
 }
 
-static NativeDefinitionRegistrar _ { &registerRM2Definitions, NativeDefinitionDependencyFlagBits::COLLISION };
+static NativeDefinitionRegistrar _ { &registerRM2Definitions, NativeDefinitionDependencyFlags::COLLISION };

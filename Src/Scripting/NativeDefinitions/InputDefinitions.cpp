@@ -73,4 +73,4 @@ static void registerInputDefinitions(ScriptManager&, asIScriptEngine& engine, Re
     registerKey(engine, "Enter", helpers.keyBinds->enter);
 }
 
-static NativeDefinitionRegistrar _ { &registerInputDefinitions, NativeDefinitionDependencyFlagBits::MATH };
+static NativeDefinitionRegistrar _ { &registerInputDefinitions, NativeDefinitionDependencyFlags::MATH };

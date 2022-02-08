@@ -290,9 +290,6 @@
     <ClInclude Include="..\Src\Graphics\Billboard.h">
       <Filter>Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Scripting\NativeDefinitions\BillboardDefinitions.h">
-      <Filter>Scripting\NativeDefinitions</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\Scripting\NativeDefinitions\ConsoleDefinitions.h">
       <Filter>Scripting\NativeDefinitions</Filter>
     </ClInclude>
@@ -308,9 +305,6 @@
     <ClInclude Include="..\Src\Models\Model.h">
       <Filter>Models</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Scripting\NativeDefinitions\ModelDefinitions.h">
-      <Filter>Scripting\NativeDefinitions</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\World\Pickable.h">
       <Filter>World</Filter>
     </ClInclude>
@@ -323,9 +317,6 @@
     <ClInclude Include="..\Src\Input\MouseData.h">
       <Filter>Input</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Scripting\NativeDefinitions\LocalizationDefinitions.h">
-      <Filter>Scripting\NativeDefinitions</Filter>
-    </ClInclude>
     <ClInclude Include="..\Src\Scripting\RefCounter.h">
       <Filter>Scripting</Filter>
     </ClInclude>
@@ -334,9 +325,6 @@
     </ClInclude>
     <ClInclude Include="..\Src\Graphics\ModelImageGenerator.h">
       <Filter>Graphics</Filter>
-    </ClInclude>
-    <ClInclude Include="..\Src\Scripting\NativeDefinitions\ModelImageGeneratorDefinitions.h">
-      <Filter>Scripting\NativeDefinitions</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Models\CBR.h">
       <Filter>Models</Filter>
@@ -365,7 +353,7 @@
     <ClInclude Include="..\Src\Scripting\NativeDefinitionRegistrar.h">
       <Filter>Scripting</Filter>
     </ClInclude>
-    <ClInclude Include="..\Src\Scripting\NativeDefinitionDependencies.h">
+    <ClInclude Include="..\Src\Scripting\NativeDefinitionDependencyFlags.h">
       <Filter>Scripting</Filter>
     </ClInclude>
     <ClInclude Include="..\Src\Scripting\NativeDefinitionHelpers.h">

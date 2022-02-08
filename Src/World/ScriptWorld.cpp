@@ -15,11 +15,6 @@
 #include "../Scripting/NativeDefinitionRegistrar.h"
 
 #include "../Scripting/NativeDefinitions/ConsoleDefinitions.h"
-#include "../Scripting/NativeDefinitions/UIDefinitions.h"
-#include "../Scripting/NativeDefinitions/ModelImageGeneratorDefinitions.h"
-#include "../Scripting/NativeDefinitions/LocalizationDefinitions.h"
-#include "../Scripting/NativeDefinitions/BillboardDefinitions.h"
-#include "../Scripting/NativeDefinitions/ModelDefinitions.h"
 #include "../Scripting/NativeDefinitions/PickableDefinitions.h"
 #include "../Scripting/NativeDefinitions/PlayerControllerDefinitions.h"
 #include "../Scripting/NativeDefinitions/EventDefinition.h"
@@ -31,11 +26,6 @@ ScriptWorld::ScriptWorld(const NativeDefinitionsHelpers& helpers) {
 
     NativeDefinitionRegistrar::registerNativeDefs(*manager, *refCounterManager, helpers);
 
-    nativeDefs.push_back(new ModelImageGeneratorDefinitions(manager, helpers.mig));
-    nativeDefs.push_back(new UIDefinitions(manager, helpers.um, helpers.config, helpers.world));
-    nativeDefs.push_back(new LocalizationDefinitions(manager, helpers.lm));
-    nativeDefs.push_back(new BillboardDefinitions(manager, helpers.bm));
-    nativeDefs.push_back(new ModelDefinitions(manager, helpers.gfxRes));
     nativeDefs.push_back(new PickableDefinitions(manager, refCounterManager, helpers.pm));
     nativeDefs.push_back(new PlayerControllerDefinitions(manager, refCounterManager, helpers.camera));
     ConsoleDefinitions* conDef = new ConsoleDefinitions(manager, helpers.keyBinds);
