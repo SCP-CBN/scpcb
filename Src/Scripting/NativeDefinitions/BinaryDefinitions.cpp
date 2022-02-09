@@ -15,6 +15,16 @@ static BinaryReader* createReader(const String& path) {
 
 static asITypeInfo* byteArrayType;
 
+static bool tryReadBytes(BinaryReader* reader, asUINT bytes, CScriptArray* arr) {
+	arr->Resize(bytes);
+	for (asUINT i : Range(bytes)) {
+		if (!reader->tryRead<byte>(((byte*)arr->GetBuffer())[i])) {
+			return false;
+		}
+	}
+	return true;
+}
+
 static CScriptArray* readBytes(BinaryReader* reader, asUINT bytes) {
 	CScriptArray* ret = CScriptArray::Create(byteArrayType, bytes);
 	for (asUINT i : Range(bytes)) {
@@ -23,13 +33,20 @@ static CScriptArray* readBytes(BinaryReader* reader, asUINT bytes) {
 	return ret;
 }
 
+static void readBytesInto(BinaryReader* reader, CScriptArray* arr, asUINT bytes) {
+	arr->Resize(bytes);
+	for (asUINT i : Range(bytes)) {
+		((byte*)arr->GetBuffer())[i] = reader->read<byte>();
+	}
+}
+
 static void registerBinaryDefinitions(ScriptManager&, asIScriptEngine& engine, RefCounterManager& refCtr, const NativeDefinitionsHelpers&) {
 	PGE_REGISTER_REF_TYPE_FULL(BinaryReader, engine, refCtr);
 	engine.PGE_REGISTER_REF_FACTORY(BinaryReader, createReader);
 
 	byteArrayType = engine.GetTypeInfoByDecl("array<u8>");
 
-	engine.PGE_REGISTER_FUNCTION_AS_METHOD_REPLACE_RET(BinaryReader, ArrayHack<byte>*, readBytes);
+	engine.PGE_REGISTER_METHOD(BinaryReader, endOfFile);
 
 #define REGISTER_READ(name, type) \
 	engine.PGE_REGISTER_METHOD_N(BinaryReader, "tryRead" name, tryRead<type>); \
@@ -52,7 +69,12 @@ static void registerBinaryDefinitions(ScriptManager&, asIScriptEngine& engine, R
 	REGISTER_READ_T(Vector2i);
 	REGISTER_READ_T(Matrix4x4f);
 
-	engine.PGE_REGISTER_METHOD(BinaryReader, endOfFile);
+	REGISTER_READ_T(String);
+	engine.PGE_REGISTER_METHOD(BinaryReader, readStringInto);
+
+	engine.PGE_REGISTER_FUNCTION_AS_METHOD_REPLACE_RET(BinaryReader, ArrayHack<byte>*, readBytes);
+	engine.PGE_REGISTER_FUNCTION_AS_METHOD_REPLACE_ARGS(BinaryReader, tryReadBytes, (BinaryReader*, asUINT, ArrayHack<byte>*));
+	engine.PGE_REGISTER_FUNCTION_AS_METHOD_REPLACE_ARGS(BinaryReader, readBytesInto, (BinaryReader*, ArrayHack<byte>*, asUINT));
 
 	engine.PGE_REGISTER_METHOD(BinaryReader, trySkip);
 	engine.PGE_REGISTER_METHOD(BinaryReader, skip);

@@ -12,8 +12,8 @@
 #include "../RefCounter.h"
 
 template <typename T, typename... Args>
-static void constructGen(void* memory, Args... args) {
-    new (memory) T(args...);
+static void constructGen(void* memory, Args&&... args) {
+    new (memory) T(std::forward<Args>(args)...);
 }
 
 template <typename T>
@@ -96,13 +96,13 @@ static const PGE::String getTypeName() {
 }
 
 template <typename T>
-struct ArrayHack { using Type = T; };
+struct ArrayHack : PGE::Meta { using Type = T; };
 
 template <typename T>
-struct IsArrayHack : PGE::Meta, std::false_type { };
+struct IsArrayHack : PGE::False { };
 
 template <typename T>
-struct IsArrayHack<ArrayHack<T>> : PGE::Meta, std::true_type { };
+struct IsArrayHack<ArrayHack<T>> : PGE::True { };
 
 template <typename T>
 static const PGE::String getAsTypeName(bool isReturn = false) {
@@ -258,11 +258,22 @@ template <typename NewR, auto f>
 struct ReplaceRetType;
 
 template <typename NewR, typename R, typename... Args, R(*func)(Args...)>
-struct ReplaceRetType<NewR, func> {
+struct ReplaceRetType<NewR, func> : PGE::Meta {
     using Type = NewR(*)(Args...);
 };
 
-#define pgeReplaceRetType(newType, func) (ReplaceRetType<newType, &func>::Type)&func
+template <auto f, typename... NewArgs>
+struct ReplaceArgTypes;
+
+template <typename R, typename... NewArgs, typename... Args, R(*func)(Args...)>
+struct ReplaceArgTypes<func, NewArgs...> : PGE::Meta {
+    using Type = R(*)(NewArgs...);
+};
+
+#define DEBRACE(...) __VA_ARGS__
+
+#define pgeReplaceRetType(newType, func) (typename ReplaceRetType<newType, &func>::Type)&func
+#define pgeReplaceArgTypes(func, newTypes) (typename ReplaceArgTypes<func, DEBRACE newTypes>::Type)&func
 
 #define pgeFUNCTION(func, callConv) idfk(#func, &func, callConv).cstr(), asFUNCTION(func), callConv
 
@@ -273,8 +284,6 @@ struct ReplaceRetType<NewR, func> {
 #define PGE_REGISTER_REF_TYPE(class) pgeTYPE(class, asOBJ_REF)
 
 #define CLASS_FAC(class) class ## Factory
-
-#define DEBRACE(...) __VA_ARGS__
 
 #define PGE_REGISTER_REF_TYPE_CUSTOM(class, engine, factory) \
 engine.PGE_REGISTER_REF_TYPE(class); \
@@ -310,7 +319,10 @@ PGE_REGISTER_REF_TYPE_CUSTOM(class, engine, CLASS_FAC(class))
     RegisterObjectMethod(#class, idfk(name, func, asCALL_CDECL_OBJFIRST).cstr(), asFUNCTION(func), asCALL_CDECL_OBJFIRST)
 
 #define PGE_REGISTER_FUNCTION_AS_METHOD_REPLACE_RET(class, returnType, func) \
-    PGE_REGISTER_FUNCTION_AS_METHOD_N(class, #func, pgeReplaceRetType(ArrayHack<byte>*, func))
+    PGE_REGISTER_FUNCTION_AS_METHOD_N(class, #func, pgeReplaceRetType(returnType, func))
+
+#define PGE_REGISTER_FUNCTION_AS_METHOD_REPLACE_ARGS(class, func, argTypes) \
+    PGE_REGISTER_FUNCTION_AS_METHOD_N(class, #func, pgeReplaceArgTypes(func, argTypes))
 
 #define pgeMETHODPR(class, ret, func, args) \
     asSMethodPtr<sizeof(void(class::*)())>::template Convert(ptrDeduceConst<class, ret IDFK2(args)>(&class::func))
