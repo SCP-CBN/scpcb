@@ -228,6 +228,7 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
     <ClCompile Include="..\Src\Scripting\NativeDefinition.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitionRegistrar.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\BillboardDefinitions.cpp" />
+    <ClCompile Include="..\Src\Scripting\NativeDefinitions\BinaryDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\CollisionDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\ColorDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\ConsoleDefinitions.cpp" />

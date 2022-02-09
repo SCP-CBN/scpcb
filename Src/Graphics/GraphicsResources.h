@@ -40,7 +40,7 @@ class GraphicsResources {
 
         // TEX
         struct Content {
-            PGE::String str;
+            PGE::String::Key str;
             PGE::Texture* ptr;
             int count;
         };

@@ -1,7 +1,10 @@
 #ifndef NATIVE_UTILS_H_INCLUDED
 #define NATIVE_UTILS_H_INCLUDED
 
+// Warning: This file contains several illegal programming techniques and is banned in 213 countries.
+
 #include <angelscript.h>
+#include <scriptarray/scriptarray.h>
 
 #include <PGE/String/String.h>
 #include <PGE/Exception/Exception.h>
@@ -9,7 +12,7 @@
 #include "../RefCounter.h"
 
 template <typename T, typename... Args>
-static void constructGen(Args... args, void* memory) {
+static void constructGen(void* memory, Args... args) {
     new (memory) T(args...);
 }
 
@@ -39,6 +42,18 @@ class GenericRefCounter : public RefCounter {
 			return newVal;
 		}
 
+        template <auto f>
+        struct Wrapper;
+
+        template <typename... Args, T*(*func)(Args...)>
+        struct Wrapper<func> {
+            static constexpr T* exec(GenericRefCounter* refCtr, Args&&... args) {
+                T* ret = func(std::forward<Args>(args)...);
+                refCtr->emplace(ret);
+                return ret;
+            }
+        };
+
 		void addRef(void* ptr) override {
             auto it = refCount.find(ptr);
 			PGE_ASSERT(it != refCount.end(), "ptr was not registered");
@@ -57,9 +72,13 @@ class GenericRefCounter : public RefCounter {
 		}
 };
 
-static const PGE::String trimNamespaces(const PGE::String& name) {
+static PGE::String trimNamespaces(const PGE::String& name) {
     PGE::String::ReverseIterator it = name.findLast(":");
-    return name.substr(it != name.rend() ? PGE::String::Iterator(--it) : name.begin(), name.findFirst("<"));
+    return name.substr(it != name.rend() ? PGE::String::Iterator(--it) : name.begin(), name.end());
+}
+
+static PGE::String trimTemplates(const PGE::String& name) {
+    return name.substr(name.begin(), name.findFirst("<"));
 }
 
 template <typename T>
@@ -77,14 +96,32 @@ static const PGE::String getTypeName() {
 }
 
 template <typename T>
+struct ArrayHack { using Type = T; };
+
+template <typename T>
+struct IsArrayHack : PGE::Meta, std::false_type { };
+
+template <typename T>
+struct IsArrayHack<ArrayHack<T>> : PGE::Meta, std::true_type { };
+
+template <typename T>
 static const PGE::String getAsTypeName(bool isReturn = false) {
     PGE::String ret;
-    bool isConst = std::is_const<std::remove_reference<T>::type>::value;
-    if (isConst) { ret += "const "; }
-    ret += getTypeName<std::remove_cvref<T>::type>().replace("String", "string");
-    if (std::is_pointer<T>::value) { ret = ret.replace("*", "@"); }
+    using RawT = std::remove_cvref_t<T>;
+    constexpr bool isConst = std::is_const_v<std::remove_reference_t<T>>;
+    if constexpr (isConst) { ret += "const "; }
+    if constexpr (std::is_integral_v<RawT> && !std::is_same_v<bool, RawT>) {
+        ret += std::is_signed_v<RawT> ? "i" : "u";
+        ret += PGE::String::from(sizeof(RawT) * 8);
+    } else if constexpr (IsArrayHack<std::remove_pointer_t<RawT>>::value) {
+        ret += "array<" + getAsTypeName<typename std::remove_pointer_t<RawT>::Type>() + ">";
+        if constexpr (std::is_pointer_v<RawT>) { ret += "@"; }
+    } else {
+        ret += getTypeName<RawT>().replace("String", "string");
+        if constexpr (std::is_pointer_v<T>) { ret = ret.replace("*", "@"); }
+    }
     ret = ret.replace("unsigned ", "u");
-    if (std::is_reference<T>::value) {
+    if constexpr (std::is_reference_v<T>) {
         ret += "&";
         if (!isReturn) {
             ret += isConst ? "in" : "out";
@@ -99,17 +136,17 @@ static bool isTypeConst(const PGE::String& type) {
 
 template <typename T, typename... Args>
 static const PGE::String idfk(const PGE::String& name, T(*fu)(Args...), asECallConvTypes callConv) {
-    PGE::String ret = getAsTypeName<T>(true) + " " + trimNamespaces(name) + "(";
+    PGE::String ret = getAsTypeName<T>(true) + " " + trimTemplates(trimNamespaces(name)) + "(";
     bool isConst = false;
     if constexpr (sizeof...(Args) > 0) {
         std::vector<PGE::String> strings; strings.reserve(sizeof...(Args));
         (strings.push_back(getAsTypeName<Args>()), ...);
         switch (callConv) {
-            case asCALL_CDECL_OBJLAST: {
+            case asCALL_CDECL_OBJLAST: case asCALL_THISCALL_OBJLAST: {
                 isConst = isTypeConst(strings.back());
                 strings.pop_back();
             } break;
-            case asCALL_CDECL_OBJFIRST: {
+            case asCALL_CDECL_OBJFIRST: case asCALL_THISCALL_OBJFIRST: {
                 isConst = isTypeConst(strings.front());
                 strings.erase(strings.begin());
             }
@@ -217,6 +254,16 @@ constexpr auto ptrDeduceConst(T(Class::* func)(Args...) const) {
     return func;
 }
 
+template <typename NewR, auto f>
+struct ReplaceRetType;
+
+template <typename NewR, typename R, typename... Args, R(*func)(Args...)>
+struct ReplaceRetType<NewR, func> {
+    using Type = NewR(*)(Args...);
+};
+
+#define pgeReplaceRetType(newType, func) (ReplaceRetType<newType, &func>::Type)&func
+
 #define pgeFUNCTION(func, callConv) idfk(#func, &func, callConv).cstr(), asFUNCTION(func), callConv
 
 #define pgeMETHOD(class, func) idfkMethod<class>(#func, &class::func).cstr(), asMETHOD(class, func), asCALL_THISCALL
@@ -238,12 +285,14 @@ engine.RegisterObjectBehaviour(#class, asBEHAVE_RELEASE, "void f()", asMETHOD(Ge
 static GenericRefCounter<class> CLASS_FAC(class){refCtr}; \
 PGE_REGISTER_REF_TYPE_CUSTOM(class, engine, CLASS_FAC(class))
 
-
 #define PGE_REGISTER_REF_CONSTRUCTOR(class, args) \
     RegisterObjectBehaviour(#class, asBEHAVE_FACTORY, #class "@ f" #args, asMETHOD(GenericRefCounter<class>, factory<DEBRACE args>), asCALL_THISCALL_ASGLOBAL, &CLASS_FAC(class))
 
 #define PGE_REGISTER_REF_CONSTRUCTOR_CUSTOM(class, func, factory) \
     RegisterObjectBehaviour(#class, asBEHAVE_FACTORY, (idfkMethod("f", &decltype(factory)::func, false, { }, true)).cstr(), asMETHOD(decltype(factory), func), asCALL_THISCALL_ASGLOBAL, &factory)
+
+#define PGE_REGISTER_REF_FACTORY(class, func) \
+	RegisterObjectBehaviour(#class, asBEHAVE_FACTORY, idfk("f", &func, asCALL_CDECL).cstr(), asFUNCTION(GenericRefCounter<class>::Wrapper<func>::exec), asCALL_CDECL_OBJFIRST, &CLASS_FAC(class))
 
 #define pgeOFFSET(class, property) (getAsTypeName<decltype(class::property)>() + " " #property).cstr(), asOFFSET(class, property)
 #define PGE_REGISTER_PROPERTY(class, property) RegisterObjectProperty(#class, pgeOFFSET(class, property))
@@ -252,12 +301,16 @@ PGE_REGISTER_REF_TYPE_CUSTOM(class, engine, CLASS_FAC(class))
 #define IDFK2(args) IDFK(DEBRACE args)
 #define IHDFKATP(...) __VA_OPT__(, DEBRACE __VA_ARGS__)
 
-#define PGE_REGISTER_METHOD_IMPL(class, func, reversedOp, ...) RegisterObjectMethod(#class, idfkMethod<class>(#func, &class::func, reversedOp, { __VA_ARGS__ }).cstr(), asMETHOD(class, func), asCALL_THISCALL)
-#define PGE_REGISTER_METHOD(class, func, ...) PGE_REGISTER_METHOD_IMPL(class, func, false, __VA_ARGS__)
-#define PGE_REGISTER_METHOD_R(class, func) PGE_REGISTER_METHOD_IMPL(class, func, true)
+#define PGE_REGISTER_METHOD_IMPL(class, name, func, reversedOp, ...) RegisterObjectMethod(#class, idfkMethod<class>(trimTemplates(trimNamespaces(name)), &class::func, reversedOp, { __VA_ARGS__ }).cstr(), asMETHOD(class, func), asCALL_THISCALL)
+#define PGE_REGISTER_METHOD(class, func, ...) PGE_REGISTER_METHOD_IMPL(class, #func, func, false, __VA_ARGS__)
+#define PGE_REGISTER_METHOD_R(class, func) PGE_REGISTER_METHOD_IMPL(class, #func, func, true)
+#define PGE_REGISTER_METHOD_N(class, name, func, ...) PGE_REGISTER_METHOD_IMPL(class, name, func, false __VA_ARGS__)
 
-#define PGE_REGISTER_FUNCTION_AS_METHOD(class, name, func) \
+#define PGE_REGISTER_FUNCTION_AS_METHOD_N(class, name, func) \
     RegisterObjectMethod(#class, idfk(name, func, asCALL_CDECL_OBJFIRST).cstr(), asFUNCTION(func), asCALL_CDECL_OBJFIRST)
+
+#define PGE_REGISTER_FUNCTION_AS_METHOD_REPLACE_RET(class, returnType, func) \
+    PGE_REGISTER_FUNCTION_AS_METHOD_N(class, #func, pgeReplaceRetType(ArrayHack<byte>*, func))
 
 #define pgeMETHODPR(class, ret, func, args) \
     asSMethodPtr<sizeof(void(class::*)())>::template Convert(ptrDeduceConst<class, ret IDFK2(args)>(&class::func))
@@ -286,11 +339,11 @@ PGE_REGISTER_REF_TYPE_CUSTOM(class, engine, CLASS_FAC(class))
     asFunctionPtr((void (*)())((ret (*)args)(func))), asCALL_CDECL)
 #define PGE_REGISTER_GLOBAL_FUNCTION(func) RegisterGlobalFunction(pgeFUNCTION(func, asCALL_CDECL))
 
-#define PGE_REGISTER_TO_STRING(class) RegisterObjectMethod(#class, "string toString() const", asFUNCTION(String::from<class>), asCALL_CDECL_OBJLAST)
+#define PGE_REGISTER_TO_STRING(class) RegisterObjectMethod(#class, "string toString() const", asFUNCTION(String::from<class>), asCALL_CDECL_OBJFIRST)
 
 #define PGE_REGISTER_CONSTRUCTOR(class, ...) RegisterObjectBehaviour(#class, asBEHAVE_CONSTRUCT, idfk("f", &constructGen<class IHDFKATP(__VA_ARGS__)>, \
-    asCALL_CDECL_OBJLAST).cstr(), asFUNCTION((constructGen<class IHDFKATP(__VA_ARGS__)>)), asCALL_CDECL_OBJLAST)
-#define PGE_REGISTER_DESTRUCTOR(class) RegisterObjectBehaviour(#class, asBEHAVE_DESTRUCT, "void f()", asFUNCTION(destructGen<class>), asCALL_CDECL_OBJLAST)
+    asCALL_CDECL_OBJFIRST).cstr(), asFUNCTION((constructGen<class IHDFKATP(__VA_ARGS__)>)), asCALL_CDECL_OBJFIRST)
+#define PGE_REGISTER_DESTRUCTOR(class) RegisterObjectBehaviour(#class, asBEHAVE_DESTRUCT, "void f()", asFUNCTION(destructGen<class>), asCALL_CDECL_OBJFIRST)
 
 #define PGE_REGISTER_CAST_AS_CTOR(FROM, TO) RegisterObjectBehaviour(#TO, asBEHAVE_CONSTRUCT, "void f(const " #FROM "&in)", asMETHOD(FROM, operator TO), asCALL_THISCALL)
 

@@ -166,8 +166,8 @@ static void registerMathDefinitions(class ScriptManager&, asIScriptEngine& engin
     engine.PGE_REGISTER_GLOBAL_FUNCTION(Matrix4x4f::constructOrthographicMat);
     engine.SetDefaultNamespace("");
 
-    engine.PGE_REGISTER_FUNCTION_AS_METHOD(Matrix4x4f, "opIndex", matrixAccessor);
-    engine.PGE_REGISTER_FUNCTION_AS_METHOD(Matrix4x4f, "opIndex", matrixAccessorMut);
+    engine.PGE_REGISTER_FUNCTION_AS_METHOD_N(Matrix4x4f, "opIndex", matrixAccessor);
+    engine.PGE_REGISTER_FUNCTION_AS_METHOD_N(Matrix4x4f, "opIndex", matrixAccessorMut);
 
     engine.PGE_REGISTER_METHOD(Matrix4x4f, operator==);
     engine.PGE_REGISTER_METHOD(Matrix4x4f, equals, "Math::EPSILON_DEFAULT");
