@@ -11,6 +11,12 @@
 
 #include "../RefCounter.h"
 
+// This can be placed in function signatures to give the AS signature deduction
+// info about the template parameter of the CScriptArray
+template <typename T>
+class HackArray : public CScriptArray { using CScriptArray::CScriptArray; };
+static_assert(sizeof(HackArray<void>) == sizeof(CScriptArray));
+
 template <typename T, typename... Args>
 static void constructGen(void* memory, Args&&... args) {
     new (memory) T(std::forward<Args>(args)...);
@@ -82,65 +88,86 @@ static PGE::String trimTemplates(const PGE::String& name) {
 }
 
 template <typename T>
-static const PGE::String getTypeName() {
+static PGE::String getTypeName() {
 #if defined(_MSC_VER) && !defined(__GNUC__) && !defined(__llvm__) && !defined(__INTEL_COMPILER)
     PGE::String ret = __FUNCSIG__; // class PGE::String __cdecl getTypeName<TYPE>(void)
     auto beginPos = ret.findFirst('<');
     ret = ret.substr(beginPos + 1, ret.end() - sizeof(">(void)") + 1);
-    return trimNamespaces(ret.replace("class ", "").replace("struct ", ""));
+    return ret.replace("class ", "").replace("struct ", "");
 #else
     PGE::String ret = __PRETTY_FUNCTION__; // PGE::String getTypeName() [with T = TYPE]
     auto begin = ret.findFirst('=') + 2;
-    return trimNamespaces(ret.substr(begin, ret.end() - 1));
+    return ret.substr(begin, ret.end() - 1);
 #endif
 }
 
 template <typename T>
-struct ArrayHack : PGE::Meta { using Type = T; };
-
-template <typename T>
-struct IsArrayHack : PGE::False { };
-
-template <typename T>
-struct IsArrayHack<ArrayHack<T>> : PGE::True { };
-
-template <typename T>
-static const PGE::String getAsTypeName(bool isReturn = false) {
-    PGE::String ret;
-    using RawT = std::remove_cvref_t<T>;
-    constexpr bool isConst = std::is_const_v<std::remove_reference_t<T>>;
-    if constexpr (isConst) { ret += "const "; }
-    if constexpr (std::is_integral_v<RawT> && !std::is_same_v<bool, RawT>) {
-        ret += std::is_signed_v<RawT> ? "i" : "u";
-        ret += PGE::String::from(sizeof(RawT) * 8);
-    } else if constexpr (IsArrayHack<std::remove_pointer_t<RawT>>::value) {
-        ret += "array<" + getAsTypeName<typename std::remove_pointer_t<RawT>::Type>() + ">";
-        if constexpr (std::is_pointer_v<RawT>) { ret += "@"; }
-    } else {
-        ret += getTypeName<RawT>().replace("String", "string");
-        if constexpr (std::is_pointer_v<T>) { ret = ret.replace("*", "@"); }
-    }
-    ret = ret.replace("unsigned ", "u");
-    if constexpr (std::is_reference_v<T>) {
-        ret += "&";
-        if (!isReturn) {
-            ret += isConst ? "in" : "out";
+struct AsTypeName : PGE::Meta {
+    static PGE::String get(bool isReturn = false) {
+        if constexpr (std::is_integral_v<T> && !std::is_same_v<bool, T>) {
+            return (std::is_signed_v<T> ? "i" : "u") + PGE::String::from(sizeof(T) * 8);
+        } else if constexpr (std::is_same_v<PGE::String, T>) {
+            return "string";
+        } else {
+            return trimNamespaces(trimTemplates(getTypeName<T>()));
         }
     }
-    return ret;
-}
+};
+
+template <template <typename...> typename Temp, typename... ActualArgs>
+struct AsTypeName<Temp<ActualArgs...>> : PGE::Meta {
+    static PGE::String get(bool isReturn = false) {
+        PGE::String fullName;
+        if constexpr (std::same_as<HackArray<ActualArgs...>, Temp<ActualArgs...>>) { fullName = "array"; }
+        else { fullName = trimTemplates(getTypeName<Temp<ActualArgs...>>()); }
+        std::vector<PGE::String> templateTypes; templateTypes.reserve(sizeof...(ActualArgs));
+        (templateTypes.push_back(AsTypeName<ActualArgs>::get(true)), ...);
+        return fullName + "<" + PGE::String::join(templateTypes, ", ") + ">";
+    }
+};
+
+template <typename T>
+struct AsTypeName<const T&> : PGE::Meta {
+    static PGE::String get(bool isReturn = false) {
+        return AsTypeName<const T>::get(isReturn) + (isReturn ? "&" : "&in");
+    }
+};
+
+template <typename T>
+struct AsTypeName<T&&> : public AsTypeName<const T&> { };
+
+template <typename T>
+struct AsTypeName<T&> : PGE::Meta {
+    static PGE::String get(bool isReturn = false) {
+        return AsTypeName<T>::get(isReturn) + (isReturn ? "&" : "&out");
+    }
+};
+
+template <typename T>
+struct AsTypeName<T*> : PGE::Meta {
+    static PGE::String get(bool isReturn = false) {
+        return AsTypeName<T>::get(isReturn) + "@";
+    }
+};
+
+template <typename T>
+struct AsTypeName<const T> : PGE::Meta {
+    static PGE::String get(bool isReturn = false) {
+        return "const " + AsTypeName<T>::get(isReturn);
+    }
+};
 
 static bool isTypeConst(const PGE::String& type) {
     return type.findFirst("const") != type.end();
 }
 
 template <typename T, typename... Args>
-static const PGE::String idfk(const PGE::String& name, T(*fu)(Args...), asECallConvTypes callConv) {
-    PGE::String ret = getAsTypeName<T>(true) + " " + trimTemplates(trimNamespaces(name)) + "(";
+static PGE::String idfk(const PGE::String& name, T(*fu)(Args...), asECallConvTypes callConv) {
+    PGE::String ret = AsTypeName<T>::get(true) + " " + trimTemplates(trimNamespaces(name)) + "(";
     bool isConst = false;
     if constexpr (sizeof...(Args) > 0) {
         std::vector<PGE::String> strings; strings.reserve(sizeof...(Args));
-        (strings.push_back(getAsTypeName<Args>()), ...);
+        (strings.push_back(AsTypeName<Args>::get()), ...);
         switch (callConv) {
             case asCALL_CDECL_OBJLAST: case asCALL_THISCALL_OBJLAST: {
                 isConst = isTypeConst(strings.back());
@@ -157,7 +184,7 @@ static const PGE::String idfk(const PGE::String& name, T(*fu)(Args...), asECallC
 }
 
 template <typename... Args>
-static const PGE::String funcToAsFuncName(const PGE::String& cppName) {
+static PGE::String funcToAsFuncName(const PGE::String& cppName) {
     //using StringLiterals; // TODO: ???
 
     static const PGE::String OPERATOR = "operator";
@@ -210,17 +237,17 @@ static const PGE::String funcToAsFuncName(const PGE::String& cppName) {
 }
 
 template <bool isConst, typename Class, typename T, typename... Args>
-static const PGE::String idfkProper(const PGE::String& name, bool opReversed, const std::vector<PGE::String>& defaults, bool ignoreConst) {
-    PGE::String ret = getAsTypeName<T>(true) + " " + funcToAsFuncName<Args...>(name) + (opReversed ? "_r" : "") + "(";
+static PGE::String idfkProper(const PGE::String& name, bool opReversed, const std::vector<PGE::String>& defaults, bool ignoreConst) {
+    PGE::String ret = AsTypeName<T>::get(true) + " " + funcToAsFuncName<Args...>(name) + (opReversed ? "_r" : "") + "(";
     if constexpr (sizeof...(Args) > 0) {
         std::vector<PGE::String> strings; strings.reserve(sizeof...(Args));
-        (strings.push_back(getAsTypeName<Args>()), ...);
-        for (int i : PGE::Range(strings.size())) {
+        (strings.push_back(AsTypeName<Args>::get()), ...);
+        for (int i : PGE::Range((int)strings.size())) {
             if (i != 0) {
                 ret += ", ";
             }
             ret += strings[i];
-            if (int defaultIndex = i - (strings.size() - defaults.size()); defaultIndex >= 0) {
+            if (int defaultIndex = (int)(i - (strings.size() - defaults.size())); defaultIndex >= 0) {
                 ret += " = " + defaults[defaultIndex];
             }
         }
@@ -233,13 +260,13 @@ static const PGE::String idfkProper(const PGE::String& name, bool opReversed, co
 }
 
 template <typename Class, typename T, typename... Args>
-static const PGE::String idfkMethod(const PGE::String& name, T(Class::*)(Args...) const,
+static PGE::String idfkMethod(const PGE::String& name, T(Class::*)(Args...) const,
     bool isReversed = false, const std::vector<PGE::String>& defaults = { }, bool ignoreConst = false) {
     return idfkProper<true, Class, T, Args...>(name, isReversed, defaults, ignoreConst);
 }
 
 template <typename Class, typename T, typename... Args>
-static const PGE::String idfkMethod(const PGE::String& name, T(Class::*)(Args...),
+static PGE::String idfkMethod(const PGE::String& name, T(Class::*)(Args...),
     bool isReversed = false, const std::vector<PGE::String>& defaults = { }, bool ignoreConst = false) {
     return idfkProper<false, Class, T, Args...>(name, isReversed, defaults, ignoreConst);
 }
@@ -253,22 +280,6 @@ template <typename Class, typename T, typename... Args>
 constexpr auto ptrDeduceConst(T(Class::* func)(Args...) const) {
     return func;
 }
-
-template <typename NewR, auto f>
-struct ReplaceRetType;
-
-template <typename NewR, typename R, typename... Args, R(*func)(Args...)>
-struct ReplaceRetType<NewR, func> : PGE::Meta {
-    using Type = NewR(*)(Args...);
-};
-
-template <auto f, typename... NewArgs>
-struct ReplaceArgTypes;
-
-template <typename R, typename... NewArgs, typename... Args, R(*func)(Args...)>
-struct ReplaceArgTypes<func, NewArgs...> : PGE::Meta {
-    using Type = R(*)(NewArgs...);
-};
 
 #define DEBRACE(...) __VA_ARGS__
 
@@ -303,7 +314,7 @@ PGE_REGISTER_REF_TYPE_CUSTOM(class, engine, CLASS_FAC(class))
 #define PGE_REGISTER_REF_FACTORY(class, func) \
 	RegisterObjectBehaviour(#class, asBEHAVE_FACTORY, idfk("f", &func, asCALL_CDECL).cstr(), asFUNCTION(GenericRefCounter<class>::Wrapper<func>::exec), asCALL_CDECL_OBJFIRST, &CLASS_FAC(class))
 
-#define pgeOFFSET(class, property) (getAsTypeName<decltype(class::property)>() + " " #property).cstr(), asOFFSET(class, property)
+#define pgeOFFSET(class, property) (AsTypeName<decltype(class::property)>::get() + " " #property).cstr(), asOFFSET(class, property)
 #define PGE_REGISTER_PROPERTY(class, property) RegisterObjectProperty(#class, pgeOFFSET(class, property))
 
 #define IDFK(...) __VA_OPT__(,) __VA_ARGS__
@@ -318,11 +329,7 @@ PGE_REGISTER_REF_TYPE_CUSTOM(class, engine, CLASS_FAC(class))
 #define PGE_REGISTER_FUNCTION_AS_METHOD_N(class, name, func) \
     RegisterObjectMethod(#class, idfk(name, func, asCALL_CDECL_OBJFIRST).cstr(), asFUNCTION(func), asCALL_CDECL_OBJFIRST)
 
-#define PGE_REGISTER_FUNCTION_AS_METHOD_REPLACE_RET(class, returnType, func) \
-    PGE_REGISTER_FUNCTION_AS_METHOD_N(class, #func, pgeReplaceRetType(returnType, func))
-
-#define PGE_REGISTER_FUNCTION_AS_METHOD_REPLACE_ARGS(class, func, argTypes) \
-    PGE_REGISTER_FUNCTION_AS_METHOD_N(class, #func, pgeReplaceArgTypes(func, argTypes))
+#define PGE_REGISTER_FUNCTION_AS_METHOD(class, func) PGE_REGISTER_FUNCTION_AS_METHOD_N(class, #func, func)
 
 #define pgeMETHODPR(class, ret, func, args) \
     asSMethodPtr<sizeof(void(class::*)())>::template Convert(ptrDeduceConst<class, ret IDFK2(args)>(&class::func))
@@ -359,7 +366,7 @@ PGE_REGISTER_REF_TYPE_CUSTOM(class, engine, CLASS_FAC(class))
 
 #define PGE_REGISTER_CAST_AS_CTOR(FROM, TO) RegisterObjectBehaviour(#TO, asBEHAVE_CONSTRUCT, "void f(const " #FROM "&in)", asMETHOD(FROM, operator TO), asCALL_THISCALL)
 
-#define PGE_REGISTER_GLOBAL_PROPERTY_N(name, var) RegisterGlobalProperty((getAsTypeName<decltype(var)>(true) + " " + name).cstr(), (void*)&var)
+#define PGE_REGISTER_GLOBAL_PROPERTY_N(name, var) RegisterGlobalProperty((AsTypeName<decltype(var)>::get(true) + " " + name).cstr(), (void*)&var)
 #define PGE_REGISTER_GLOBAL_PROPERTY(var) PGE_REGISTER_GLOBAL_PROPERTY_N(trimNamespaces(#var), var)
 
 #endif // NATIVE_UTILS_H_INCLUDED

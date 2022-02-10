@@ -15,7 +15,7 @@ static BinaryReader* createReader(const String& path) {
 
 static asITypeInfo* byteArrayType;
 
-static bool tryReadBytes(BinaryReader* reader, asUINT bytes, CScriptArray* arr) {
+static bool tryReadBytes(BinaryReader* reader, asUINT bytes, HackArray<byte>* arr) {
 	arr->Resize(bytes);
 	for (asUINT i : Range(bytes)) {
 		if (!reader->tryRead<byte>(((byte*)arr->GetBuffer())[i])) {
@@ -25,15 +25,15 @@ static bool tryReadBytes(BinaryReader* reader, asUINT bytes, CScriptArray* arr) 
 	return true;
 }
 
-static CScriptArray* readBytes(BinaryReader* reader, asUINT bytes) {
+static HackArray<byte>* readBytes(BinaryReader* reader, asUINT bytes) {
 	CScriptArray* ret = CScriptArray::Create(byteArrayType, bytes);
 	for (asUINT i : Range(bytes)) {
 		((byte*)ret->GetBuffer())[i] = reader->read<byte>();
 	}
-	return ret;
+	return (HackArray<byte>*)ret;
 }
 
-static void readBytesInto(BinaryReader* reader, CScriptArray* arr, asUINT bytes) {
+static void readBytesInto(BinaryReader* reader, HackArray<byte>* arr, asUINT bytes) {
 	arr->Resize(bytes);
 	for (asUINT i : Range(bytes)) {
 		((byte*)arr->GetBuffer())[i] = reader->read<byte>();
@@ -72,9 +72,9 @@ static void registerBinaryDefinitions(ScriptManager&, asIScriptEngine& engine, R
 	REGISTER_READ_T(String);
 	engine.PGE_REGISTER_METHOD(BinaryReader, readStringInto);
 
-	engine.PGE_REGISTER_FUNCTION_AS_METHOD_REPLACE_RET(BinaryReader, ArrayHack<byte>*, readBytes);
-	engine.PGE_REGISTER_FUNCTION_AS_METHOD_REPLACE_ARGS(BinaryReader, tryReadBytes, (BinaryReader*, asUINT, ArrayHack<byte>*));
-	engine.PGE_REGISTER_FUNCTION_AS_METHOD_REPLACE_ARGS(BinaryReader, readBytesInto, (BinaryReader*, ArrayHack<byte>*, asUINT));
+	engine.PGE_REGISTER_FUNCTION_AS_METHOD(BinaryReader, tryReadBytes);
+	engine.PGE_REGISTER_FUNCTION_AS_METHOD(BinaryReader, readBytes);
+	engine.PGE_REGISTER_FUNCTION_AS_METHOD(BinaryReader, readBytesInto);
 
 	engine.PGE_REGISTER_METHOD(BinaryReader, trySkip);
 	engine.PGE_REGISTER_METHOD(BinaryReader, skip);
