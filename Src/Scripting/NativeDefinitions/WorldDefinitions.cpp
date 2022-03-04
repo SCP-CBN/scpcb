@@ -6,7 +6,7 @@
 #include "../../World/World.h"
 
 static void registerWorldDefinitions(ScriptManager&, asIScriptEngine& engine, RefCounterManager&, const NativeDefinitionsHelpers& helpers) {
-    constexpr int PLATFORM =
+    static constexpr int PLATFORM =
 #ifdef _WIN32
         0
 #elif defined __APPLE__
