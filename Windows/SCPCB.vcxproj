@@ -45,14 +45,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>.\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\obj\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>../Engine/Include;../Libraries/freetype/include;../Libraries/angelscript/sdk/angelscript/include;../Libraries/angelscript/sdk/add_on;../Libraries/tinyxml2/;../Libraries/assimp-4.1.0/include;../Libraries/stb_image;$(IncludePath)</IncludePath>
+    <IncludePath>../Engine/Include;../Libraries/freetype/include;../Libraries/angelscript/sdk/angelscript/include;../Libraries/angelscript/sdk/add_on;../Libraries/tinyxml2/;../Libraries/assimp-4.1.0/include;../Libraries/stb_image;../Src;$(IncludePath)</IncludePath>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>.\bin\$(Platform)\$(Configuration)\</OutDir>
     <IntDir>.\obj\$(Platform)\$(Configuration)\</IntDir>
-    <IncludePath>../Engine/Include;../Libraries/freetype/include;../Libraries/angelscript/sdk/angelscript/include;../Libraries/angelscript/sdk/add_on;../Libraries/tinyxml2/;../Libraries/assimp-4.1.0/include;../Libraries/stb_image;$(IncludePath)</IncludePath>
+    <IncludePath>../Engine/Include;../Libraries/freetype/include;../Libraries/angelscript/sdk/angelscript/include;../Libraries/angelscript/sdk/add_on;../Libraries/tinyxml2/;../Libraries/assimp-4.1.0/include;../Libraries/stb_image;../Src;$(IncludePath)</IncludePath>
     <RunPostBuildEvent>Always</RunPostBuildEvent>
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
   </PropertyGroup>
@@ -236,6 +236,7 @@ xcopy /d /s /y "$(ProjectDir)..\Libraries\freetype-2.10.1\objs\$(Platform)\$(Con
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\InputDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\LocalizationDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\MathDefinitions.cpp" />
+    <ClCompile Include="..\Src\Scripting\NativeDefinitions\Math\Math.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\MementoDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\ModelDefinitions.cpp" />
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\ModelImageGeneratorDefinitions.cpp" />

@@ -200,6 +200,9 @@
     <ClCompile Include="..\Src\Scripting\NativeDefinitions\BinaryDefinitions.cpp">
       <Filter>Scripting\NativeDefinitions</Filter>
     </ClCompile>
+    <ClCompile Include="..\Src\Scripting\NativeDefinitions\Math\Math.cpp">
+      <Filter>Scripting\NativeDefinitions\Math</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h" />
@@ -408,6 +411,9 @@
     </Filter>
     <Filter Include="Serialize">
       <UniqueIdentifier>{6627f51a-c0fb-4ca8-899e-021571bdf075}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scripting\NativeDefinitions\Math">
+      <UniqueIdentifier>{7caa1a88-9d3d-440b-8c9a-26343f60ab05}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
