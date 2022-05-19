@@ -15,3 +15,6 @@
 [submodule "Libraries/tinyxml2"]
 	path = Libraries/tinyxml2
 	url = git@github.com:SCP-CBN/tinyxml2.git
+[submodule "Libraries/assimp"]
+	path = Libraries/assimp
+	url = git@github.com:assimp/assimp.git

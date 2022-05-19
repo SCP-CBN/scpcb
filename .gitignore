@@ -3,6 +3,9 @@
 exception*.txt
 options.ini
 
+# CMake
+build/
+
 # Visual Studio
 [Dd]ebug
 [Rr]elease
