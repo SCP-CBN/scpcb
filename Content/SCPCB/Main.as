@@ -1,4 +1,6 @@
 external class Room;
+//external class FullGen::MapGenFull;
+//external class Layout::Layout;
 
 serialize LightContainmentZone@ lcz;
 
@@ -89,6 +91,10 @@ void main() {
 
     @fpsCounter = GUIText(null, -50.0 * UI::getAspectRatio(), -50.0, false, false, false);
     fpsCounter.text = "test";
+
+    //Map Gen Test
+    FullGen::MapFullGen@ testGen;
+    @testGen = FullGen::MapFullGen(17);
 
     //Msg::set("LOL");
 
